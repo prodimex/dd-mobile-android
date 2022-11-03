@@ -10,16 +10,25 @@ android {
         applicationId "ru.prodimex.digitaldispatcher"
         minSdk 21
         targetSdk 29
-        versionCode 5003
-        versionName "5.0.03"
+        versionCode 5019
+        versionName "5.0.19"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    signingConfigs {
+        release {
+            storeFile file("ddmobanrelease.keystore")
+            storePassword "ddmobanrelease"
+            keyAlias "ddmobanrelease"
+            keyPassword "ddmobanrelease"
+        }
     }
 
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
     compileOptions {

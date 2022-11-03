@@ -77,7 +77,15 @@ class Main : AppCompatActivity() {
         Dictionary.init()
         main = this
         sharedPref = getSharedPreferences("ProdimexLocalStorage", MODE_PRIVATE)
-        showPage(UPDATE_PAGE)
+
+        if(AppConfig.APP_MODE == AppConfig.DEV_MODE) {
+            showPage(UPDATE_PAGE)
+        } else if(AppConfig.APP_MODE == AppConfig.DRIVER_MODE) {
+            showPage(LOGIN_PAGE)
+        } else if(AppConfig.APP_MODE == AppConfig.LOADER_MODE) {
+            showPage(LOADER_ENTER_PAGE)
+        }
+
 
         supportActionBar?.hide()
         currentApiVersion = android.os.Build.VERSION.SDK_INT

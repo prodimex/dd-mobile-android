@@ -32,7 +32,7 @@ class UpdatePage:AppController() {
         scene.findViewById<LinearLayout>(R.id.update_download_progress).visibility = View.GONE
         startPreloading()
 
-        HTTPRequest.nodeServerUrl = "https://ddu.prodimex.ru/releases-new"
+        HTTPRequest.nodeServerUrl = AppConfig.UPDATE_URL
         HTTPRequest("", hashMapOf("ver" to BuildConfig.BUILD_TYPE), _requestMethod = "GET", _callback = fun(_response:HashMap<String, Any>) {
             Main.log(_response)
             if(_response.contains("error"))
