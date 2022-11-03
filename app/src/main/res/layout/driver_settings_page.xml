@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/red_silver"
+        android:orientation="vertical"
+        android:padding="30dp">
+        <TextView
+            android:id="@+id/settings_debug_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/random_big_text"
+            android:textSize="18dp"
+            android:layout_marginBottom="5dp"
+            android:textColor="@color/text_gray"
+            />
+        <Button
+            android:id="@+id/set_current_trip_to_loaded"
+            android:layout_width="wrap_content"
+            android:background="@drawable/button_background"
+            android:text="@string/set_current_trip_to_loaded"
+            android:paddingHorizontal="30dp"
+            android:layout_marginTop="15dp"
+            android:layout_height="wrap_content"/>
+        <Button
+            android:id="@+id/set_current_trip_to_discarded"
+            android:layout_width="wrap_content"
+            android:background="@drawable/button_background"
+            android:text="@string/set_current_trip_to_discarded"
+            android:paddingHorizontal="30dp"
+            android:layout_marginTop="15dp"
+            android:layout_height="wrap_content"/>
+        <Button
+            android:id="@+id/show_sample_alert"
+            android:layout_width="wrap_content"
+            android:background="@drawable/button_background"
+            android:text="@string/sample_alert"
+            android:paddingHorizontal="30dp"
+            android:layout_marginTop="15dp"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <include layout="@layout/driver_bottom"/>
+    </RelativeLayout>
+</RelativeLayout>

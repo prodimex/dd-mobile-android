@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="red_silver">#FFf7f3f7</color>
+    <color name="gray">#FFCCCCCC</color>
+    <color name="debug">#FF2566DC</color>
+    <color name="button_background">#FF0079ff</color>
+    <color name="button_background_press">#FF4aa2ff</color>
+    <color name="button_background_red">#ff9D2623</color>
+    <color name="button_background_red_press">#ffbD4643</color>
+    <color name="background_view_red">#ffe6c2c2</color>
+    <color name="text_gray">#444444</color>
+    <color name="alert_background">#aa000000</color>
+    <color name="text_gray_light">#636363</color>
+    <color name="text_orange">#EA5805</color>
+    <color name="text_url_blue">#1AA0DD</color>
+    <color name="text_light_gray">#838383</color>
+    <color name="text_white_gray">#acacac</color>
+    <color name="text_red">#862433</color>
+    <color name="edit_text_border_color">#D5D9DC</color>
+    <color name="bottom_menu_background">#233239</color>
+    <color name="text_yellow">#FFF669</color>
+    <color name="text_orange_light">#EFA13C</color>
+
+    <color name="status_text_color_1">#EA5806</color>
+    <color name="status_text_color_2">#399E50</color>
+    <color name="status_text_color_3">#41C2FF</color>
+    <color name="status_text_color_4">#0A5AA4</color>
+    <color name="status_text_color_5">#5E6979</color>
+    <color name="status_text_color_6">#B245E6</color>
+    <color name="status_text_color_7">#EFAC00</color>
+</resources>

@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/red_silver">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/request_update_data"
+            android:textColor="@color/text_gray"
+            android:textSize="18dp"
+            android:textAlignment="center"
+            />
+        <ImageView
+            android:id="@+id/update_page_preloading"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="15dp"
+            app:srcCompat="@drawable/preloader"
+            app:tint="@color/button_background_press"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/update_layout_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/red_silver"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:padding="25dp">
+
+        <TextView
+            android:id="@+id/update_page_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/update_available"
+            android:textColor="@color/text_red"
+            android:textSize="20dp" />
+
+        <TextView
+            android:id="@+id/update_page_version"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="Версия: 4.0.25-debug"
+            android:textColor="@color/text_gray"
+            android:textSize="16dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="@string/please_update_text"
+            android:textAlignment="textStart"
+            android:textColor="@color/text_gray"
+            android:textSize="18dp" />
+
+        <TextView
+            android:id="@+id/update_change_list"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="@string/please_update_text"
+            android:textAlignment="textStart"
+            android:textColor="@color/text_gray"
+            android:textSize="18dp" />
+
+        <TextView
+            android:id="@+id/update_weight_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:text="Размер файла: 4.55 Мбайт"
+            android:textColor="@color/text_light_gray"
+            android:textSize="16dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/do_not_update_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/button_background"
+                android:paddingHorizontal="25dp"
+                android:text="@string/do_not_update"
+                android:textSize="16dp" />
+
+            <Button
+                android:id="@+id/update_now_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:background="@drawable/button_background"
+                android:paddingHorizontal="25dp"
+                android:text="@string/update_now"
+                android:textSize="16dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/update_download_progress"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/red_silver"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="25dp">
+        <TextView
+            android:id="@+id/update_download_progress_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Загрузка - 80%"
+            android:textColor="@color/text_gray"
+            android:textSize="14dp"/>
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp">
+            <LinearLayout
+                android:id="@+id/update_download_progress_bg"
+                android:layout_width="250dp"
+                android:layout_height="14dp"
+                android:background="@drawable/preloader_shape_bg"
+                android:orientation="vertical" />
+            <LinearLayout
+                android:id="@+id/update_download_progress_fg"
+                android:layout_width="244dp"
+                android:layout_height="8dp"
+                android:layout_marginLeft="3dp"
+                android:layout_marginTop="3dp"
+                android:background="@drawable/preloader_shape_fg"
+                android:orientation="vertical" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/update_download_loaded_bytes_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="4,25 Мбайт из 4,25 Мбайт"
+            android:textColor="@color/text_gray"
+            android:textSize="14dp" />
+    </LinearLayout>
+    <TextView
+        android:id="@+id/app_version_text"
+        android:layout_width="wrap_content"
+        android:text="Версия: 4.0.25-debug"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="10dp"
+        android:gravity="center_horizontal"
+        android:textColor="@color/text_light_gray"
+        android:textSize="12dp"
+        android:layout_height="wrap_content"/>
+</RelativeLayout>

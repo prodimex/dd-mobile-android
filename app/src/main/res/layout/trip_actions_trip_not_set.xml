@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center">
+    <Button
+        android:id="@+id/go_to_line_button"
+        android:layout_width="wrap_content"
+        android:background="@drawable/button_background"
+        android:text="@string/go_to_line"
+        android:paddingHorizontal="30dp"
+        android:layout_height="wrap_content"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/before_start_press_go_to_line"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/text_gray"
+        android:textSize="18dp"
+        android:textAlignment="center"
+        />
+</LinearLayout>
