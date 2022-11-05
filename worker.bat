@@ -64,6 +64,12 @@ Echo ===========================================================================
 Echo    [%ESC%[36m 1 %ESC%[0m] Build loader debug app and install and run
 Echo    [%ESC%[36m 2 %ESC%[0m] Build driver debug app and install and run
 Echo    [%ESC%[36m 3 %ESC%[0m] Build develop debug app and install and run
+Echo.
+Echo    [%ESC%[36m 41 %ESC%[0m] Prepare release to upload loader
+Echo    [%ESC%[36m 42 %ESC%[0m] Prepare release to upload driver
+Echo    [%ESC%[36m 43 %ESC%[0m] Prepare release to upload develop
+Echo    [%ESC%[36m 5 %ESC%[0m] Prepare all to upload
+Echo.
 Echo    [%ESC%[36m 3 %ESC%[0m] build version up
 Echo ===========================================================================
 Echo    SELECT:
@@ -71,30 +77,66 @@ Set Input=0918239021309810982093809
 Set /P Input="-->"
 if %Input% == 1 (
     del .\app\src\main\java\ru\prodimex\digitaldispatcher\AppConfig.kt
-    COPY .\app\src\main\java\ru\prodimex\digitaldispatcher\configs\Loader.txt .\app\src\main\java\ru\prodimex\digitaldispatcher\AppConfig.kt
+    copy .\app\src\main\java\ru\prodimex\digitaldispatcher\configs\Loader.txt .\app\src\main\java\ru\prodimex\digitaldispatcher\AppConfig.kt
 
 	GOTO :DEV_BUILD_AND_INSTALL_AND_RUN
 )
 if %Input% == 2 (
     del .\app\src\main\java\ru\prodimex\digitaldispatcher\AppConfig.kt
-    COPY .\app\src\main\java\ru\prodimex\digitaldispatcher\configs\Driver.txt .\app\src\main\java\ru\prodimex\digitaldispatcher\AppConfig.kt
+    copy .\app\src\main\java\ru\prodimex\digitaldispatcher\configs\Driver.txt .\app\src\main\java\ru\prodimex\digitaldispatcher\AppConfig.kt
 
     GOTO :DEV_BUILD_AND_INSTALL_AND_RUN
 )
 if %Input% == 3 (
     del .\app\src\main\java\ru\prodimex\digitaldispatcher\AppConfig.kt
-    COPY .\app\src\main\java\ru\prodimex\digitaldispatcher\configs\Develop.txt .\app\src\main\java\ru\prodimex\digitaldispatcher\AppConfig.kt
+    copy .\app\src\main\java\ru\prodimex\digitaldispatcher\configs\Develop.txt .\app\src\main\java\ru\prodimex\digitaldispatcher\AppConfig.kt
 
     GOTO :DEV_BUILD_AND_INSTALL_AND_RUN
 )
+
+Set /S AppVersion = unavailable
+
+    Echo pedaloh %AppVersion% pedaloh
+if %Input% == 43 (
+    CALL :UP_VERSION
+
+setlocal EnableDelayedExpansion
+    for /F "delims=" %%a in ('cscript readversionname.vbs') do (endlocal & set appVersionName=%%a)
+    GOTO :COMPILATION_SELECTOR
+)
+
+
 if %Input% == 22 (
 	start cmd /k "gradlew assembleRelease && exit"
 	GOTO :COMPILATION_SELECTOR
 )
+::start /WAIT cmd /k "gradlew assembleRelease && exit"
+
+   ::
+
+    ::move .\app\build\outputs\apk\release\app-release.apk .\upload\develop\%appVersionName%-release.apk
+ ::copy /y "%FileURI%" "%TargetDir%\%NewFileName%"
+    ::start cmd /k "gradlew assembleRelease && copy .\app\build\outputs\apk\release\app-release.apk .\upload\develop\version.apk && pause"
+
+
 if %Input% == 33 (
     start cmd /k "cscript /nologo upver.vbs  > .\app\build.txt && cd app && ren build.gradle build.gradle.bkup && del build.gradle.bkup && ren build.txt build.gradle && exit"
 )
 GOTO :COMPILATION_SELECTOR
+
+:UP_VERSION
+    ::cscript /nologo upver.vbs > .\app\build.txt
+    ::rename  .\app\build.gradle build.gradle.bkup
+    ::rename .\app\build.txt build.gradle
+    ::del .\app\build.gradle.bkup
+    ::setlocal EnableDelayedExpansion
+    ::for /F "delims=" %%a in ('cscript readversionname.vbs') do (endlocal & set appVersionName=%%a)
+    ::%AppVersion% = %appVersionName%
+
+    ::Echo pedaloh %appVersionName%
+    Echo.
+    Echo ===========================================================================
+EXIT /b
 
 :DEV_BUILD_AND_INSTALL_AND_RUN
 start cmd /k "cscript /nologo upver.vbs  > .\app\build.txt && cd app && ren build.gradle build.gradle.bkup && del build.gradle.bkup && ren build.txt build.gradle && cd ../ && gradlew assembleDebug && gradlew installDebug && %ANDROID_HOME%\platform-tools\adb.exe shell am start -n ru.prodimex.digitaldispatcher/ru.prodimex.digitaldispatcher.Main && exit"
