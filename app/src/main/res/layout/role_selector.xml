@@ -30,10 +30,10 @@
                 android:layout_marginBottom="10dp"
                 android:layout_height="wrap_content"/>
             <Button
-                android:id="@+id/select_loader_role"
+                android:id="@+id/select_scanner_role"
                 android:layout_width="wrap_content"
                 android:background="@drawable/button_background"
-                android:text="@string/loader"
+                android:text="@string/scanner"
                 android:paddingHorizontal="20dp"
                 android:layout_marginLeft="10dp"
                 android:layout_height="wrap_content"/>

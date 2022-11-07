@@ -22,6 +22,7 @@
     <string name="chose_your_role">Тест связи по роли:</string>
     <string name="drivers_pages_layouts">Макеты страниц водителя:</string>
     <string name="test_modes">Тестовые режимы:</string>
+    <string name="scanner">СКАНЕР</string>
     <string name="loader_pages_layouts">Макеты страниц погрузчика:</string>
     <string name="driver">ВОДИТЕЛЬ</string>
     <string name="profile">ПРОФИЛЬ</string>

@@ -64,11 +64,14 @@ class Main : AppCompatActivity() {
     }
 
     private val uiOptions = (View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-            or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN
-            or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-            or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_LOW_PROFILE
+            or View.SYSTEM_UI_FLAG_FULLSCREEN
+            or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+            or View.SYSTEM_UI_FLAG_LOW_PROFILE
             or View.SYSTEM_UI_FLAG_IMMERSIVE or View.SYSTEM_UI_FLAG_LAYOUT_STABLE)
-
+    //or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+    //
+    //
+    //View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
     var currentApiVersion:Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -87,7 +90,7 @@ class Main : AppCompatActivity() {
             showPage(LOADER_ENTER_PAGE)
         }*/
 
-        supportActionBar?.hide()
+        //supportActionBar?.hide()
         currentApiVersion = android.os.Build.VERSION.SDK_INT
         if(currentApiVersion!! >= Build.VERSION_CODES.KITKAT) {
             window.decorView.setOnSystemUiVisibilityChangeListener {
@@ -115,7 +118,7 @@ class Main : AppCompatActivity() {
             toastMe("Времено не работает")
             return@setOnClick
             showPage(DRIVER_PAGE) }
-        setOnClick(R.id.select_loader_role) {
+        setOnClick(R.id.select_scanner_role) {
             toastMe("Времено не работает")
             return@setOnClick
             showPage(LOADER_PAGE) }

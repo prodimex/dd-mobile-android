@@ -11,6 +11,9 @@ class DriverSettingsPage:DriverAppController() {
         highlightText(R.id.settings_text, R.color.text_yellow)
 
         var text = "Всего маяков: ${Beacons.beaconTransmitters.size}<br>"
+        Beacons.beaconTransmitters.forEach {
+            text += "${it.key}<br>"
+        }
         text += if(Beacons.scanStarted) "Сканирование запущено<br>" else "Сканирование не запущено<br>"
         setText(R.id.settings_debug_text, text)
 

@@ -143,7 +143,11 @@ class Beacons {
             val beaconTransmitter = BeaconTransmitter(Main.main.applicationContext, beaconParser)
 
             Main.log("beaconTransmitter.advertiseMode ${beaconTransmitter.advertiseMode}")
-
+            beaconTransmitter.advertiseMode = AdvertiseSettings.ADVERTISE_MODE_LOW_LATENCY
+            beaconTransmitter.advertiseTxPowerLevel = AdvertiseSettings.ADVERTISE_TX_POWER_HIGH
+            Main.log("${beaconTransmitter.advertiseTxPowerLevel} = ${AdvertiseSettings.ADVERTISE_TX_POWER_HIGH}")
+            Main.log("${beaconTransmitter.advertiseMode} = ${AdvertiseSettings.ADVERTISE_MODE_LOW_LATENCY}")
+            //beaconTransmitter.advertiseTxPowerLevel
             beaconTransmitter.startAdvertising(beacon, object : AdvertiseCallback() {
                 override fun onStartFailure(errorCode: Int) {
                     Main.log("Error from start advertising $errorCode")

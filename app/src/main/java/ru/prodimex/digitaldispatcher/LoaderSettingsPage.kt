@@ -27,6 +27,9 @@ class LoaderSettingsPage:LoaderAppController() {
     override fun updateView() {
         super.updateView()
         var text = "Всего маяков: ${Beacons.beaconTransmitters.size}<br>"
+        Beacons.beaconTransmitters.forEach {
+            text += "${it.key}<br>"
+        }
         text += if(Beacons.scanStarted) "Сканирование запущено<br>" else "Сканирование не запущено<br>"
         text += "Код индекса хохяйства: ${Beacons.beaconFarmCode}<br>"
         setText(R.id.settings_debug_text, text)
