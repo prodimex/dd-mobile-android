@@ -78,14 +78,14 @@ class Main : AppCompatActivity() {
         main = this
         sharedPref = getSharedPreferences("ProdimexLocalStorage", MODE_PRIVATE)
 
-        if(AppConfig.APP_MODE == AppConfig.DEV_MODE) {
+        showPage(UPDATE_PAGE)
+        /*if(AppConfig.APP_MODE == AppConfig.DEV_MODE) {
             showPage(UPDATE_PAGE)
         } else if(AppConfig.APP_MODE == AppConfig.DRIVER_MODE) {
             showPage(LOGIN_PAGE)
         } else if(AppConfig.APP_MODE == AppConfig.LOADER_MODE) {
             showPage(LOADER_ENTER_PAGE)
-        }
-
+        }*/
 
         supportActionBar?.hide()
         currentApiVersion = android.os.Build.VERSION.SDK_INT
@@ -152,6 +152,7 @@ class Main : AppCompatActivity() {
             .setMessage("Для корректной работы приложения необходимо включить Bluetooth-адаптер.")
             .setPositiveButton("ВКЛЮЧИТЬ") { dialog, which ->
                 BluetoothAdapter.getDefaultAdapter().enable()
+                Main.main.toastMe("Bluetooth включен!")
             }.setIcon(android.R.drawable.ic_dialog_alert).show()
     }
 
@@ -236,8 +237,16 @@ class Main : AppCompatActivity() {
         super.onDestroy()
     }
 
+    fun runApplication() {
+        when (AppConfig.APP_MODE) {
+            AppConfig.DEV_MODE -> showPage(Main.ROLE_SELECTOR)
+            AppConfig.LOADER_MODE -> showPage(Main.LOADER_ENTER_PAGE)
+            AppConfig.DRIVER_MODE -> showPage(Main.LOGIN_PAGE)
+        }
+    }
+
     fun installUpdate() {
-        showPage(ROLE_SELECTOR)
+        runApplication()
         val intent = Intent(Intent.ACTION_VIEW)
         log(Environment.getExternalStorageDirectory())
         val f = File("${Environment.getExternalStorageDirectory().absolutePath}/Download/pxupdate.apk")

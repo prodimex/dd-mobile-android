@@ -62,8 +62,12 @@ class DriverLoginPage:AppController() {
             "password" to "373369",
             "token" to "0000",
             "notificationToken" to "",
+
             Пряхин: 79036396165
             Пароль: 802697
+
+            Бугорский Владимир Анатольевич 79036396179
+            Пароль: 899012
         */
     }
 

@@ -6,7 +6,7 @@ Do Until objFile.AtEndOfStream
     strLine = objFile.ReadLine
     If InStr(strLine,"versionCode")> 0 Then
         ver = Replace(strLine, "versionCode", "")
-        verInt = CInt(ver) + 1
+        verInt = CInt(ver) - 1
         strLine = "        versionCode " + CStr(verInt)
     End If
     If InStr(strLine,"versionName")> 0 Then

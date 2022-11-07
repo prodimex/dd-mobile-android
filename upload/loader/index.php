@@ -20,7 +20,7 @@
 	$explode = explode('.apk', $apklist[0]);
 
 	$versionName = $explode[0];
-	$hostUrl = 'https://ddu.prodimex.ru/app-updates/develop/';
+	$hostUrl = 'https://ddu.prodimex.ru/app-updates/loader/';
 	$file = ''.$versionName.'.apk';
 	$apkSize = filesize($file);
 	$versionCode = preg_replace('~\D+~','', $versionName);
@@ -33,7 +33,7 @@
 		'grain' => rand(0, 100000),
 		'release_changes' => [
 			['title' => '- Это полностью новое приложение пересобранное с нуля.'],
-			['title' => '- Данная версия предназначена для тестирования.']
+            ['title' => '- Данная версия предназначена для тестирования.']
 		],
 		'apkSize' => $apkSize,
 		'apklist' => $apklist,

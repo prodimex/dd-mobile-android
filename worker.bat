@@ -62,84 +62,165 @@ cls
 :COMPILATION_SELECTOR
 Echo ===========================================================================
 Echo    [%ESC%[36m 1 %ESC%[0m] Build loader debug app and install and run
+Echo    [%ESC%[36m 11 %ESC%[0m] Prepare debug to upload loader
+Echo.
 Echo    [%ESC%[36m 2 %ESC%[0m] Build driver debug app and install and run
+Echo    [%ESC%[36m 21 %ESC%[0m] Prepare debug to upload driver
+Echo.
 Echo    [%ESC%[36m 3 %ESC%[0m] Build develop debug app and install and run
+Echo    [%ESC%[36m 31 %ESC%[0m] Prepare debug to upload develop
 Echo.
 Echo    [%ESC%[36m 41 %ESC%[0m] Prepare release to upload loader
 Echo    [%ESC%[36m 42 %ESC%[0m] Prepare release to upload driver
 Echo    [%ESC%[36m 43 %ESC%[0m] Prepare release to upload develop
-Echo    [%ESC%[36m 5 %ESC%[0m] Prepare all to upload
 Echo.
-Echo    [%ESC%[36m 3 %ESC%[0m] build version up
+Echo    [%ESC%[36m 5 %ESC%[0m] Up version and prepare all to upload
+Echo.
+Echo    [%ESC%[36m 60 %ESC%[0m] Up version
+Echo    [%ESC%[36m 61 %ESC%[0m] Down version
+Echo.
 Echo ===========================================================================
 Echo    SELECT:
 Set Input=0918239021309810982093809
 Set /P Input="-->"
-if %Input% == 1 (
-    del .\app\src\main\java\ru\prodimex\digitaldispatcher\AppConfig.kt
-    copy .\app\src\main\java\ru\prodimex\digitaldispatcher\configs\Loader.txt .\app\src\main\java\ru\prodimex\digitaldispatcher\AppConfig.kt
 
+if %Input% == 1 (
+    CALL :CHANGE_BUILD_CONFIG Loader
 	GOTO :DEV_BUILD_AND_INSTALL_AND_RUN
 )
-if %Input% == 2 (
-    del .\app\src\main\java\ru\prodimex\digitaldispatcher\AppConfig.kt
-    copy .\app\src\main\java\ru\prodimex\digitaldispatcher\configs\Driver.txt .\app\src\main\java\ru\prodimex\digitaldispatcher\AppConfig.kt
-
-    GOTO :DEV_BUILD_AND_INSTALL_AND_RUN
-)
-if %Input% == 3 (
-    del .\app\src\main\java\ru\prodimex\digitaldispatcher\AppConfig.kt
-    copy .\app\src\main\java\ru\prodimex\digitaldispatcher\configs\Develop.txt .\app\src\main\java\ru\prodimex\digitaldispatcher\AppConfig.kt
-
-    GOTO :DEV_BUILD_AND_INSTALL_AND_RUN
-)
-
-Set /S AppVersion = unavailable
-
-    Echo pedaloh %AppVersion% pedaloh
-if %Input% == 43 (
-    CALL :UP_VERSION
-
-setlocal EnableDelayedExpansion
-    for /F "delims=" %%a in ('cscript readversionname.vbs') do (endlocal & set appVersionName=%%a)
+if %Input% == 11 (
+    CALL :CHANGE_BUILD_CONFIG Loader
+    start /WAIT cmd /k "gradlew assembleDebug && exit"
+    CALL :COPY_TO loader debug
     GOTO :COMPILATION_SELECTOR
 )
 
-
-if %Input% == 22 (
-	start cmd /k "gradlew assembleRelease && exit"
-	GOTO :COMPILATION_SELECTOR
+if %Input% == 2 (
+    CALL :CHANGE_BUILD_CONFIG Driver
+    GOTO :DEV_BUILD_AND_INSTALL_AND_RUN
 )
-::start /WAIT cmd /k "gradlew assembleRelease && exit"
+if %Input% == 21 (
+    CALL :CHANGE_BUILD_CONFIG Driver
+    start /WAIT cmd /k "gradlew assembleDebug && exit"
+    CALL :COPY_TO driver debug
+    GOTO :COMPILATION_SELECTOR
+)
 
-   ::
+if %Input% == 3 (
+    CALL :CHANGE_BUILD_CONFIG Develop
+    GOTO :DEV_BUILD_AND_INSTALL_AND_RUN
+)
 
-    ::move .\app\build\outputs\apk\release\app-release.apk .\upload\develop\%appVersionName%-release.apk
+if %Input% == 31 (
+    CALL :CHANGE_BUILD_CONFIG Develop
+    start /WAIT cmd /k "gradlew assembleDebug && exit"
+    CALL :COPY_TO develop debug
+    GOTO :COMPILATION_SELECTOR
+)
+
+if %Input% == 41 (
+    CALL :CHANGE_BUILD_CONFIG Loader
+    start /WAIT cmd /k "gradlew assembleRelease && exit"
+    CALL :COPY_TO loader release
+    GOTO :COMPILATION_SELECTOR
+)
+if %Input% == 42 (
+    CALL :CHANGE_BUILD_CONFIG Driver
+    start /WAIT cmd /k "gradlew assembleRelease && exit"
+    CALL :COPY_TO driver release
+    GOTO :COMPILATION_SELECTOR
+)
+if %Input% == 43 (
+    CALL :CHANGE_BUILD_CONFIG Develop
+    start /WAIT cmd /k "gradlew assembleRelease && exit"
+    CALL :COPY_TO develop release
+    GOTO :COMPILATION_SELECTOR
+)
+
+if %Input% == 5 (
+    CALL :UP_VERSION
+    CALL :CHANGE_BUILD_CONFIG Loader
+    start /WAIT cmd /k "gradlew assembleRelease && exit"
+    CALL :COPY_TO loader release
+
+    CALL :CHANGE_BUILD_CONFIG Driver
+    start /WAIT cmd /k "gradlew assembleRelease && exit"
+    CALL :COPY_TO driver release
+
+    CALL :CHANGE_BUILD_CONFIG Develop
+    start /WAIT cmd /k "gradlew assembleRelease && exit"
+    CALL :COPY_TO develop release
+
+    GOTO :COMPILATION_SELECTOR
+)
+
+if %Input% == 60 (
+    CALL :UP_VERSION
+    GOTO :COMPILATION_SELECTOR
+)
+if %Input% == 61 (
+    CALL :DOWN_VERSION
+    GOTO :COMPILATION_SELECTOR
+)
+
  ::copy /y "%FileURI%" "%TargetDir%\%NewFileName%"
     ::start cmd /k "gradlew assembleRelease && copy .\app\build\outputs\apk\release\app-release.apk .\upload\develop\version.apk && pause"
 
+::setlocal EnableDelayedExpansion
+      ::for /F "delims=" %%a in ('cscript readversionname.vbs') do (endlocal & set appVersionName=%%a)
 
-if %Input% == 33 (
-    start cmd /k "cscript /nologo upver.vbs  > .\app\build.txt && cd app && ren build.gradle build.gradle.bkup && del build.gradle.bkup && ren build.txt build.gradle && exit"
-)
+::if %Input% == 33 (
+   :: start cmd /k "cscript /nologo upver.vbs  > .\app\build.txt && cd app && ren build.gradle build.gradle.bkup && del build.gradle.bkup && ren build.txt build.gradle && exit"
+::)
 GOTO :COMPILATION_SELECTOR
 
-:UP_VERSION
-    ::cscript /nologo upver.vbs > .\app\build.txt
-    ::rename  .\app\build.gradle build.gradle.bkup
-    ::rename .\app\build.txt build.gradle
-    ::del .\app\build.gradle.bkup
-    ::setlocal EnableDelayedExpansion
-    ::for /F "delims=" %%a in ('cscript readversionname.vbs') do (endlocal & set appVersionName=%%a)
-    ::%AppVersion% = %appVersionName%
+:CHANGE_BUILD_CONFIG
+    Set TargetConfig=%1
+    del .\app\src\main\java\ru\prodimex\digitaldispatcher\AppConfig.kt
+    copy .\app\src\main\java\ru\prodimex\digitaldispatcher\configs\%TargetConfig%.txt .\app\src\main\java\ru\prodimex\digitaldispatcher\AppConfig.kt
+    Echo   %ESC%[42m BUILD CONFIGURATION CHANGED TO %TargetConfig% %ESC%[0m
+EXIT /b
 
-    ::Echo pedaloh %appVersionName%
-    Echo.
+:UP_VERSION
+    cscript /nologo upver.vbs > .\app\build.txt
+    rename  .\app\build.gradle build.gradle.bkup
+    rename .\app\build.txt build.gradle
+    del .\app\build.gradle.bkup
+
+    setlocal EnableDelayedExpansion
+    for /F "delims=" %%a in ('cscript readversionname.vbs') do (endlocal & set appVersionName=%%a)
+    Echo   %ESC%[42m VERSION UPPED TO %appVersionName% %ESC%[0m
+    Echo ===========================================================================
+EXIT /b
+:DOWN_VERSION
+    cscript /nologo downver.vbs > .\app\build.txt
+    rename  .\app\build.gradle build.gradle.bkup
+    rename .\app\build.txt build.gradle
+    del .\app\build.gradle.bkup
+
+    setlocal EnableDelayedExpansion
+    for /F "delims=" %%a in ('cscript readversionname.vbs') do (endlocal & set appVersionName=%%a)
+    Echo   %ESC%[42m VERSION DOWNED TO %appVersionName% %ESC%[0m
     Echo ===========================================================================
 EXIT /b
 
+:COPY_TO
+    Set Destination=%1
+    Set Mode=%2
+    setlocal EnableDelayedExpansion
+    for /F "delims=" %%a in ('cscript readversionname.vbs') do (endlocal & set appVersionName=%%a)
+    move .\app\build\outputs\apk\%Mode%\app-%Mode%.apk .\upload\%Destination%\%appVersionName%-%Mode%.apk
+    Echo pedaloh %appVersionName% %Destination% \upload\%Destination%\%appVersionName%-%Mode%.apk
+EXIT /b
+
 :DEV_BUILD_AND_INSTALL_AND_RUN
-start cmd /k "cscript /nologo upver.vbs  > .\app\build.txt && cd app && ren build.gradle build.gradle.bkup && del build.gradle.bkup && ren build.txt build.gradle && cd ../ && gradlew assembleDebug && gradlew installDebug && %ANDROID_HOME%\platform-tools\adb.exe shell am start -n ru.prodimex.digitaldispatcher/ru.prodimex.digitaldispatcher.Main && exit"
+    ::CALL :UP_VERSION
+    start /WAIT cmd /k "gradlew assembleDebug && gradlew installDebug && exit"
+    Echo   %ESC%[42m APPLICATION COMPILED AND INSTALLED %ESC%[0m
+    %ANDROID_HOME%\platform-tools\adb.exe shell am start -n ru.prodimex.digitaldispatcher/ru.prodimex.digitaldispatcher.Main
+    Echo   %ESC%[42m APPLICATION STARTED %ESC%[0m
+    ::gradlew assembleDebug && gradlew installDebug && %ANDROID_HOME%\platform-tools\adb.exe shell am start -n ru.prodimex.digitaldispatcher/ru.prodimex.digitaldispatcher.Main && exit
+::start cmd /k "cscript /nologo upver.vbs  > .\app\build.txt && cd app && ren build.gradle build.gradle.bkup && del build.gradle.bkup && ren build.txt build.gradle && cd ../ && gradlew assembleDebug && gradlew installDebug && %ANDROID_HOME%\platform-tools\adb.exe shell am start -n ru.prodimex.digitaldispatcher/ru.prodimex.digitaldispatcher.Main && exit"
 GOTO :COMPILATION_SELECTOR
 
 pause

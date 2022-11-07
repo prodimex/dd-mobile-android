@@ -35,16 +35,21 @@ class UpdatePage:AppController() {
         HTTPRequest.nodeServerUrl = AppConfig.UPDATE_URL
         HTTPRequest("", hashMapOf("ver" to BuildConfig.BUILD_TYPE), _requestMethod = "GET", _callback = fun(_response:HashMap<String, Any>) {
             Main.log(_response)
-            if(_response.contains("error"))
-                scene.showPage(Main.ROLE_SELECTOR)
+            /*if(_response.contains("error")) {
 
-            if(_response["versionCode"].toString().toFloat().toInt() > BuildConfig.VERSION_CODE) {
+
+                return
+            }*/
+
+            if(_response.contains("versionCode") && _response["versionCode"].toString().toFloat().toInt() > BuildConfig.VERSION_CODE) {
                 showUpdateInfo(_response)
             } else {
-                scene.showPage(Main.ROLE_SELECTOR)
+                scene.runApplication()
             }
         }).execute()
     }
+
+
 
     fun showUpdateInfo(_updateData:HashMap<String, Any>) {
         scene.findViewById<LinearLayout>(R.id.update_layout_content).visibility = View.VISIBLE
@@ -66,7 +71,7 @@ class UpdatePage:AppController() {
         stopPreloading()
 
         setOnClick(R.id.do_not_update_button) {
-            scene.showPage(Main.ROLE_SELECTOR)
+            scene.runApplication()
         }
         setOnClick(R.id.update_now_button) {
             if(!checkStoragePermission())
@@ -111,6 +116,7 @@ class UpdatePage:AppController() {
 
         scene.findViewById<ImageView>(R.id.update_page_preloading).startAnimation(r)
     }
+
     fun stopPreloading() {
         scene.findViewById<ImageView>(R.id.update_page_preloading).clearAnimation()
         scene.findViewById<ImageView>(R.id.update_page_preloading).visibility = View.GONE
