@@ -4,6 +4,8 @@ import kotlin.math.abs
 
 class Dictionary {
     companion object {
+        var signalsLangs = HashMap<String, String>()
+
         const val NEW_ITEM = "00"
         const val CONNECT_TO_LOADER_SIGNAL = "01"
         const val GIVE_SHORTCUT_TO_DRIVER_AND_RETURN_DRIVER_INFO = "02"
@@ -84,6 +86,21 @@ class Dictionary {
 
             Main.log(carNumberHexsByChar)
             Main.log(carNumberCharsByHex)
+
+            signalsLangs[NEW_ITEM] = ""
+            signalsLangs[CONNECT_TO_LOADER_SIGNAL] = "Водитель: подключи меня"
+            signalsLangs[GIVE_SHORTCUT_TO_DRIVER_AND_RETURN_DRIVER_INFO] = "Погрузчик: получи шорткат и вышли мне инфу о себе"
+            signalsLangs[SEND_DRIVER_INFO_TO_LOADER] = "Водитель: передаю информацию о себе"
+            signalsLangs[STOP_SENDING_DATA_AND_WAIT] = "Погрузчик: я получил инфу, жди"
+            signalsLangs[IM_WAITING_FOR_LOADER_SIGNAL] = "Водитель: жду сигнала"
+            signalsLangs[SILENCE] = "Погрузчик: молчание"
+            signalsLangs[YOU_NEED_TO_RECONNECT] = "Погрузчик: водитель переподключиьс"
+            signalsLangs[RECONNECT_TO_LOADER] = "Водитель: переподключаюсь"
+            signalsLangs[GO_TO_LOADING] = "Погрузчик: отправляйся на погрузку"
+            signalsLangs[IM_ON_LOADING] = "Водитель: я на погрузке"
+            signalsLangs[GIVE_SHORTCUT_AND_WAIT_FOR_LOADER_SIGNAL] = "Погрузчик: получи шорткат и жди"
+            signalsLangs[DISMISS_FROM_QUEUE] = "Погрузчик: отклоняю погрузку"
+            signalsLangs[IM_DISMISSED_BUT_ON_FIELD] = "Водитель: меня отклонили"
         }
 
         val daysOfWeek = arrayOf("", "пн", "вт", "ср", "чт", "пт", "сб", "вс", "", "", "", "", "", "")

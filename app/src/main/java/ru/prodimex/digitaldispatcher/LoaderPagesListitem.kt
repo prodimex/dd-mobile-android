@@ -8,7 +8,7 @@ import android.widget.*
 import com.google.gson.Gson
 import com.google.gson.internal.LinkedTreeMap
 
-class OnFieldDriver(_number:String) {
+class LoaderPagesListitem(_number:String) {
     var PAGE_ID = Main.LOADER_QUEUE_PAGE
     val number = _number
     var driverState = Dictionary.NEW_ITEM
@@ -113,7 +113,7 @@ class OnFieldDriver(_number:String) {
                     || uuid.indexOf(Dictionary.RECONNECT_TO_LOADER) == 0)
             && (driverState != Dictionary.GIVE_SHORTCUT_TO_DRIVER_AND_RETURN_DRIVER_INFO
                     && driverState != Dictionary.GIVE_SHORTCUT_AND_WAIT_FOR_LOADER_SIGNAL)) {
-
+            Beacons.killBeacon(currentBeacon)
             PAGE_ID = Main.LOADER_QUEUE_PAGE
             Main.log("СОЗДАЕМ ОТВЕТНЫЙ БИКОН ДЛЯ ПЕРЕДАЧИ ШОРТКАТА ВОДИТЕЛЮ")
 

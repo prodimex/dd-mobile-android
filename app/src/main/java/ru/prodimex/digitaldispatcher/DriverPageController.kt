@@ -33,7 +33,7 @@ class DriverPageController:AppController() {
             var uuid = it.id1.toString()
             uuid = uuid.replace("-", "", true)
 
-            var number = LoaderPageDriverView.getNumberFromNumberCode(uuid.slice(1..parseLong(uuid[0].toString(), 16).toInt() * 2))
+            var number = BeaconScannerListItem.getNumberFromNumberCode(uuid.slice(1..parseLong(uuid[0].toString(), 16).toInt() * 2))
             Main.log("scanObserver: $uuid $number")
             if(drivers.contains(number)) {
                 Main.log("scanObserver: $uuid $number")

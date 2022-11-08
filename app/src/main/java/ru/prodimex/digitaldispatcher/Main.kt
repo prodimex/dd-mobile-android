@@ -26,7 +26,7 @@ class Main : AppCompatActivity() {
         const val DRIVER_SETTINGS_PAGE = "DRIVER_SETTINGS_PAGE"
 
         const val DRIVER_PAGE = "DRIVER_PAGE"
-        const val LOADER_PAGE = "LOADER_PAGE"
+        const val BEACON_SCANNER_PAGE = "BEACON_SCANNER_PAGE"
 
 
         const val LOADER_ENTER_PAGE = "LOADER_ENTER_PAGE"
@@ -119,9 +119,9 @@ class Main : AppCompatActivity() {
             return@setOnClick
             showPage(DRIVER_PAGE) }
         setOnClick(R.id.select_scanner_role) {
-            toastMe("Времено не работает")
-            return@setOnClick
-            showPage(LOADER_PAGE) }
+            //toastMe("Времено не работает")
+            //return@setOnClick
+            showPage(BEACON_SCANNER_PAGE) }
 
         setOnClick(R.id.select_driver_mode) { showPage(LOGIN_PAGE) }
         setOnClick(R.id.select_loader_mode) { showPage(LOADER_ENTER_PAGE) }
@@ -134,7 +134,7 @@ class Main : AppCompatActivity() {
             LOGIN_PAGE -> DriverLoginPage().afterInit(LOGIN_PAGE)
             DRIVER_SETTINGS_PAGE -> DriverSettingsPage().afterInit(DRIVER_SETTINGS_PAGE)
 
-            LOADER_PAGE -> LoaderPageController().afterInit(LOADER_PAGE)
+            BEACON_SCANNER_PAGE -> BeaconScannerPage().afterInit(BEACON_SCANNER_PAGE)
             DRIVER_PAGE -> DriverPageController().afterInit(DRIVER_PAGE)
 
             LOADER_ENTER_PAGE -> LoaderEnterPage().afterInit(LOADER_ENTER_PAGE)

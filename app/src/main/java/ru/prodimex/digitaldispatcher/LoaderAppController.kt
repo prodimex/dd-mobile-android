@@ -8,8 +8,8 @@ open class LoaderAppController:AppController() {
     companion object {
         var driverShortCutMem = 0
 
-        var driversOnField:MutableMap<String, OnFieldDriver> = hashMapOf()
-        var driversOnFieldByShortCut:MutableMap<String, OnFieldDriver> = hashMapOf()
+        var driversOnField:MutableMap<String, LoaderPagesListitem> = hashMapOf()
+        var driversOnFieldByShortCut:MutableMap<String, LoaderPagesListitem> = hashMapOf()
         var reconnectShortcuts:MutableMap<String, BeaconTransmitter> = hashMapOf()
 
         var driversInfoCache = HashMap<String, Any>()
@@ -17,7 +17,7 @@ open class LoaderAppController:AppController() {
         fun checkDriverAvailability(_uuid:String) {
             var number = Beacons.makeNumberFromUUID(_uuid)
             if(!driversOnField.contains(number)) {
-                driversOnField[number] = OnFieldDriver(number)
+                driversOnField[number] = LoaderPagesListitem(number)
                 Main.log("Обнаружен новый водитель и добавлен: $_uuid")
             }
             driversOnField[number]!!.receiveUIIDs(_uuid)

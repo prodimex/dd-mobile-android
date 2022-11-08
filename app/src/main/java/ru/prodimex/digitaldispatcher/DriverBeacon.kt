@@ -1,17 +1,11 @@
 package ru.prodimex.digitaldispatcher
 
 import android.annotation.SuppressLint
-import android.bluetooth.le.AdvertiseCallback
-import android.bluetooth.le.AdvertiseSettings
 import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.Space
 import android.widget.TextView
-import org.altbeacon.beacon.Beacon
-import org.altbeacon.beacon.BeaconParser
-import org.altbeacon.beacon.BeaconTransmitter
-import java.sql.Driver
 import java.util.*
 
 
@@ -109,7 +103,7 @@ class DriverBeacon(_scene:DriverPageController) {
         setOnClick(R.id.connect_button) {
             beaconEnabled = true
             myCurrendSignalCode = CONNECT_ME
-            var rawUUid = LoaderPageController.fieldId.toString()
+            var rawUUid = BeaconScannerPage.fieldId.toString()
             rawUUid += driversData[id]["number"]?.length?.let {Integer.toHexString(it).uppercase()}
             rawUUid += numberCode
             rawUUid += myCurrendSignalCode
@@ -141,13 +135,13 @@ class DriverBeacon(_scene:DriverPageController) {
         if (lastSignal == _signal)
             return
 
-        if(_signal.indexOf(LoaderPageController.fieldId, 0, true) == 0) {
+        if(_signal.indexOf(BeaconScannerPage.fieldId, 0, true) == 0) {
 
-            var signalTail = _signal.slice(LoaderPageController.fieldId.length.._signal.length-1)
+            var signalTail = _signal.slice(BeaconScannerPage.fieldId.length.._signal.length-1)
 
             val signalCode = signalTail[0].toString()
-            Main.log("checkIncommingSignal $_signal $signalTail ${myCurrendSignalCode == CONNECT_ME} ${signalCode == LoaderPageDriverView.ACCEPT_CONNECTION}")
-            if (myCurrendSignalCode == CONNECT_ME && signalCode == LoaderPageDriverView.ACCEPT_CONNECTION) {
+            Main.log("checkIncommingSignal $_signal $signalTail ${myCurrendSignalCode == CONNECT_ME} ${signalCode == BeaconScannerListItem.ACCEPT_CONNECTION}")
+            if (myCurrendSignalCode == CONNECT_ME && signalCode == BeaconScannerListItem.ACCEPT_CONNECTION) {
                 killAllTransmitters()
                 myCurrendSignalCode = SEND_INFO_ON_CONNECTION
                 vis(R.id.disconnect_button, false)

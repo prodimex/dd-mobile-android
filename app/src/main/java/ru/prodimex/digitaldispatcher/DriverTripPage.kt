@@ -268,7 +268,7 @@ class DriverTripPage:DriverAppController() {
             stopPreloading()
             showAssignedStateActions()
         }
-        Beacons.controller = this
+
         timer.cancel()
     }
 
@@ -303,12 +303,8 @@ class DriverTripPage:DriverAppController() {
 
             var uuid = it.id1.toString().replace("-", "", true)
             if(uuid.indexOf(numberCode) == 2) {
-                if(currentRangingState == Dictionary.CONNECT_TO_LOADER_SIGNAL
-                    || currentRangingState == Dictionary.RECONNECT_TO_LOADER) {
-                    Main.log("myCarNumber $currentCarNumber")
-                    Main.log(uuid + " - " + numberCode)
-                    Main.log(uuid.indexOf(numberCode))
-
+                if(currentRangingState == Dictionary.CONNECT_TO_LOADER_SIGNAL || currentRangingState == Dictionary.RECONNECT_TO_LOADER) {
+                    Main.log("myCarNumber $currentCarNumber $uuid $numberCode")
                     when (uuid.slice(0..1)) {
                         Dictionary.GIVE_SHORTCUT_AND_WAIT_FOR_LOADER_SIGNAL -> {
                             var ix = 2 + currentCarNumber.length * 2
@@ -347,7 +343,6 @@ class DriverTripPage:DriverAppController() {
                             }
                         }
                     }
-                    Main.log("Finded beacon ${Beacons.beaconFarmCode} ${it.id1} Shortcut: $myShortCut")
                 }
                 if(currentRangingState == Dictionary.SEND_DRIVER_INFO_TO_LOADER) {
                     when (uuid.slice(0..1)) {
@@ -359,7 +354,9 @@ class DriverTripPage:DriverAppController() {
             }
             Main.log(uuid.indexOf(myShortCut))
 
-            if(uuid.indexOf(myShortCut) == 2 || uuid.indexOf(myShortCut) == 18) {
+            //if(uuid.indexOf(myShortCut) == 2 || uuid.indexOf(myShortCut) == 18  || uuid.indexOf(myShortCut) == 20) {
+            Main.log("${uuid.indexOf(myShortCut)} ${numberCode.length+2}")
+            if(uuid.indexOf(myShortCut) == numberCode.length+1) {
                 if(commandsWithShortcuts.contains(currentRangingState)) {
                     Main.log("Получен сигнал с шорткатом")
                     Main.log(uuid)

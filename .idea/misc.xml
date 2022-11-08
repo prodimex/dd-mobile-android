@@ -3,8 +3,12 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Work/ddmoban/app/src/main/res/layout/loader_enter_page.xml" value="0.18802083333333333" />
+        <entry key="..\:/Work/ddmoban/app/src/main/res/layout/loader_page.xml" value="0.18802083333333333" />
+        <entry key="..\:/Work/ddmoban/app/src/main/res/layout/loader_page_driver_block.xml" value="0.18802083333333333" />
         <entry key="..\:/Work/ddmoban/app/src/main/res/layout/loader_top.xml" value="0.225" />
         <entry key="..\:/Work/ddmoban/app/src/main/res/layout/role_selector.xml" value="0.225" />
+        <entry key="..\:/Work/ddmoban/app/src/main/res/layout/scanner_page_list_item.xml" value="0.5" />
         <entry key="..\:/Work/ddmoban/app/src/main/res/layout/update_page.xml" value="0.225" />
       </map>
     </option>

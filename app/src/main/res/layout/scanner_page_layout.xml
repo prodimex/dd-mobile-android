@@ -67,4 +67,21 @@
             </ScrollView>
         </LinearLayout>
     </FrameLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:foregroundGravity="center_horizontal"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/app_version_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="10dp"
+            android:gravity="center_horizontal"
+            android:text="Версия: 4.0.25-debug"
+            android:textColor="@color/text_light_gray"
+            android:textSize="12dp" />
+    </RelativeLayout>
 </RelativeLayout>
