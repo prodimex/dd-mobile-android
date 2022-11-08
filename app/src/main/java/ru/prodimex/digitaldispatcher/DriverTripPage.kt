@@ -356,7 +356,7 @@ class DriverTripPage:DriverAppController() {
 
             //if(uuid.indexOf(myShortCut) == 2 || uuid.indexOf(myShortCut) == 18  || uuid.indexOf(myShortCut) == 20) {
             Main.log("${uuid.indexOf(myShortCut)} ${numberCode.length+2}")
-            if(uuid.indexOf(myShortCut) == numberCode.length+1) {
+            if(uuid.indexOf(myShortCut) == 2 || uuid.indexOf(myShortCut) == numberCode.length+2) {
                 if(commandsWithShortcuts.contains(currentRangingState)) {
                     Main.log("Получен сигнал с шорткатом")
                     Main.log(uuid)
