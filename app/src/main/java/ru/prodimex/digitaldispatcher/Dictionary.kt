@@ -114,5 +114,15 @@ class Dictionary {
             6 to R.color.status_text_color_6,
             7 to R.color.status_text_color_7,
         )
+
+        fun getErrorByCode(_code:String):String {
+            when(_code) {
+                "403" -> return "Неверный пароль."
+                "400" -> return "Пользователь с таким номером\nтелефона не найден."
+                "888" -> return "Интернет выключен.\nПроверьте Wi-Fi и Мобильные данные"
+                "999" -> return "Ошибка связи."
+                else -> return "Ошибка связи. ($_code)"
+            }
+        }
     }
 }

@@ -7,6 +7,8 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.vicmikhailau.maskededittext.MaskedEditText
 
 
@@ -15,7 +17,7 @@ class DriverLoginPage:AppController() {
 
     }
     private var showPassword = false
-    val phoneField:MaskedEditText
+    var phoneField:MaskedEditText? = null
     var passwordText:EditText? = null
     var errorField:TextView? = null
     var loginButton:PreloadingButton? = null
@@ -24,12 +26,38 @@ class DriverLoginPage:AppController() {
     var requestPasswordActionsView:LinearLayout? = null
 
     init {
-        showLayout(R.layout.driver_enter_page)
-        phoneField = scene.findViewById(R.id.user_phone)
-        phoneField.setText(Main.getParam("phone"))
-        showPasswordActions()
-        updateView()
 
+        init(R.layout.driver_enter_page)
+    }
+
+    override fun init(_layoutId:Int) {
+        //super.init(_layoutId)
+        if(Main.getParam("userData") != "") {
+            Main.log(Main.getParam("userData"))
+            val userData:HashMap<String, Any>
+                = Gson().fromJson(Main.getParam("userData"), object : TypeToken<HashMap<String?, Any?>?>() {}.type)
+            UserData.collectData(userData)
+
+            if(Main.getParam("tripData") != "") {
+                val tripData:HashMap<String, Any>
+                        = Gson().fromJson(Main.getParam("tripData"), object : TypeToken<HashMap<String?, Any?>?>() {}.type)
+                UserData.collectTripData(tripData)
+            }
+
+            HTTPRequest.token = Main.getParam("token").toString()
+            HTTPRequest.token_type = Main.getParam("token_type").toString()
+            HTTPRequest.nodeServerUrl =  Main.getParam("server") + "/mobile/"
+
+            Beacons.init()
+            Beacons.startScan()
+            switchTopage(Main.TRIP_PAGE)
+        } else {
+            showLayout(_layoutId)
+            phoneField = scene.findViewById(R.id.user_phone)
+            phoneField!!.setText(Main.getParam("phone"))
+            showPasswordActions()
+            updateView()
+        }
     }
 
     fun showPasswordActions() {
@@ -109,7 +137,6 @@ class DriverLoginPage:AppController() {
             if(_response["result"] == "error") {
                 showError(_response)
             } else {
-
                 showPasswordActions()
                 passwordText!!.setText("")
                 passwordText!!.requestFocus()
@@ -133,13 +160,7 @@ class DriverLoginPage:AppController() {
 
     fun showError(_response:HashMap<String, Any>) {
         enableInput(true)
-        when(_response["responseCode"]) {
-            "403" -> errorField!!.text = "Неверный пароль."
-            "400" -> errorField!!.text = "Пользователь с таким номером\nтелефона не найден."
-            "888" -> errorField!!.text = "Интернет выключен.\nПроверьте Wi-Fi и Мобильные данные"
-            "999" -> errorField!!.text = "Ошибка связи."
-            else -> errorField!!.text = "Ошибка связи. (${_response["responseCode"]})"
-        }
+        errorField!!.text = Dictionary.getErrorByCode(_response["responseCode"].toString())
         vis(R.id.error_field, true)
     }
 
@@ -213,6 +234,9 @@ class DriverLoginPage:AppController() {
     }
 
     override fun updateView() {
+        if(pageKilled)
+            return
+
         val selStart = passwordText!!.selectionStart
         val selEnd = passwordText!!.selectionEnd
         if (showPassword) {

@@ -1,6 +1,7 @@
 package ru.prodimex.digitaldispatcher
 
 import android.telephony.PhoneNumberUtils
+import com.google.gson.Gson
 import com.google.gson.internal.LinkedTreeMap
 import java.util.*
 import kotlin.collections.ArrayList
@@ -34,6 +35,9 @@ class UserData {
 
         fun collectData(_data:HashMap<String, Any>) {
             data = _data
+
+            var str = Gson().toJson(_data).toString()
+            Main.setParam("userData", str)
 
             driver = toNode(data["driver"])
             profile = toNode(driver["profile"])
@@ -76,6 +80,13 @@ class UserData {
         var dq_id = ""
 
         fun collectTripData(_data:HashMap<String, Any>) {
+            Main.log(_data)
+            if (_data.contains("error"))
+                return
+
+            var str = Gson().toJson(_data).toString()
+            Main.setParam("tripData", str)
+
             tripData = _data
             if (_data["timeslot"]!!::class.simpleName == "ArrayList" && (_data["timeslot"]!! as ArrayList<Any>).size == 0) {
                 Main.log(_data)

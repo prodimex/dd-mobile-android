@@ -60,6 +60,14 @@ class DriverTripPage:DriverAppController() {
     fun pingTrip() {
         pingCounter++
         HTTPRequest("users/trip", _requestMethod = "GET", _callback = fun (_response:HashMap<String, Any>) {
+            if(_response["result"] == "error") {
+                showErrorByCode(_response)
+                if(UserData.tripData != null) {
+                    processPingResponse(UserData.tripData!!)
+                }
+                return
+            }
+            hideError()
             Main.log(" - ping - ")
             processPingResponse(_response)
         }).execute()
@@ -107,9 +115,15 @@ class DriverTripPage:DriverAppController() {
         timer.cancel()
         HTTPRequest("users/ready-to-trip-new",
             _args = hashMapOf("car_id" to carId, "isNeedDelete" to "false", "ready_at" to currentDate ),
-            _callback = fun(_resp:HashMap<String, Any>) {
+            _callback = fun(_response:HashMap<String, Any>) {
+                if(_response["result"] == "error") {
+                    showErrorByCode(_response)
+                    stopPreloading()
+                    return
+                }
+                hideError()
                 Main.log(" ================= ")
-                Main.log(_resp)
+                Main.log(_response)
                 Main.log(" + +++ +++++++++++ ")
                 startSheduler()
             }).execute()
@@ -191,7 +205,13 @@ class DriverTripPage:DriverAppController() {
                         timer.cancel()
                         HTTPRequest("trips/confirm-finish-new",
                             _args = hashMapOf("tripId" to UserData.tripId),
-                            _callback = fun(_resp:HashMap<String, Any>) {
+                            _callback = fun(_response:HashMap<String, Any>) {
+                                if(_response["result"] == "error") {
+                                    showErrorByCode(_response)
+                                    stopPreloading()
+                                    return
+                                }
+                                hideError()
                                 takeNewTrip()
                             }).execute()
                     }
@@ -200,7 +220,13 @@ class DriverTripPage:DriverAppController() {
                         timer.cancel()
                         HTTPRequest("trips/confirm-finish-new",
                             _args = hashMapOf("tripId" to UserData.tripId),
-                            _callback = fun(_resp:HashMap<String, Any>) {
+                            _callback = fun(_response:HashMap<String, Any>) {
+                                if(_response["result"] == "error") {
+                                    showErrorByCode(_response)
+                                    stopPreloading()
+                                    return
+                                }
+                                hideError()
                                 pingTrip()
                             }).execute()
                     }
@@ -246,7 +272,13 @@ class DriverTripPage:DriverAppController() {
     fun cancelTrip() {
         startPreloading()
         timer.cancel()
-        HTTPRequest("trips/${UserData.tripId}/cancel", _requestMethod = "GET", _callback = fun(_res:HashMap<String, Any>) {
+        HTTPRequest("trips/${UserData.tripId}/cancel", _requestMethod = "GET", _callback = fun(_response:HashMap<String, Any>) {
+            if(_response["result"] == "error") {
+                showErrorByCode(_response)
+                stopPreloading()
+                return
+            }
+            hideError()
             pingTrip()
         }).execute()
     }
@@ -403,8 +435,13 @@ class DriverTripPage:DriverAppController() {
         playAlertSoundAnd("Погрузчик вызывает вас для погрузки.")
         HTTPRequest("trips/logs-new",
             _args = hashMapOf("id" to UserData.tripId, "status" to "loaded", "loggingTime" to "Mon Oct 31 2022 08:38:22 GMT+0300"),
-            _callback = fun(_resp:HashMap<String, Any>) {
-                Main.log(_resp)
+            _callback = fun(_response:HashMap<String, Any>) {
+                if(_response["result"] == "error") {
+                    showErrorByCode(_response)
+                    return
+                }
+                hideError()
+                Main.log(_response)
             }).execute()
     }
 

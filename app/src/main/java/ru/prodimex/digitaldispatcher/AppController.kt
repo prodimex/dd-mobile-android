@@ -1,5 +1,6 @@
 package ru.prodimex.digitaldispatcher
 
+import android.annotation.SuppressLint
 import android.os.Build
 import android.text.Html
 import android.view.View
@@ -82,4 +83,20 @@ open class AppController {
         scene.findViewById<TextView>(_id).setTextColor(ContextCompat.getColor(scene.applicationContext, _color))
     }
 
+    fun showErrorByCode(_response:HashMap<String, Any>) {
+        var code = _response["responseCode"].toString()
+        val errText:TextView? = scene.findViewById(R.id.error_field_app_version)
+        if (errText == null) {
+            Main.main.toastMe(Dictionary.getErrorByCode(code))
+        } else {
+            scene.findViewById<TextView>(R.id.error_field_app_version).text = Dictionary.getErrorByCode(code)
+        }
+    }
+
+    fun hideError() {
+        val errText:TextView? = scene.findViewById(R.id.error_field_app_version)
+        if (errText != null) {
+            scene.findViewById<TextView>(R.id.error_field_app_version).text = ""
+        }
+    }
 }

@@ -34,12 +34,11 @@ class UpdatePage:AppController() {
 
         HTTPRequest.nodeServerUrl = AppConfig.UPDATE_URL
         HTTPRequest("", hashMapOf("ver" to BuildConfig.BUILD_TYPE), _requestMethod = "GET", _callback = fun(_response:HashMap<String, Any>) {
-            Main.log(_response)
-            /*if(_response.contains("error")) {
-
-
+            if(_response["result"] == "error") {
+                scene.runApplication()
                 return
-            }*/
+            }
+            Main.log(_response)
 
             if(_response.contains("versionCode") && _response["versionCode"].toString().toFloat().toInt() > BuildConfig.VERSION_CODE) {
                 showUpdateInfo(_response)
@@ -48,8 +47,6 @@ class UpdatePage:AppController() {
             }
         }).execute()
     }
-
-
 
     fun showUpdateInfo(_updateData:HashMap<String, Any>) {
         scene.findViewById<LinearLayout>(R.id.update_layout_content).visibility = View.VISIBLE

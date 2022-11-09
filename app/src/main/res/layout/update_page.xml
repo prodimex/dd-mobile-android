@@ -155,15 +155,6 @@
             android:textColor="@color/text_gray"
             android:textSize="14dp" />
     </LinearLayout>
-    <TextView
-        android:id="@+id/app_version_text"
-        android:layout_width="wrap_content"
-        android:text="Версия: 4.0.25-debug"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="10dp"
-        android:gravity="center_horizontal"
-        android:textColor="@color/text_light_gray"
-        android:textSize="12dp"
-        android:layout_height="wrap_content"/>
+
+    <include layout="@layout/app_version"/>
 </RelativeLayout>

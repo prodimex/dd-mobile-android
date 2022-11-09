@@ -20,8 +20,13 @@ class DriverSettingsPage:DriverAppController() {
         setOnClick(R.id.set_current_trip_to_loaded) {
             HTTPRequest("trips/logs-new",
                 _args = hashMapOf("id" to UserData.tripId, "status" to "loaded", "loggingTime" to "Mon Oct 31 2022 08:38:22 GMT+0300"),
-                _callback = fun(_resp:HashMap<String, Any>) {
-                    Main.log(_resp)
+                _callback = fun(_response:HashMap<String, Any>) {
+                    if(_response["result"] == "error") {
+                        showErrorByCode(_response)
+                        return
+                    }
+                    hideError()
+                    Main.log(_response)
                 }).execute()
         }
 
