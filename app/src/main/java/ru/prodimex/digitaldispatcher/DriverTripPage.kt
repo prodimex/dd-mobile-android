@@ -1,36 +1,27 @@
 package ru.prodimex.digitaldispatcher
 
-import android.media.RingtoneManager
-import android.net.Uri
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.LinearInterpolator
 import android.view.animation.RotateAnimation
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import com.google.gson.internal.LinkedTreeMap
-import org.altbeacon.beacon.Beacon
 import java.text.SimpleDateFormat
 import java.util.*
 
 class DriverTripPage:DriverAppController() {
     companion object {
         var pingCounter = 0
-        var beaconsInited = false
         var currentRangingState = ""
         var myShortCut = ""
         var toLoaderConnected = false
         var toLoaderConnectionStarted = false
     }
-    private var infoView:LinearLayout? = null
-    private var actionsView:LinearLayout? = null
+
     var timer = Timer()
     var takeNewTripStarted = false
-    var currentCarNumber = (UserData.cars[0] as LinkedTreeMap)["number"].toString()
-    var currentTripState = 0
 
     init {
         init(R.layout.driver_trip_page)
@@ -51,7 +42,7 @@ class DriverTripPage:DriverAppController() {
         startSheduler()
     }
 
-    fun startSheduler() {
+    override fun startSheduler() {
         timer = Timer()
         timer.scheduleAtFixedRate(object : TimerTask() { override fun run() { pingTrip() }}, 0, 1000)
         pingTrip()
@@ -105,7 +96,6 @@ class DriverTripPage:DriverAppController() {
             return
         takeNewTripStarted = true
         setText(R.id.trip_page_header,"Получаем новый рейс,\nподождите...")
-
         startPreloading()
         Main.log("-------------------------------")
         Main.log(UserData.cars[0])
@@ -204,7 +194,7 @@ class DriverTripPage:DriverAppController() {
                         startPreloading()
                         timer.cancel()
                         HTTPRequest("trips/confirm-finish-new",
-                            _args = hashMapOf("tripId" to UserData.tripId),
+                             _args = hashMapOf("tripId" to UserData.tripId, "ready_to_trip" to "true"),
                             _callback = fun(_response:HashMap<String, Any>) {
                                 if(_response["result"] == "error") {
                                     showErrorByCode(_response)
@@ -212,6 +202,7 @@ class DriverTripPage:DriverAppController() {
                                     return
                                 }
                                 hideError()
+
                                 takeNewTrip()
                             }).execute()
                     }
@@ -235,7 +226,7 @@ class DriverTripPage:DriverAppController() {
         }
     }
 
-    fun showAssignedStateActions() {
+    override fun showAssignedStateActions() {
         if(toLoaderConnected) {
             setText(R.id.trip_page_trip_status,"СТАТУС: <b>В ОЧЕРЕДИ</b>")
             infoView!!.findViewById<TextView>(R.id.trip_page_trip_status).setTextColor(ContextCompat.getColor(scene.applicationContext, Dictionary.statusColors[2]!!))
@@ -283,7 +274,7 @@ class DriverTripPage:DriverAppController() {
         }).execute()
     }
 
-    fun showToLoaderConnectionActions() {
+    override fun showToLoaderConnectionActions() {
         if(actionsView != null) {
             scene.findViewById<LinearLayout>(R.id.trip_page_actions_container).removeView(actionsView)
             actionsView = null
@@ -320,174 +311,7 @@ class DriverTripPage:DriverAppController() {
         Beacons.startScan()
     }
 
-    val commandsWithShortcuts = hashMapOf(Dictionary.IM_WAITING_FOR_LOADER_SIGNAL to true,
-        Dictionary.IM_DISMISSED_BUT_ON_FIELD to true,
-        Dictionary.SEND_DRIVER_INFO_TO_LOADER to true,
-        Dictionary.IM_ON_LOADING to true,
-    )
-
-    override fun scanObserver(beacons: Collection<Beacon>) {
-        super.scanObserver(beacons)
-        var numberCode = Beacons.makeCodeFromNumber(currentCarNumber)
-        beacons.forEach {
-            if(Beacons.beaconFarmCode.indexOf("${it.id2.toString() + it.id3.toString()}") != 0)
-                return
-
-            var uuid = it.id1.toString().replace("-", "", true)
-            if(uuid.indexOf(numberCode) == 2) {
-                if(currentRangingState == Dictionary.CONNECT_TO_LOADER_SIGNAL || currentRangingState == Dictionary.RECONNECT_TO_LOADER) {
-                    Main.log("myCarNumber $currentCarNumber $uuid $numberCode")
-                    when (uuid.slice(0..1)) {
-                        Dictionary.GIVE_SHORTCUT_AND_WAIT_FOR_LOADER_SIGNAL -> {
-                            var ix = 2 + currentCarNumber.length * 2
-                            myShortCut = uuid.slice(ix..ix + 3)
-                            waitForSignal()
-                        }
-                        Dictionary.GIVE_SHORTCUT_TO_DRIVER_AND_RETURN_DRIVER_INFO -> {
-                            var ix = 2 + currentCarNumber.length * 2
-                            myShortCut = uuid.slice(ix..ix + 3)
-                            currentRangingState = Dictionary.SEND_DRIVER_INFO_TO_LOADER
-
-                            var uuidHead = currentRangingState
-                            uuidHead += myShortCut
-
-                            var fio = "${UserData.surname}|${UserData.name}|${UserData.patronymic}".uppercase()
-                            var fioCode = ""
-                            fio.forEach { fioCode += Dictionary.farmIndexHexByChar[it.toString()] }
-                            Main.log("Generater driver data")
-                            var maxInfoLength = 32 - uuidHead.length - 2
-                            var totalChunks = Math.ceil((fioCode.length.toFloat()/maxInfoLength.toFloat()).toDouble()).toInt()
-                            Main.log("$fio $fioCode ${fioCode.length} ${maxInfoLength} ${fioCode.length.toFloat()/maxInfoLength.toFloat()} $totalChunks")
-                            Beacons.killAllBeacons()
-                            for(i in 0 until totalChunks) {
-                                var newUUID = "$uuidHead$i${totalChunks - 1}"
-                                if (i * maxInfoLength + maxInfoLength > fioCode.length) {
-                                    Main.log(fioCode.slice(i * maxInfoLength..fioCode.length-1))
-                                    newUUID +=fioCode.slice(i * maxInfoLength..fioCode.length - 1)
-                                } else {
-                                    Main.log(fioCode.slice(i * maxInfoLength..i * maxInfoLength + maxInfoLength-1))
-                                    newUUID += fioCode.slice(i * maxInfoLength..i * maxInfoLength + maxInfoLength - 1)
-                                }
-                                newUUID = Beacons.completeRawUUID(newUUID)
-
-                                Main.log(newUUID)
-                                Beacons.createBeacon(newUUID)
-                            }
-                        }
-                    }
-                }
-                if(currentRangingState == Dictionary.SEND_DRIVER_INFO_TO_LOADER) {
-                    when (uuid.slice(0..1)) {
-                        Dictionary.STOP_SENDING_DATA_AND_WAIT -> {
-                            waitForSignal()
-                        }
-                    }
-                }
-            }
-            Main.log(uuid.indexOf(myShortCut))
-
-            //if(uuid.indexOf(myShortCut) == 2 || uuid.indexOf(myShortCut) == 18  || uuid.indexOf(myShortCut) == 20) {
-            Main.log("${uuid.indexOf(myShortCut)} ${numberCode.length+2}")
-            if(uuid.indexOf(myShortCut) == 2 || uuid.indexOf(myShortCut) == numberCode.length+2) {
-                if(commandsWithShortcuts.contains(currentRangingState)) {
-                    Main.log("Получен сигнал с шорткатом")
-                    Main.log(uuid)
-                    when (uuid.slice(0..1)) {
-                        Dictionary.DISMISS_FROM_QUEUE -> {
-                            youDismissed()
-                        }
-                        Dictionary.YOU_NEED_TO_RECONNECT -> {
-                            startReconnectionToLoader()
-                        }
-                        Dictionary.GO_TO_LOADING -> {
-                            goToLoading()
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    fun youDismissed() {
-        if(currentRangingState == Dictionary.IM_DISMISSED_BUT_ON_FIELD)
-            return
-
-        toLoaderConnected = false
-        toLoaderConnectionStarted = false
-        playAlertSoundAnd("Погрузчик отклонил вашу погрузку.")
-
-        currentRangingState = Dictionary.IM_DISMISSED_BUT_ON_FIELD
-        Beacons.killAllBeacons()
-        Beacons.createBeacon(Beacons.completeRawUUID("$currentRangingState$myShortCut"))
-
-        setText(R.id.trip_page_trip_status,"СТАТУС: <b>ОТКАЗАНО В ПОГРУЗКЕ</b>")
-        infoView!!.findViewById<TextView>(R.id.trip_page_trip_status).setTextColor(ContextCompat.getColor(scene.applicationContext, R.color.button_background_red))
-        showAssignedStateActions()
-    }
-
-    fun goToLoading() {
-        if(currentRangingState == Dictionary.IM_ON_LOADING)
-            return
-
-        currentRangingState = Dictionary.IM_ON_LOADING
-        Beacons.killAllBeacons()
-        Beacons.createBeacon(Beacons.completeRawUUID("$currentRangingState$myShortCut"))
-        playAlertSoundAnd("Погрузчик вызывает вас для погрузки.")
-        HTTPRequest("trips/logs-new",
-            _args = hashMapOf("id" to UserData.tripId, "status" to "loaded", "loggingTime" to "Mon Oct 31 2022 08:38:22 GMT+0300"),
-            _callback = fun(_response:HashMap<String, Any>) {
-                if(_response["result"] == "error") {
-                    showErrorByCode(_response)
-                    return
-                }
-                hideError()
-                Main.log(_response)
-            }).execute()
-    }
-
-    fun startReconnectionToLoader() {
-        if(currentRangingState == Dictionary.RECONNECT_TO_LOADER)
-            return
-
-        Main.main.toastMe("ПОГРУЗЧИК ЗАПРОСИЛ ОБНОВИТЬ ДАННЫЕ")
-        toLoaderConnectionStarted = true
-        toLoaderConnected = false
-        currentRangingState = Dictionary.RECONNECT_TO_LOADER
-        showToLoaderConnectionActions()
-
-        var uuid = currentRangingState
-        uuid += myShortCut + currentCarNumber.length.let {Integer.toHexString(it).uppercase()}
-        uuid += Beacons.makeCodeFromNumber(currentCarNumber)
-        uuid = Beacons.completeRawUUID(uuid)
-
-        Beacons.createBeacon(uuid)
-    }
-
-
-
-    fun playAlertSoundAnd(_msg:String) {
-        PopupManager.showAlert(_msg)
-        val notification: Uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-        val r = RingtoneManager.getRingtone(Main.main.applicationContext, notification)
-        r.play()
-    }
-
-    fun waitForSignal() {
-        Beacons.killAllBeacons()
-        currentRangingState = Dictionary.IM_WAITING_FOR_LOADER_SIGNAL
-        Beacons.createBeacon(Beacons.completeRawUUID("$currentRangingState$myShortCut"))
-        toLoaderConnected = true
-        toLoaderConnectionStarted = false
-        currentTripState = 0
-        startSheduler()
-
-        stopPreloading()
-        if(actionsView != null) {
-            scene.findViewById<LinearLayout>(R.id.trip_page_actions_container).removeView(actionsView)
-            actionsView = null
-        }
-    }
-    fun startPreloading() {
+    override fun startPreloading() {
         Main.log("===== startPreloading")
         if(actionsView != null)
             actionsView!!.visibility = View.GONE
@@ -499,7 +323,7 @@ class DriverTripPage:DriverAppController() {
 
         scene.findViewById<ImageView>(R.id.trip_page_preloading).startAnimation(r)
     }
-    fun stopPreloading() {
+    override fun stopPreloading() {
         Main.log("----- stopPreloading")
         scene.findViewById<ImageView>(R.id.trip_page_preloading).clearAnimation()
         scene.findViewById<ImageView>(R.id.trip_page_preloading).visibility = View.GONE

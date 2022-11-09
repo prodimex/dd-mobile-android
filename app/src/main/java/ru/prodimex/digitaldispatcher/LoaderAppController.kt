@@ -1,5 +1,7 @@
 package ru.prodimex.digitaldispatcher
 
+import android.media.RingtoneManager
+import android.net.Uri
 import android.widget.TextView
 import org.altbeacon.beacon.Beacon
 import org.altbeacon.beacon.BeaconTransmitter
@@ -19,8 +21,16 @@ open class LoaderAppController:AppController() {
             if(!driversOnField.contains(number)) {
                 driversOnField[number] = LoaderPagesListitem(number)
                 Main.log("Обнаружен новый водитель и добавлен: $_uuid")
+                playAlertSoundAnd("Обнаружен новый водитель.")
             }
             driversOnField[number]!!.receiveUIIDs(_uuid)
+        }
+
+        fun playAlertSoundAnd(_msg:String) {
+            Main.main.toastMe(_msg)
+            val notification: Uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+            val r = RingtoneManager.getRingtone(Main.main.applicationContext, notification)
+            r.play()
         }
 
         fun makeReconnectBeacon(_shortcut:String) {

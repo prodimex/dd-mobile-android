@@ -81,7 +81,7 @@ class BeaconScannerListItem(_scene: BeaconScannerPage, _uuid:String) {
     fun updateView() {
         view.findViewById<TextView>(R.id.driver_number).text = "$number $action ${Dictionary.signalsLangs[action.toString()]}"
         view.findViewById<TextView>(R.id.ping_count).text = "$pingCounter $uuid"
-        view.findViewById<TextView>(R.id.offline_ping_count).text = "$offlinePingCounter"
+        view.findViewById<TextView>(R.id.offline_ping_count).text = "$offlinePingCounter - ${Beacons.makeNumberFromUUID(uuid)}"
         if(online) {
             view.setBackgroundColor(0xFFCCCCCC.toInt())
         } else {
@@ -94,7 +94,9 @@ class BeaconScannerListItem(_scene: BeaconScannerPage, _uuid:String) {
     }
 
     fun ping(_uuid:String? = null) {
-        uuid = _uuid.toString()
+        if(_uuid != null)
+            uuid = _uuid.toString()
+
         pingCounter++
         if(_uuid == null) {
             if(offlinePingCounter > 5) online = false
@@ -103,7 +105,6 @@ class BeaconScannerListItem(_scene: BeaconScannerPage, _uuid:String) {
             online = true
             offlinePingCounter = 0
         }
-        //Main.log("ping $_uuid")
         updateView()
     }
 
