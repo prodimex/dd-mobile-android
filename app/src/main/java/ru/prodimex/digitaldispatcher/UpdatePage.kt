@@ -33,7 +33,10 @@ class UpdatePage:AppController() {
         startPreloading()
 
         HTTPRequest.nodeServerUrl = AppConfig.UPDATE_URL
-        HTTPRequest("", hashMapOf("ver" to BuildConfig.BUILD_TYPE), _requestMethod = "GET", _callback = fun(_response:HashMap<String, Any>) {
+        HTTPRequest("", hashMapOf(
+            "build_mode" to BuildConfig.BUILD_TYPE,
+            "app_mode" to AppConfig.APP_MODE
+            ), _requestMethod = "GET", _callback = fun(_response:HashMap<String, Any>) {
             if(_response["result"] == "error") {
                 scene.runApplication()
                 return

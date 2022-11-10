@@ -86,7 +86,7 @@ class DriverLoginPage:AppController() {
         errorField = scene.findViewById(R.id.error_field)
         enableInput(true)
         /*
-            "phone" to "79857739431",
+            "phone" to "7 985 773 94 31",
             "password" to "373369",
             "token" to "0000",
             "notificationToken" to "",

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Разработчик ПРОДИМЕКС</string>
+    <string name="app_name">Погрузчик ПРОДИМЕКС</string>
     <string name="app_name_bold"><b>Цифровой диспетчер «ПРОДИМЕКС»</b></string>
     <string name="app_loader_sub_name">Режим погрузчика</string>
     <string name="authorization">Авторизация</string>

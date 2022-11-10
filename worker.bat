@@ -74,7 +74,8 @@ Echo    [%ESC%[36m 41 %ESC%[0m] Prepare release to upload loader
 Echo    [%ESC%[36m 42 %ESC%[0m] Prepare release to upload driver
 Echo    [%ESC%[36m 43 %ESC%[0m] Prepare release to upload develop
 Echo.
-Echo    [%ESC%[36m 5 %ESC%[0m] Up version and prepare all to upload
+Echo    [%ESC%[36m 5 %ESC%[0m] Prepare all to upload on release
+Echo    [%ESC%[36m 51 %ESC%[0m] Prepare all to upload on debug
 Echo.
 Echo    [%ESC%[36m 60 %ESC%[0m] Up version
 Echo    [%ESC%[36m 61 %ESC%[0m] Down version
@@ -85,74 +86,65 @@ Set Input=0918239021309810982093809
 Set /P Input="-->"
 
 if %Input% == 1 (
-    CALL :CHANGE_BUILD_CONFIG Loader
+    CALL :CHANGE_BUILD_CONFIG loader
 	GOTO :DEV_BUILD_AND_INSTALL_AND_RUN
 )
 if %Input% == 11 (
-    CALL :CHANGE_BUILD_CONFIG Loader
-    start /WAIT cmd /k "gradlew assembleDebug && exit"
-    CALL :COPY_TO loader debug
+    CALL :BUILD_APP_TO_MODE_BY_VERSION debug loader
     GOTO :COMPILATION_SELECTOR
 )
 
 if %Input% == 2 (
-    CALL :CHANGE_BUILD_CONFIG Driver
+    CALL :CHANGE_BUILD_CONFIG driver
     GOTO :DEV_BUILD_AND_INSTALL_AND_RUN
 )
 if %Input% == 21 (
-    CALL :CHANGE_BUILD_CONFIG Driver
-    start /WAIT cmd /k "gradlew assembleDebug && exit"
-    CALL :COPY_TO driver debug
+    CALL :BUILD_APP_TO_MODE_BY_VERSION debug driver
     GOTO :COMPILATION_SELECTOR
 )
 
 if %Input% == 3 (
-    CALL :CHANGE_BUILD_CONFIG Develop
+    CALL :CHANGE_BUILD_CONFIG develop
     GOTO :DEV_BUILD_AND_INSTALL_AND_RUN
 )
 
 if %Input% == 31 (
-    CALL :CHANGE_BUILD_CONFIG Develop
-    start /WAIT cmd /k "gradlew assembleDebug && exit"
-    CALL :COPY_TO develop debug
+    CALL :BUILD_APP_TO_MODE_BY_VERSION debug develop
     GOTO :COMPILATION_SELECTOR
 )
 
 if %Input% == 41 (
-    CALL :CHANGE_BUILD_CONFIG Loader
-    start /WAIT cmd /k "gradlew assembleRelease && exit"
-    CALL :COPY_TO loader release
+    CALL :BUILD_APP_TO_MODE_BY_VERSION release loader
     GOTO :COMPILATION_SELECTOR
 )
 if %Input% == 42 (
-    CALL :CHANGE_BUILD_CONFIG Driver
-    start /WAIT cmd /k "gradlew assembleRelease && exit"
-    CALL :COPY_TO driver release
+    CALL :BUILD_APP_TO_MODE_BY_VERSION release driver
     GOTO :COMPILATION_SELECTOR
 )
 if %Input% == 43 (
-    CALL :CHANGE_BUILD_CONFIG Develop
-    start /WAIT cmd /k "gradlew assembleRelease && exit"
-    CALL :COPY_TO develop release
+    CALL :BUILD_APP_TO_MODE_BY_VERSION release develop
     GOTO :COMPILATION_SELECTOR
 )
 
 if %Input% == 5 (
-    CALL :UP_VERSION
-    CALL :CHANGE_BUILD_CONFIG Loader
-    start /WAIT cmd /k "gradlew assembleRelease && exit"
-    CALL :COPY_TO loader release
+    @echo off
 
-    CALL :CHANGE_BUILD_CONFIG Driver
-    start /WAIT cmd /k "gradlew assembleRelease && exit"
-    CALL :COPY_TO driver release
-
-    CALL :CHANGE_BUILD_CONFIG Develop
-    start /WAIT cmd /k "gradlew assembleRelease && exit"
-    CALL :COPY_TO develop release
+    CALL :BUILD_APP_TO_MODE_BY_VERSION release develop
+    CALL :BUILD_APP_TO_MODE_BY_VERSION release driver
+    CALL :BUILD_APP_TO_MODE_BY_VERSION release loader
 
     GOTO :COMPILATION_SELECTOR
 )
+if %Input% == 51 (
+    @echo off
+
+    CALL :BUILD_APP_TO_MODE_BY_VERSION debug develop
+    CALL :BUILD_APP_TO_MODE_BY_VERSION debug driver
+    CALL :BUILD_APP_TO_MODE_BY_VERSION debug loader
+
+    GOTO :COMPILATION_SELECTOR
+)
+
 
 if %Input% == 60 (
     CALL :UP_VERSION
@@ -162,6 +154,19 @@ if %Input% == 61 (
     CALL :DOWN_VERSION
     GOTO :COMPILATION_SELECTOR
 )
+GOTO :COMPILATION_SELECTOR
+
+    ::CALL :CHANGE_BUILD_CONFIG develop
+    ::start /WAIT cmd /k "gradlew assembleRelease && exit"
+    ::CALL :COPY_TO develop release
+
+    ::CALL :CHANGE_BUILD_CONFIG driver
+    ::start /WAIT cmd /k "gradlew assembleRelease && exit"
+    ::CALL :COPY_TO driver release
+
+    ::CALL :CHANGE_BUILD_CONFIG loader
+    ::start /WAIT cmd /k "gradlew assembleRelease && exit"
+    ::CALL :COPY_TO loader release
 
  ::copy /y "%FileURI%" "%TargetDir%\%NewFileName%"
     ::start cmd /k "gradlew assembleRelease && copy .\app\build\outputs\apk\release\app-release.apk .\upload\develop\version.apk && pause"
@@ -172,15 +177,50 @@ if %Input% == 61 (
 ::if %Input% == 33 (
    :: start cmd /k "cscript /nologo upver.vbs  > .\app\build.txt && cd app && ren build.gradle build.gradle.bkup && del build.gradle.bkup && ren build.txt build.gradle && exit"
 ::)
-GOTO :COMPILATION_SELECTOR
+
+
+:BUILD_APP_TO_MODE_BY_VERSION
+    Set Mode=%1
+    Set BuildVersion=%2
+    Echo %ESC%[41m Building application to %BuildVersion% in %Mode% mode started %ESC%[0m
+
+    del .\app\src\main\java\ru\prodimex\digitaldispatcher\AppConfig.kt
+    copy .\app\src\main\java\ru\prodimex\digitaldispatcher\configs\%BuildVersion%.txt .\app\src\main\java\ru\prodimex\digitaldispatcher\AppConfig.kt
+    Echo   %ESC%[42m BUILD CONFIGURATION CHANGED TO %BuildVersion% %ESC%[0m
+
+    if %Mode% == release (
+        start /WAIT cmd /k "gradlew assembleRelease && exit"
+    )
+    if %Mode% == debug (
+        start /WAIT cmd /k "gradlew assembleDebug && exit"
+    )
+
+    setlocal EnableDelayedExpansion
+    for /F "delims=" %%a in ('cscript readversionname.vbs') do (endlocal & set appVersionName=%%a)
+    move .\app\build\outputs\apk\%Mode%\app-%Mode%.apk .\upload\%appVersionName%-%BuildVersion%-%Mode%.apk
+    Echo Copied %appVersionName% %BuildVersion% \upload\%appVersionName%-%BuildVersion%-%Mode%.apk
+
+    Echo %ESC%[41m Building application to %BuildVersion% in %Mode% mode completed %ESC%[0m
+    TIMEOUT 2
+EXIT /b
 
 :CHANGE_BUILD_CONFIG
     Set TargetConfig=%1
     del .\app\src\main\java\ru\prodimex\digitaldispatcher\AppConfig.kt
     copy .\app\src\main\java\ru\prodimex\digitaldispatcher\configs\%TargetConfig%.txt .\app\src\main\java\ru\prodimex\digitaldispatcher\AppConfig.kt
     Echo   %ESC%[42m BUILD CONFIGURATION CHANGED TO %TargetConfig% %ESC%[0m
-EXIT /b
 
+    del .\app\src\main\res\values\strings.xml
+    Echo .\app\src\main\res\values\%TargetConfig%.xml
+    copy .\app\src\main\java\ru\prodimex\digitaldispatcher\configs\%TargetConfig%.xml .\app\src\main\res\values\strings.xml
+
+    del .\app\src\main\res\drawable-v24\ic_launcher_foreground.xml
+    Echo .\app\src\main\java\ru\prodimex\digitaldispatcher\configs\icon_%TargetConfig%.xml
+    copy .\app\src\main\java\ru\prodimex\digitaldispatcher\configs\icon_%TargetConfig%.xml .\app\src\main\res\drawable-v24\ic_launcher_foreground.xml
+EXIT /b
+rename  .\app\src\main\res\values\strings.xml strings.xml.bkup
+    rename .\app\src\main\res\values\strings.txt strings.xml
+del .\app\build.gradle.bkup
 :UP_VERSION
     cscript /nologo upver.vbs > .\app\build.txt
     rename  .\app\build.gradle build.gradle.bkup
@@ -204,13 +244,22 @@ EXIT /b
     Echo ===========================================================================
 EXIT /b
 
+:PREPARE_TO_UPLOAD
+    Set Mode=%1
+    Set AppVersion=%2
+    setlocal EnableDelayedExpansion
+    for /F "delims=" %%a in ('cscript readversionname.vbs') do (endlocal & set appVersionName=%%a)
+    move .\app\build\outputs\apk\%Mode%\app-%Mode%.apk .\upload\%Destination%\%appVersionName%-%Mode%.apk
+    Echo Copied %appVersionName% %Destination% \upload\%Destination%\%appVersionName%-%Mode%.apk
+EXIT /b
+
 :COPY_TO
     Set Destination=%1
     Set Mode=%2
     setlocal EnableDelayedExpansion
     for /F "delims=" %%a in ('cscript readversionname.vbs') do (endlocal & set appVersionName=%%a)
     move .\app\build\outputs\apk\%Mode%\app-%Mode%.apk .\upload\%Destination%\%appVersionName%-%Mode%.apk
-    Echo pedaloh %appVersionName% %Destination% \upload\%Destination%\%appVersionName%-%Mode%.apk
+    Echo Copied %appVersionName% %Destination% \upload\%Destination%\%appVersionName%-%Mode%.apk
 EXIT /b
 
 :DEV_BUILD_AND_INSTALL_AND_RUN

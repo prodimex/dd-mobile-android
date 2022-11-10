@@ -1,5 +1,4 @@
 Set objFS = CreateObject("Scripting.FileSystemObject")
-strFile = ".\app\build.gradle"
 Set objFile = objFS.OpenTextFile(".\app\build.gradle")
 verInt = 0
 Do Until objFile.AtEndOfStream
