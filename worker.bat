@@ -186,6 +186,14 @@ GOTO :COMPILATION_SELECTOR
 
     del .\app\src\main\java\ru\prodimex\digitaldispatcher\AppConfig.kt
     copy .\app\src\main\java\ru\prodimex\digitaldispatcher\configs\%BuildVersion%.txt .\app\src\main\java\ru\prodimex\digitaldispatcher\AppConfig.kt
+
+    del .\app\src\main\res\values\strings.xml
+    Echo .\app\src\main\res\values\%BuildVersion%.xml
+    copy .\app\src\main\java\ru\prodimex\digitaldispatcher\configs\%BuildVersion%.xml .\app\src\main\res\values\strings.xml
+
+    del .\app\src\main\res\drawable-v24\ic_launcher_foreground.xml
+    Echo .\app\src\main\java\ru\prodimex\digitaldispatcher\configs\icon_%BuildVersion%.xml
+    copy .\app\src\main\java\ru\prodimex\digitaldispatcher\configs\icon_%BuildVersion%.xml .\app\src\main\res\drawable-v24\ic_launcher_foreground.xml
     Echo   %ESC%[42m BUILD CONFIGURATION CHANGED TO %BuildVersion% %ESC%[0m
 
     if %Mode% == release (
@@ -208,7 +216,6 @@ EXIT /b
     Set TargetConfig=%1
     del .\app\src\main\java\ru\prodimex\digitaldispatcher\AppConfig.kt
     copy .\app\src\main\java\ru\prodimex\digitaldispatcher\configs\%TargetConfig%.txt .\app\src\main\java\ru\prodimex\digitaldispatcher\AppConfig.kt
-    Echo   %ESC%[42m BUILD CONFIGURATION CHANGED TO %TargetConfig% %ESC%[0m
 
     del .\app\src\main\res\values\strings.xml
     Echo .\app\src\main\res\values\%TargetConfig%.xml
@@ -217,6 +224,8 @@ EXIT /b
     del .\app\src\main\res\drawable-v24\ic_launcher_foreground.xml
     Echo .\app\src\main\java\ru\prodimex\digitaldispatcher\configs\icon_%TargetConfig%.xml
     copy .\app\src\main\java\ru\prodimex\digitaldispatcher\configs\icon_%TargetConfig%.xml .\app\src\main\res\drawable-v24\ic_launcher_foreground.xml
+
+    Echo   %ESC%[42m BUILD CONFIGURATION CHANGED TO %TargetConfig% %ESC%[0m
 EXIT /b
 rename  .\app\src\main\res\values\strings.xml strings.xml.bkup
     rename .\app\src\main\res\values\strings.txt strings.xml
