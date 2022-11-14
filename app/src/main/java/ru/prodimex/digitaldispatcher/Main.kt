@@ -260,4 +260,13 @@ class Main : AppCompatActivity() {
 
         startActivity(intent)
     }
+
+    private var backPressed:Long = 0
+    override fun onBackPressed() {
+        if (backPressed + 2000 > System.currentTimeMillis())
+            System.exit(0)
+        else
+            Toast.makeText(baseContext, "Нажмите снова, чтобы выйти!", Toast.LENGTH_SHORT).show()
+        backPressed = System.currentTimeMillis()
+    }
 }
