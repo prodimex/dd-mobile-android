@@ -22,6 +22,10 @@ class Dictionary {
         const val DISMISS_FROM_QUEUE = "0c"
         const val IM_DISMISSED_BUT_ON_FIELD = "0d"
 
+        const val DRIVER_ON_FIELD_ON_AIR = "0e"
+        const val LOADER_ON_FIELD_ON_AIR = "0f"
+        const val SCANNER_ON_FIELD_ON_AIR = "10"
+
         val units = arrayOf("Кбайт", "Мбайт", "Гбайт", "Тбайт", "Пбайт", "Эбайт", "Збайт", "Ибайт")
 
         fun fileSizeAsString(_bytes:Float, _dp:Int = 2):String {

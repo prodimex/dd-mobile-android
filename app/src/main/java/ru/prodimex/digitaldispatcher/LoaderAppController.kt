@@ -16,6 +16,12 @@ open class LoaderAppController:AppController() {
 
         var driversInfoCache = HashMap<String, Any>()
 
+        fun dropDrivers() {
+            driversOnField.clear()
+            driversOnFieldByShortCut.clear()
+            reconnectShortcuts.clear()
+        }
+
         fun checkDriverAvailability(_uuid:String) {
             var number = Beacons.makeNumberFromUUID(_uuid)
             if(!driversOnField.contains(number)) {

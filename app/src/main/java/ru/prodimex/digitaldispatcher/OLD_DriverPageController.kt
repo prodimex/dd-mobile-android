@@ -5,9 +5,9 @@ import java.lang.Long.parseLong
 import android.widget.TextView
 import org.altbeacon.beacon.Beacon
 
-class DriverPageController:AppController() {
+class OLD_DriverPageController:AppController() {
     companion object {
-        val drivers:MutableMap<String, DriverBeacon> = mutableMapOf()
+        val drivers:MutableMap<String, OLD_DriverBeacon> = mutableMapOf()
     }
 
     init {
@@ -15,13 +15,13 @@ class DriverPageController:AppController() {
         listContainer = scene.findViewById(R.id.drivers_container)
 
         Beacons.init()
-        Beacons.startScan()
+        Beacons.startScan("00")
 
         scene.setOnClick(R.id.add_driver_button) {
-            if (drivers.size == DriverBeacon.driversData.size-2)
+            if (drivers.size == OLD_DriverBeacon.driversData.size-2)
                 return@setOnClick
 
-            val driver = DriverBeacon(this)
+            val driver = OLD_DriverBeacon(this)
             drivers[driver.number] = driver
             updateView()
         }
@@ -46,6 +46,6 @@ class DriverPageController:AppController() {
     override fun updateView() {
         var totalTransmitters = 0
         drivers.forEach { totalTransmitters += it.value.myTransmitters.size }
-        (scene.findViewById<TextView>(R.id.top_panel_info)).text = "Водителей: ${drivers.size}/${DriverBeacon.driversData.size-2}\nТрансмиттеров: $totalTransmitters"
+        (scene.findViewById<TextView>(R.id.top_panel_info)).text = "Водителей: ${drivers.size}/${OLD_DriverBeacon.driversData.size-2}\nТрансмиттеров: $totalTransmitters"
     }
 }

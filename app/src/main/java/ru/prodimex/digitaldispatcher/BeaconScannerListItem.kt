@@ -6,7 +6,6 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.Space
 import android.widget.TextView
-import java.lang.Long.parseLong
 
 
 class BeaconScannerListItem(_scene: BeaconScannerPage, _uuid:String) {
@@ -64,10 +63,10 @@ class BeaconScannerListItem(_scene: BeaconScannerPage, _uuid:String) {
 
         setOnClick(R.id.accept_driver_connection) {
             var uuid = number.length.let {Integer.toHexString(it).uppercase()}
-            uuid += DriverBeacon.makeCodeFromNumber(number)
+            uuid += Beacons.makeCodeFromNumber(number)
             uuid += BeaconScannerPage.fieldId
             uuid += ACCEPT_CONNECTION
-            uuid = DriverBeacon.completeRawUUID(uuid)
+            uuid = Beacons.completeRawUUID(uuid)
 
             Main.log("uuid ${uuid}")
             Beacons.createBeacon(uuid)

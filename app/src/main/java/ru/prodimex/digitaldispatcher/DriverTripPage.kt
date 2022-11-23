@@ -286,7 +286,6 @@ class DriverTripPage:DriverAppController() {
 
         setOnClick(R.id.connect_to_loader_cancel_button) {
             toLoaderConnectionStarted = false
-            Beacons.stopScan()
             Beacons.killAllBeacons()
             stopPreloading()
             showAssignedStateActions()
@@ -308,7 +307,6 @@ class DriverTripPage:DriverAppController() {
 
         Main.log(" ======================= ++++ $uuid")
         Beacons.createBeacon(uuid)
-        Beacons.startScan()
     }
 
     override fun startPreloading() {

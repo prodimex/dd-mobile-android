@@ -67,6 +67,15 @@
                     android:paddingVertical="10dp"
                     android:layout_marginTop="10dp"
                     android:textSize="18dp"/>
+                <TextView
+                    android:id="@+id/drop_drivers"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_url_blue"
+                    android:text="@string/drop_drivers"
+                    android:paddingVertical="10dp"
+                    android:layout_marginTop="10dp"
+                    android:textSize="18dp"/>
             </LinearLayout>
         </ScrollView>
     </LinearLayout>

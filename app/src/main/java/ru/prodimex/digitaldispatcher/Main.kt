@@ -135,7 +135,7 @@ class Main : AppCompatActivity() {
             DRIVER_SETTINGS_PAGE -> DriverSettingsPage().afterInit(DRIVER_SETTINGS_PAGE)
 
             BEACON_SCANNER_PAGE -> BeaconScannerPage().afterInit(BEACON_SCANNER_PAGE)
-            DRIVER_PAGE -> DriverPageController().afterInit(DRIVER_PAGE)
+            DRIVER_PAGE -> OLD_DriverPageController().afterInit(DRIVER_PAGE)
 
             LOADER_ENTER_PAGE -> LoaderEnterPage().afterInit(LOADER_ENTER_PAGE)
             LOADER_QUEUE_PAGE -> LoaderQueuePage().afterInit(LOADER_QUEUE_PAGE)

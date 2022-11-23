@@ -6,10 +6,9 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.Space
 import android.widget.TextView
-import java.util.*
 
 
-class DriverBeacon(_scene:DriverPageController) {
+class OLD_DriverBeacon(_scene:OLD_DriverPageController) {
     companion object {
         var driverCounter = 0
 
@@ -61,7 +60,7 @@ class DriverBeacon(_scene:DriverPageController) {
         fun putDashToIndex(_uuid:String, _index:Int):String {
             return _uuid.replaceRange(_index, _index, "-")
         }
-
+/*
         fun completeRawUUID(_uuid:String):String {
             var uuid = _uuid
             for (i in 0 until 32 - uuid.length) uuid += 0
@@ -79,9 +78,10 @@ class DriverBeacon(_scene:DriverPageController) {
 
             return result
         }
+        */
     }
     private val scene = _scene
-    private val id = DriverPageController.drivers.size
+    private val id = OLD_DriverPageController.drivers.size
     val tag:String = "driverCounter_".plus(driverCounter++)
     @SuppressLint("InflateParams")
     private val view:LinearLayout = scene.scene.layoutInflater.inflate(R.layout.driver_block, null) as LinearLayout
@@ -89,7 +89,7 @@ class DriverBeacon(_scene:DriverPageController) {
     private var beaconEnabled = false
     val myTransmitters = arrayListOf<String>()
     val number = driversData[id]["number"]!!
-    val numberCode = makeCodeFromNumber(number)
+    val numberCode = Beacons.makeCodeFromNumber(number)
     var myCurrendSignalCode = ""
     init {
         Main.log("Created DriverBeacon: $tag")
@@ -108,10 +108,10 @@ class DriverBeacon(_scene:DriverPageController) {
             rawUUid += numberCode
             rawUUid += myCurrendSignalCode
 
-            Main.log("rawUUid ${completeRawUUID(rawUUid)}")
+            Main.log("rawUUid ${Beacons.completeRawUUID(rawUUid)}")
             Main.log("rawUUid $rawUUid")
 
-            createBeacon(completeRawUUID(rawUUid))
+            createBeacon(Beacons.completeRawUUID(rawUUid))
             updateView()
         }
 
@@ -119,7 +119,7 @@ class DriverBeacon(_scene:DriverPageController) {
             stopTransmit()
             scene.listContainer.removeView(view)
             scene.listContainer.removeView(space)
-            DriverPageController.drivers.remove(tag)
+            OLD_DriverPageController.drivers.remove(tag)
         }
         (view.findViewById(R.id.driver_id) as TextView).text = "#$id АМ номер: ${driversData[id]["number"]}"
         (view.findViewById(R.id.driver_fio) as TextView).text = "".plus(driversData[id]["fio"])

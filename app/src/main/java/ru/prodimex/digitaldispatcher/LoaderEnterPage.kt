@@ -16,8 +16,8 @@ class LoaderEnterPage:AppController() {
         LoaderAppController.driversInfoCache = Gson().fromJson(Main.sharedPref.getString("driversInfoCache", "{}"),
             object: TypeToken<HashMap<String?, Any?>?>() {}.type)
 
-        if(Main.getParam("tripFieldindex") != "") {
-            startWithIndex(Main.getParam("tripFieldindex"))
+        if(Main.getParam("tripFieldindex") != "" && Main.getParam("appEntered") != "") {
+            runApp(Main.getParam("tripFieldindex"))
         } else {
             init(R.layout.loader_enter_page)
         }
@@ -35,16 +35,17 @@ class LoaderEnterPage:AppController() {
                 vis(R.id.error_field, true)
                 return@setOnClick
             }
-            startWithIndex(farmIndexInput.text.toString())
+            runApp(farmIndexInput.text.toString())
         }
     }
 
-    fun startWithIndex(_index:String) {
+    fun runApp(_index:String) {
         UserData.tripFieldindex = _index
-        Beacons.init()
-        Beacons.startScan()
-
         Main.setParam("tripFieldindex", UserData.tripFieldindex)
+        Main.setParam("appEntered", "true")
+
+        Beacons.init()
+        Beacons.startScan(Beacons.completeRawUUID(Dictionary.LOADER_ON_FIELD_ON_AIR))
         switchTopage(Main.LOADER_QUEUE_PAGE)
     }
 }

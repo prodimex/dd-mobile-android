@@ -31,12 +31,11 @@ class DriverLoginPage:AppController() {
     }
 
     override fun init(_layoutId:Int) {
-        //super.init(_layoutId)
         if(Main.getParam("userData") != "") {
             Main.log(Main.getParam("userData"))
             val userData:HashMap<String, Any>
                 = Gson().fromJson(Main.getParam("userData"), object : TypeToken<HashMap<String?, Any?>?>() {}.type)
-            UserData.collectData(userData)
+
 
             if(Main.getParam("tripData") != "") {
                 val tripData:HashMap<String, Any>
@@ -48,9 +47,7 @@ class DriverLoginPage:AppController() {
             HTTPRequest.token_type = Main.getParam("token_type").toString()
             HTTPRequest.nodeServerUrl =  Main.getParam("server") + "/mobile/"
 
-            Beacons.init()
-            Beacons.startScan()
-            switchTopage(Main.TRIP_PAGE)
+            runApp(userData)
         } else {
             showLayout(_layoutId)
             phoneField = scene.findViewById(R.id.user_phone)
@@ -192,14 +189,24 @@ class DriverLoginPage:AppController() {
                 HTTPRequest.token_type = _response["token_type"].toString()
                 HTTPRequest.nodeServerUrl =  _response["server"].toString() + "/mobile/"
                 HTTPRequest("users/current", _requestMethod = "GET", _callback = fun (_response:HashMap<String, Any>) {
-                    UserData.collectData(_response)
-                    Beacons.init()
-                    Beacons.startScan()
-                    switchTopage(Main.TRIP_PAGE)
+                    runApp(_response)
                 }).execute()
             }
         }, _isTms = true).execute()
     }
+
+    private fun runApp(_userData:HashMap<String, Any>) {
+        UserData.collectData(_userData)
+
+        Beacons.init()
+        switchTopage(Main.TRIP_PAGE)
+        var uuid = Dictionary.DRIVER_ON_FIELD_ON_AIR
+        uuid += DriverAppController.currentCarNumber.length.let { Integer.toHexString(it).uppercase()}
+        uuid += DriverAppController.numberCode
+        uuid = Beacons.completeRawUUID(uuid)
+        Beacons.startScan(uuid)
+    }
+
     private fun enableInput(_isEnable:Boolean = true) {
         if(passwordActionsView != null && passwordActionsView!!.parent != null) {
             if(_isEnable) loginButton!!.stopPreloading() else loginButton!!.startPreloading()

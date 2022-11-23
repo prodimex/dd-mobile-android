@@ -17,12 +17,15 @@ import java.util.*
 class Beacons {
     companion object {
         lateinit var beaconManager:BeaconManager
+        var immortalBeacon:BeaconTransmitter? = null
+        var controller:AppController? = null
+
         val beaconParser = BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24")
 
         val region = Region("all-beacons", null, null, null)
         val beaconTransmitters: MutableMap<String, BeaconTransmitter> = mutableMapOf()
         var beaconFarmCode:String = "1234512345"
-        var controller:AppController? = null
+
         var initialized = false
         var scanStarted = false
         fun init() {
@@ -63,7 +66,7 @@ class Beacons {
             }
         }
 
-        fun startScan() {
+        fun startScan(_immortal_uuid:String? = null) {
             if(scanStarted)
                 return
 
@@ -71,24 +74,33 @@ class Beacons {
             scanStarted = true
             beaconManager.startMonitoring(region)
             beaconManager.startRangingBeacons(region)
+
+
+            if(_immortal_uuid != null)
+                immortalBeacon = createBeacon(_immortal_uuid!!, true)
         }
 
         fun stopScan() {
             if(!scanStarted)
                 return
+
             scanStarted = false
             Main.log("Scan stopped!")
             beaconManager.stopMonitoring(region)
             beaconManager.stopRangingBeacons(region)
             Main.log("beaconManager.foregroundBetweenScanPeriod ${beaconManager.foregroundBetweenScanPeriod}")
 
+            if(immortalBeacon != null) {
+                immortalBeacon!!.stopAdvertising()
+                immortalBeacon = null
+            }
         }
 
-        fun createBeacon(uuid:String): BeaconTransmitter {
+        fun createBeacon(_uuid:String, _immortal_beacon:Boolean = false): BeaconTransmitter {
             makeFarmCode()
-            Main.log("createBeacon uuid $uuid")
+            Main.log("createBeacon uuid $_uuid")
             Main.log("createBeacon id2+id3 ${beaconFarmCode.slice(0..4) + beaconFarmCode.slice(5..9)}")
-            val beacon = Beacon.Builder().setId1(uuid).setId2(beaconFarmCode.slice(0..4)).setId3(beaconFarmCode.slice(5..9))
+            val beacon = Beacon.Builder().setId1(_uuid).setId2(beaconFarmCode.slice(0..4)).setId3(beaconFarmCode.slice(5..9))
                 .setManufacturer(0x4C).setTxPower(0).build()
 
             /*var bluetoothManager: BluetoothManager = Main.main.applicationContext.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
@@ -157,7 +169,9 @@ class Beacons {
                 }
             })
 
-            beaconTransmitters[uuid] = beaconTransmitter
+            if(!_immortal_beacon)
+                beaconTransmitters[_uuid] = beaconTransmitter
+
             return beaconTransmitter
         }
 
@@ -170,7 +184,7 @@ class Beacons {
         }
 
         fun killAllBeacons() {
-            beaconTransmitters.forEach{
+            beaconTransmitters.forEach {
                 it.value.stopAdvertising()
             }
             beaconTransmitters.clear()

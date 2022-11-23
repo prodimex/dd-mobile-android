@@ -10,8 +10,8 @@ import java.util.HashMap
 
 open class DriverAppController:AppController() {
     companion object {
-        var currentCarNumber = getSelectedCar()
-        var numberCode = Beacons.makeCodeFromNumber(currentCarNumber)
+        val currentCarNumber:String get() = getSelectedCar()
+        val numberCode:String get() = Beacons.makeCodeFromNumber(getSelectedCar())// = Beacons.makeCodeFromNumber(currentCarNumber)
 
         fun getSelectedCar():String {
             return (UserData.cars[0])["number"].toString()

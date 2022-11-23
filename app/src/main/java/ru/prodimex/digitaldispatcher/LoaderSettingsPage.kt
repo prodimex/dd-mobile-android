@@ -8,7 +8,7 @@ class LoaderSettingsPage:LoaderAppController() {
         init(R.layout.loader_settings_page)
 
         setOnClick(R.id.change_farm_index) {
-            Main.setParam("tripFieldindex", "")
+            Main.setParam("appEntered", "")
             switchTopage(Main.LOADER_ENTER_PAGE)
         }
         setOnClick(R.id.change_application_mode) {
@@ -19,9 +19,14 @@ class LoaderSettingsPage:LoaderAppController() {
             PopupManager.showAlert("Кеш очищен.", "")
         }
 
+        setOnClick(R.id.drop_drivers) {
+            Beacons.killAllBeacons()
+            dropDrivers()
+            PopupManager.showAlert("Водители очищены.", "")
+        }
+
         highlightButton(R.id.settings_button)
         highlightIcon(R.id.settings_ico)
-
     }
 
     override fun updateView() {
