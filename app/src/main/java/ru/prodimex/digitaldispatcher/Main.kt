@@ -25,7 +25,6 @@ class Main : AppCompatActivity() {
         const val LOGIN_PAGE = "LOGIN_PAGE"
         const val DRIVER_SETTINGS_PAGE = "DRIVER_SETTINGS_PAGE"
 
-        const val DRIVER_PAGE = "DRIVER_PAGE"
         const val BEACON_SCANNER_PAGE = "BEACON_SCANNER_PAGE"
 
 
@@ -114,10 +113,6 @@ class Main : AppCompatActivity() {
         findViewById<RelativeLayout>(R.id.root_layer).removeAllViews()
         findViewById<RelativeLayout>(R.id.root_layer).addView((layoutInflater.inflate(R.layout.role_selector, null) as View))
 
-        setOnClick(R.id.select_driver_role) {
-            toastMe("Времено не работает")
-            return@setOnClick
-            showPage(DRIVER_PAGE) }
         setOnClick(R.id.select_scanner_role) {
             //toastMe("Времено не работает")
             //return@setOnClick
@@ -135,7 +130,6 @@ class Main : AppCompatActivity() {
             DRIVER_SETTINGS_PAGE -> DriverSettingsPage().afterInit(DRIVER_SETTINGS_PAGE)
 
             BEACON_SCANNER_PAGE -> BeaconScannerPage().afterInit(BEACON_SCANNER_PAGE)
-            DRIVER_PAGE -> OLD_DriverPageController().afterInit(DRIVER_PAGE)
 
             LOADER_ENTER_PAGE -> LoaderEnterPage().afterInit(LOADER_ENTER_PAGE)
             LOADER_QUEUE_PAGE -> LoaderQueuePage().afterInit(LOADER_QUEUE_PAGE)

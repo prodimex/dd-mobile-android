@@ -2,66 +2,38 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/white">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
+        android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:background="@color/white">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/black"
-            android:layout_marginBottom="10dp"
-            android:textSize="20sp"
-            android:textFontWeight="400"
-            android:text="@string/chose_your_role"/>
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <Button
-                android:id="@+id/select_driver_role"
-                android:layout_width="wrap_content"
-                android:background="@drawable/button_background"
-                android:text="@string/driver"
-                android:paddingHorizontal="20dp"
-                android:layout_marginBottom="10dp"
-                android:layout_height="wrap_content"/>
-            <Button
-                android:id="@+id/select_scanner_role"
-                android:layout_width="wrap_content"
-                android:background="@drawable/button_background"
-                android:text="@string/scanner"
-                android:paddingHorizontal="20dp"
-                android:layout_marginLeft="10dp"
-                android:layout_height="wrap_content"/>
-        </LinearLayout>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/black"
-            android:layout_marginBottom="10dp"
-            android:layout_marginTop="20dp"
-            android:textSize="20sp"
-            android:textFontWeight="400"
-            android:text="@string/test_modes"/>
+        android:layout_marginTop="100dp">
         <Button
             android:id="@+id/select_driver_mode"
             android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="20dp"
             android:background="@drawable/button_background"
-            android:text="@string/driver_mode"
             android:paddingHorizontal="20dp"
-            android:layout_marginBottom="10dp"
-            android:layout_height="wrap_content"/>
+            android:text="@string/driver_mode" />
         <Button
             android:id="@+id/select_loader_mode"
             android:layout_width="wrap_content"
             android:background="@drawable/button_background"
             android:text="@string/loader_mode"
             android:paddingHorizontal="20dp"
-            android:layout_marginBottom="10dp"
+            android:layout_marginBottom="20dp"
+            android:layout_height="wrap_content"/>
+        <Button
+            android:id="@+id/select_scanner_role"
+            android:layout_width="wrap_content"
+            android:background="@drawable/button_background"
+            android:text="@string/scanner_mode"
+            android:paddingHorizontal="20dp"
+            android:layout_marginBottom="20dp"
             android:layout_height="wrap_content"/>
     </LinearLayout>
 </RelativeLayout>
