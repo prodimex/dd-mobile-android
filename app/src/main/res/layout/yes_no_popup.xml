@@ -24,6 +24,7 @@
                 android:textColor="@color/text_gray"
                 android:text="@string/sample_alert_header"
                 android:layout_marginTop="20dp"
+                android:paddingHorizontal="7dp"
                 android:textSize="22dp"/>
             <TextView
                 android:id="@+id/alert_body_text"
@@ -31,12 +32,15 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/text_gray"
                 android:text="@string/sample_alert_body"
-                android:layout_marginTop="7dp"
+                android:layout_marginTop="10dp"
+                android:paddingHorizontal="7dp"
                 android:textSize="18dp"/>
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="10dp"
                 android:orientation="horizontal">
                 <Button
                     android:id="@+id/ok_alert_button"

@@ -12,7 +12,7 @@ open class DriverAppController:AppController() {
     companion object {
         val currentCarNumber:String get() = getSelectedCar()
         val numberCode:String get() = Beacons.makeCodeFromNumber(getSelectedCar())// = Beacons.makeCodeFromNumber(currentCarNumber)
-
+        var loaderFinded = false
         fun getSelectedCar():String {
             return (UserData.cars[0])["number"].toString()
         }
@@ -119,8 +119,23 @@ open class DriverAppController:AppController() {
                     }
                 }
             }
+
+            if(uuid.indexOf(Dictionary.LOADER_ON_FIELD_ON_AIR) == 0 && !loaderFinded && UserData.currentTripStatus == 1 && DriverTripPage.currentRangingState == "") {
+                loaderFinded = true
+                PopupManager.showYesNoDialog("Обнаружен погрузчик, желаете подключиться?", "Внимание") {
+                    Main.main.toastMe("ПОДКЛЮЧАЕМСЯ К ПОГРУЗЧИКУ")
+                    DriverTripPage.toLoaderConnectionStarted = true
+                    DriverTripPage.toLoaderConnected = false
+                    DriverTripPage.currentRangingState = Dictionary.CONNECT_TO_LOADER_SIGNAL
+                    showToLoaderConnectionActions()
+
+                    var uuid = DriverTripPage.currentRangingState + currentCarNumber.length.let { Integer.toHexString(it).uppercase()} + numberCode
+                    Beacons.createBeacon(Beacons.completeRawUUID(uuid))
+                }
+            }
         }
     }
+
     fun youDismissed() {
         if(DriverTripPage.currentRangingState == Dictionary.IM_DISMISSED_BUT_ON_FIELD)
             return
