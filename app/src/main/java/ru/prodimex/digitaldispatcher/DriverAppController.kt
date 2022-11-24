@@ -119,6 +119,9 @@ open class DriverAppController:AppController() {
                     Dict.GO_TO_LOADING -> {
                         goToLoading()
                     }
+                    Dict.GO_RETURN_TO_QUEUE -> {
+                        returnToQueue()
+                    }
                 }
             }
 
@@ -156,6 +159,20 @@ open class DriverAppController:AppController() {
     }
 
 
+
+    fun returnToQueue() {
+        if(DriverTripPage.currentRangingState == Dict.IM_WAITING_FOR_LOADER_SIGNAL)
+            return
+
+        DriverTripPage.currentRangingState = Dict.IM_WAITING_FOR_LOADER_SIGNAL
+
+        Beacons.killAllBeacons()
+        Beacons.createBeacon(Beacons.completeRawUUID("${DriverTripPage.currentRangingState}${DriverTripPage.myShortCut}"))
+        playAlertSoundAnd("Погрузчик вернул вас в очередь.")
+
+        onLoading = false
+        showAssignedStateActions()
+    }
 
     fun goToLoading() {
         if(DriverTripPage.currentRangingState == Dict.IM_ON_LOADING)

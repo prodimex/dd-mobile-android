@@ -27,6 +27,8 @@ class Dict {
         const val SCANNER_ON_FIELD_ON_AIR = "10"
         const val RECONNECT_TO_LOADER_IN_TO_LOADING_QUEUE = "11"
 
+        const val GO_RETURN_TO_QUEUE = "12"
+
         val units = arrayOf("Кбайт", "Мбайт", "Гбайт", "Тбайт", "Пбайт", "Эбайт", "Збайт", "Ибайт")
 
         fun fileSizeAsString(_bytes:Float, _dp:Int = 2):String {

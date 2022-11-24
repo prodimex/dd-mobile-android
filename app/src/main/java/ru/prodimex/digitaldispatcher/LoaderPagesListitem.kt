@@ -34,10 +34,19 @@ class LoaderPagesListitem(_number:String) {
         LoaderAppController.driversOnFieldByShortCut[shortCut] = this
 
         view.findViewById<Button>(R.id.disconnect_button).setOnClickListener {
-            PopupManager.showYesNoDialog("Отказать АМ <b>$number</b> в погрузке?", "") {
-                driverState = Dict.DISMISS_FROM_QUEUE
-                startBeacon()
-                startPreloading()
+            if(PAGE_ID == Main.LOADER_LOADED_PAGE) {
+                PopupManager.showYesNoDialog("Вернуть АМ <b>$number</b> в очередь?", "") {
+                    driverState = Dict.GO_RETURN_TO_QUEUE
+                    startBeacon()
+                    startPreloading()
+                }
+            }
+            if(PAGE_ID == Main.LOADER_QUEUE_PAGE) {
+                PopupManager.showYesNoDialog("Отказать АМ <b>$number</b> в погрузке?", "") {
+                    driverState = Dict.DISMISS_FROM_QUEUE
+                    startBeacon()
+                    startPreloading()
+                }
             }
         }
 
@@ -104,11 +113,7 @@ class LoaderPagesListitem(_number:String) {
         if(uuid.indexOf(Dict.IM_WAITING_FOR_LOADER_SIGNAL) == 0
             && (driverState == Dict.STOP_SENDING_DATA_AND_WAIT
                     || driverState == Dict.GIVE_SHORTCUT_AND_WAIT_FOR_LOADER_SIGNAL)) {
-            Beacons.killBeacon(currentBeacon)
-            Main.log("Водитель ожидает погрузки в очереди")
-            driverState = Dict.SILENCE
-            driverStatus = "Ожидает погрузки в очереди"
-            stopPreloading()
+            setImInQueueAndWait()
         }
 
         if((uuid.indexOf(Dict.CONNECT_TO_LOADER_SIGNAL) == 0
@@ -132,6 +137,10 @@ class LoaderPagesListitem(_number:String) {
             startPreloading()
         }
 
+        if(uuid.indexOf(Dict.IM_WAITING_FOR_LOADER_SIGNAL) == 0 && driverState == Dict.GO_RETURN_TO_QUEUE) {
+            setImInQueueAndWait()
+        }
+
         if(uuid.indexOf(Dict.IM_ON_LOADING) == 0 && driverState == Dict.GO_TO_LOADING) {
             PAGE_ID = Main.LOADER_LOADED_PAGE
 
@@ -153,6 +162,15 @@ class LoaderPagesListitem(_number:String) {
             driverStatus = "Погрузка запрещена"
             stopPreloading()
         }
+    }
+
+    fun setImInQueueAndWait() {
+        PAGE_ID = Main.LOADER_QUEUE_PAGE
+        Beacons.killBeacon(currentBeacon)
+        Main.log("Водитель ожидает погрузки в очереди")
+        driverState = Dict.SILENCE
+        driverStatus = "Ожидает погрузки в очереди"
+        stopPreloading()
     }
 
     fun startPreloading() {
@@ -186,5 +204,14 @@ class LoaderPagesListitem(_number:String) {
         view.findViewById<TextView>(R.id.loader_queue_driver_id).text = shortCut + ": " + number
         view.findViewById<TextView>(R.id.loader_queue_driver_fio).text = "$surname $name $patronymic"
         view.findViewById<TextView>(R.id.loader_queue_driver_status).text = "$driverStatus"
+
+        if(PAGE_ID == Main.LOADER_LOADED_PAGE) {
+            view.findViewById<Button>(R.id.disconnect_button).text = "В ОЧЕРЕДЬ"
+            view.findViewById<Button>(R.id.connect_button).text = "ПОГРУЖЕН"
+        }
+        if(PAGE_ID == Main.LOADER_QUEUE_PAGE) {
+            view.findViewById<Button>(R.id.disconnect_button).text = "ОТКАЗАТЬ"
+            view.findViewById<Button>(R.id.connect_button).text = "ЗАГРУЗИТЬ"
+        }
     }
 }
