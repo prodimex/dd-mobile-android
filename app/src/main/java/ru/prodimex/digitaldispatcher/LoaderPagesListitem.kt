@@ -11,7 +11,7 @@ import com.google.gson.internal.LinkedTreeMap
 class LoaderPagesListitem(_number:String) {
     var PAGE_ID = Main.LOADER_QUEUE_PAGE
     val number = _number
-    var driverState = Dictionary.NEW_ITEM
+    var driverState = Dict.NEW_ITEM
     var view: LinearLayout = Main.main.layoutInflater.inflate(R.layout.queue_driver_list_item, null) as LinearLayout
     var shortCut = makeShortCut()
     var currentBeacon = ""
@@ -35,7 +35,7 @@ class LoaderPagesListitem(_number:String) {
 
         view.findViewById<Button>(R.id.disconnect_button).setOnClickListener {
             PopupManager.showYesNoDialog("Отказать АМ <b>$number</b> в погрузке?", "") {
-                driverState = Dictionary.DISMISS_FROM_QUEUE
+                driverState = Dict.DISMISS_FROM_QUEUE
                 startBeacon()
                 startPreloading()
             }
@@ -43,12 +43,13 @@ class LoaderPagesListitem(_number:String) {
 
         view.findViewById<Button>(R.id.connect_button).setOnClickListener {
             PopupManager.showYesNoDialog("Отправить АМ <b>$number</b> на погрузку?", "") {
-                driverState = Dictionary.GO_TO_LOADING
+                driverState = Dict.GO_TO_LOADING
                 startBeacon()
                 startPreloading()
             }
         }
     }
+
     var recievedData = HashMap<String, String>()
     fun startBeacon() {
         currentBeacon = driverState
@@ -56,10 +57,11 @@ class LoaderPagesListitem(_number:String) {
         currentBeacon = Beacons.completeRawUUID(currentBeacon)
         Beacons.createBeacon(currentBeacon)
     }
+
     fun receiveUIIDs(_uuid:String) {
         var uuid = _uuid
-        if(uuid.indexOf(Dictionary.SEND_DRIVER_INFO_TO_LOADER) == 0
-            && driverState == Dictionary.GIVE_SHORTCUT_TO_DRIVER_AND_RETURN_DRIVER_INFO) {
+        if(uuid.indexOf(Dict.SEND_DRIVER_INFO_TO_LOADER) == 0
+            && driverState == Dict.GIVE_SHORTCUT_TO_DRIVER_AND_RETURN_DRIVER_INFO) {
             Beacons.killBeacon(currentBeacon)
             Main.log("Получаем данные от водителя")
             driverStatus = "Передаёт данные"
@@ -78,7 +80,7 @@ class LoaderPagesListitem(_number:String) {
                 for (i in 0 until dataLine.length/2) {
                     var hex = dataLine.slice(i * 2..i * 2 + 1)
                     if(hex != "00")
-                        fio += Dictionary.farmIndexCharByHex[hex]
+                        fio += Dict.farmIndexCharByHex[hex]
                 }
                 fio = fio.lowercase()
                 Main.log(fio)
@@ -90,61 +92,64 @@ class LoaderPagesListitem(_number:String) {
                 LoaderAppController.driversInfoCache[number] = hashMapOf("surname" to surname, "name" to name, "patronymic" to patronymic) //LinkedTreeMap<String, Any>()
                 Main.setParam("driversInfoCache", Gson().toJson(LoaderAppController.driversInfoCache))
 
-                dataLine.forEach { fio += Dictionary.farmIndexCharByHex }
+                dataLine.forEach { fio += Dict.farmIndexCharByHex }
                 stopPreloading()
 
-                driverState = Dictionary.STOP_SENDING_DATA_AND_WAIT
+                driverState = Dict.STOP_SENDING_DATA_AND_WAIT
                 startBeacon()
             }
             Main.log("$cur $tot ${recievedData.size} $uuid")
         }
 
-        if(uuid.indexOf(Dictionary.IM_WAITING_FOR_LOADER_SIGNAL) == 0
-            && (driverState == Dictionary.STOP_SENDING_DATA_AND_WAIT
-                    || driverState == Dictionary.GIVE_SHORTCUT_AND_WAIT_FOR_LOADER_SIGNAL)) {
+        if(uuid.indexOf(Dict.IM_WAITING_FOR_LOADER_SIGNAL) == 0
+            && (driverState == Dict.STOP_SENDING_DATA_AND_WAIT
+                    || driverState == Dict.GIVE_SHORTCUT_AND_WAIT_FOR_LOADER_SIGNAL)) {
             Beacons.killBeacon(currentBeacon)
             Main.log("Водитель ожидает погрузки в очереди")
-            driverState = Dictionary.SILENCE
+            driverState = Dict.SILENCE
             driverStatus = "Ожидает погрузки в очереди"
             stopPreloading()
         }
 
-        if((uuid.indexOf(Dictionary.CONNECT_TO_LOADER_SIGNAL) == 0
-                    || uuid.indexOf(Dictionary.RECONNECT_TO_LOADER) == 0)
-            && (driverState != Dictionary.GIVE_SHORTCUT_TO_DRIVER_AND_RETURN_DRIVER_INFO
-                    && driverState != Dictionary.GIVE_SHORTCUT_AND_WAIT_FOR_LOADER_SIGNAL)) {
+        if((uuid.indexOf(Dict.CONNECT_TO_LOADER_SIGNAL) == 0
+                    || uuid.indexOf(Dict.RECONNECT_TO_LOADER) == 0
+                    || uuid.indexOf(Dict.RECONNECT_TO_LOADER_IN_TO_LOADING_QUEUE) == 0)
+            && (driverState != Dict.GIVE_SHORTCUT_TO_DRIVER_AND_RETURN_DRIVER_INFO
+                    && driverState != Dict.GIVE_SHORTCUT_AND_WAIT_FOR_LOADER_SIGNAL)) {
             Beacons.killBeacon(currentBeacon)
-            PAGE_ID = Main.LOADER_QUEUE_PAGE
+            PAGE_ID = if(uuid.indexOf(Dict.RECONNECT_TO_LOADER_IN_TO_LOADING_QUEUE) == 0)
+                Main.LOADER_LOADED_PAGE else Main.LOADER_QUEUE_PAGE
+
             Main.log("СОЗДАЕМ ОТВЕТНЫЙ БИКОН ДЛЯ ПЕРЕДАЧИ ШОРТКАТА ВОДИТЕЛЮ")
 
             if(LoaderAppController.driversInfoCache.contains(number)) {
-                driverState = Dictionary.GIVE_SHORTCUT_AND_WAIT_FOR_LOADER_SIGNAL
+                driverState = Dict.GIVE_SHORTCUT_AND_WAIT_FOR_LOADER_SIGNAL
             } else {
-                driverState = Dictionary.GIVE_SHORTCUT_TO_DRIVER_AND_RETURN_DRIVER_INFO
+                driverState = Dict.GIVE_SHORTCUT_TO_DRIVER_AND_RETURN_DRIVER_INFO
             }
 
             startBeacon()
             startPreloading()
         }
 
-        if(uuid.indexOf(Dictionary.IM_ON_LOADING) == 0 && driverState == Dictionary.GO_TO_LOADING) {
+        if(uuid.indexOf(Dict.IM_ON_LOADING) == 0 && driverState == Dict.GO_TO_LOADING) {
             PAGE_ID = Main.LOADER_LOADED_PAGE
 
             Beacons.killBeacon(currentBeacon)
             Main.log("Водитель на загрузке")
-            driverState = Dictionary.SILENCE
+            driverState = Dict.SILENCE
             driverStatus = "На загрузке"
             stopPreloading()
         }
         Main.log("=============================================")
-        Main.log(uuid.indexOf(Dictionary.IM_DISMISSED_BUT_ON_FIELD))
+        Main.log(uuid.indexOf(Dict.IM_DISMISSED_BUT_ON_FIELD))
         Main.log(driverState)
-        if(uuid.indexOf(Dictionary.IM_DISMISSED_BUT_ON_FIELD) == 0 && driverState == Dictionary.DISMISS_FROM_QUEUE) {
+        if(uuid.indexOf(Dict.IM_DISMISSED_BUT_ON_FIELD) == 0 && driverState == Dict.DISMISS_FROM_QUEUE) {
             PAGE_ID = Main.LOADER_CANCELLED_PAGE
 
             Beacons.killBeacon(currentBeacon)
             Main.log("Водитель дисквалифицирован")
-            driverState = Dictionary.SILENCE
+            driverState = Dict.SILENCE
             driverStatus = "Погрузка запрещена"
             stopPreloading()
         }

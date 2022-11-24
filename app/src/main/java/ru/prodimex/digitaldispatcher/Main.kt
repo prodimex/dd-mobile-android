@@ -45,7 +45,8 @@ class Main : AppCompatActivity() {
         var logCounter = 0
         fun log(_str:Any) { println("#${logCounter++} MOMOZODO: $_str") }
         val PERMISSION_REQUEST_FINE_LOCATION = 1
-        val PERMISSION_REQUEST_BLUETOOTH_CONNECT = 2
+        val PERMISSION_BLUETOOTH_SCAN = 2
+        val PERMISSION_BLUETOOTH_ADVERTISE = 3
         /*val carNumberChars = mapOf(
             "0" to "00", "1" to "01", "2" to "02", "3" to "03", "4" to "04", "5" to "05", "6" to "06",
             "7" to "07", "8" to "08", "9" to "09",
@@ -76,10 +77,10 @@ class Main : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.root_layout)
-        Dictionary.init()
+        Dict.init()
         main = this
         sharedPref = getSharedPreferences("ProdimexLocalStorage", MODE_PRIVATE)
-
+        Beacons.checkPermissions()
         showPage(UPDATE_PAGE)
         /*if(AppConfig.APP_MODE == AppConfig.DEV_MODE) {
             showPage(UPDATE_PAGE)
@@ -113,11 +114,7 @@ class Main : AppCompatActivity() {
         findViewById<RelativeLayout>(R.id.root_layer).removeAllViews()
         findViewById<RelativeLayout>(R.id.root_layer).addView((layoutInflater.inflate(R.layout.role_selector, null) as View))
 
-        setOnClick(R.id.select_scanner_role) {
-            //toastMe("Времено не работает")
-            //return@setOnClick
-            showPage(BEACON_SCANNER_PAGE) }
-
+        setOnClick(R.id.select_scanner_role) { showPage(BEACON_SCANNER_PAGE) }
         setOnClick(R.id.select_driver_mode) { showPage(LOGIN_PAGE) }
         setOnClick(R.id.select_loader_mode) { showPage(LOADER_ENTER_PAGE) }
     }
@@ -207,14 +204,30 @@ class Main : AppCompatActivity() {
                 }
                 return
             }
-            PERMISSION_REQUEST_BLUETOOTH_CONNECT -> {
+            PERMISSION_BLUETOOTH_SCAN -> {
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    log("BLUETOOTH_SCAN permission granted")
+                } else {
+                    log("BLUETOOTH_SCAN permission denied")
+                }
+                return
+            }
+            PERMISSION_BLUETOOTH_ADVERTISE -> {
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    log("BLUETOOTH_ADVERTISE permission granted")
+                } else {
+                    log("BLUETOOTH_ADVERTISE permission denied")
+                }
+                return
+            }
+            /*PERMISSION_REQUEST_BLUETOOTH_CONNECT -> {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     log("BLUETOOTH_CONNECT permission granted")
                 } else {
                     log("BLUETOOTH_CONNECT permission denied")
                 }
                 return
-            }
+            }*/
         }
     }
 

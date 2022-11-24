@@ -18,7 +18,7 @@ class BeaconScannerListItem(_scene: BeaconScannerPage, _uuid:String) {
         fun getNumberFromNumberCode(_numberCode:String):String {
             var number = ""
             for (i in 0 until _numberCode.length / 2) {
-                number += Dictionary.carNumberCharsByHex[_numberCode.slice(i * 2..i * 2 + 1)]
+                number += Dict.carNumberCharsByHex[_numberCode.slice(i * 2..i * 2 + 1)]
             }
             return number
         }
@@ -54,7 +54,7 @@ class BeaconScannerListItem(_scene: BeaconScannerPage, _uuid:String) {
     var action = getActionFromUUID(_uuid)
     var uuid = _uuid
     init {
-        Main.log("loh $number ${Dictionary.signalsLangs[action]}")
+        Main.log("loh $number ${Dict.signalsLangs[action]}")
         view.tag = number
 
         scene.listContainer.addView(view)
@@ -78,7 +78,7 @@ class BeaconScannerListItem(_scene: BeaconScannerPage, _uuid:String) {
 
     @SuppressLint("SetTextI18n")
     fun updateView() {
-        view.findViewById<TextView>(R.id.driver_number).text = "$number $action ${Dictionary.signalsLangs[action.toString()]}"
+        view.findViewById<TextView>(R.id.driver_number).text = "$number $action ${Dict.signalsLangs[action.toString()]}"
         view.findViewById<TextView>(R.id.ping_count).text = "$pingCounter $uuid"
         view.findViewById<TextView>(R.id.offline_ping_count).text = "$offlinePingCounter - ${Beacons.makeNumberFromUUID(uuid)}"
         if(online) {

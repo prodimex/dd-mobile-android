@@ -157,7 +157,7 @@ class DriverLoginPage:AppController() {
 
     fun showError(_response:HashMap<String, Any>) {
         enableInput(true)
-        errorField!!.text = Dictionary.getErrorByCode(_response["responseCode"].toString())
+        errorField!!.text = Dict.getErrorByCode(_response["responseCode"].toString())
         vis(R.id.error_field, true)
     }
 
@@ -200,7 +200,7 @@ class DriverLoginPage:AppController() {
 
         Beacons.init()
         switchTopage(Main.TRIP_PAGE)
-        var uuid = Dictionary.DRIVER_ON_FIELD_ON_AIR
+        var uuid = Dict.DRIVER_ON_FIELD_ON_AIR
         uuid += DriverAppController.currentCarNumber.length.let { Integer.toHexString(it).uppercase()}
         uuid += DriverAppController.numberCode
         uuid = Beacons.completeRawUUID(uuid)

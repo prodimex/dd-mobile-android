@@ -18,7 +18,7 @@ class BeaconScannerPage:AppController() {
         scene.setOnClick(R.id.start_scan) {
             scanStarted = true
             updateView()
-            Beacons.startScan(Beacons.completeRawUUID(Dictionary.SCANNER_ON_FIELD_ON_AIR))
+            Beacons.startScan(Beacons.completeRawUUID(Dict.SCANNER_ON_FIELD_ON_AIR))
         }
         scene.setOnClick(R.id.stop_scan) {
             scanStarted = false

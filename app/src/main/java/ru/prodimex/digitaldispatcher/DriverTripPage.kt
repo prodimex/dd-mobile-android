@@ -161,18 +161,18 @@ class DriverTripPage:DriverAppController() {
 
         setText(R.id.trip_page_header,"РЕЙС: <b>${ UserData.dq_id}</b>")
         setText(R.id.trip_page_trip_status,"СТАТУС: <b>${UserData.tripStatuses[UserData.currentTripStatus]!!["name"]!!.uppercase()}</b>")
-        infoView!!.findViewById<TextView>(R.id.trip_page_trip_status).setTextColor(ContextCompat.getColor(scene.applicationContext, Dictionary.statusColors[UserData.currentTripStatus]!!))
+        infoView!!.findViewById<TextView>(R.id.trip_page_trip_status).setTextColor(ContextCompat.getColor(scene.applicationContext, Dict.statusColors[UserData.currentTripStatus]!!))
 
         var loadDate = "<b>${UserData.currentTrip!!["loading_time_from"]}</b>-<b>${UserData.currentTrip!!["loading_time_to"]}</b>"
         val formatter = SimpleDateFormat("yyyy-MM-dd")
         var date = formatter.parse("${UserData.currentTrip!!["loading_date"]}") as Date
 
 
-        loadDate += " ${Dictionary.daysOfWeek[date.day]}., ${date.date} ${Dictionary.monts[date.month]}"
+        loadDate += " ${Dict.daysOfWeek[date.day]}., ${date.date} ${Dict.monts[date.month]}"
 
         var unloadDate = "<b>${UserData.currentTrip!!["unloading_time_from"]}</b>-<b>${UserData.currentTrip!!["unloading_time_to"]}</b>"
         date = formatter.parse("${UserData.currentTrip!!["unloading_date"]}") as Date
-        unloadDate += " ${Dictionary.daysOfWeek[date.day]}., ${date.date} ${Dictionary.monts[date.month]}"
+        unloadDate += " ${Dict.daysOfWeek[date.day]}., ${date.date} ${Dict.monts[date.month]}"
 
         setText(R.id.loading_field, "Поле: <b>${UserData.toNode(UserData.currentTrip!!["loading_cargo_station"])["name"]}</b>")
         setText(R.id.unloading_field, "<b>${UserData.toNode(UserData.currentTrip!!["unloading_cargo_station"])["name"]}</b>")
@@ -228,8 +228,12 @@ class DriverTripPage:DriverAppController() {
 
     override fun showAssignedStateActions() {
         if(toLoaderConnected) {
-            setText(R.id.trip_page_trip_status,"СТАТУС: <b>В ОЧЕРЕДИ</b>")
-            infoView!!.findViewById<TextView>(R.id.trip_page_trip_status).setTextColor(ContextCompat.getColor(scene.applicationContext, Dictionary.statusColors[2]!!))
+            if(onLoading)
+                setText(R.id.trip_page_trip_status,"СТАТУС: <b>НА ПОГРУЗКЕ</b>")
+            else
+                setText(R.id.trip_page_trip_status,"СТАТУС: <b>В ОЧЕРЕДИ</b>")
+
+            infoView!!.findViewById<TextView>(R.id.trip_page_trip_status).setTextColor(ContextCompat.getColor(scene.applicationContext, Dict.statusColors[2]!!))
             return
         }
 
@@ -243,7 +247,7 @@ class DriverTripPage:DriverAppController() {
             actionsView = null
         }
 
-        if(currentRangingState == Dictionary.IM_DISMISSED_BUT_ON_FIELD) {
+        if(currentRangingState == Dict.IM_DISMISSED_BUT_ON_FIELD) {
             actionsView = scene.layoutInflater.inflate(R.layout.trip_actions_block_2, null) as LinearLayout
             scene.findViewById<LinearLayout>(R.id.trip_page_actions_container).addView(actionsView)
             setOnClick(R.id.disconnect_from_loader_button) {
@@ -297,7 +301,7 @@ class DriverTripPage:DriverAppController() {
     fun startConectionToLoader() {
         toLoaderConnectionStarted = true
         toLoaderConnected = false
-        currentRangingState = Dictionary.CONNECT_TO_LOADER_SIGNAL
+        currentRangingState = Dict.CONNECT_TO_LOADER_SIGNAL
         showToLoaderConnectionActions()
 
         var uuid = currentRangingState

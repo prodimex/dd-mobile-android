@@ -45,7 +45,7 @@ class LoaderEnterPage:AppController() {
         Main.setParam("appEntered", "true")
 
         Beacons.init()
-        Beacons.startScan(Beacons.completeRawUUID(Dictionary.LOADER_ON_FIELD_ON_AIR))
+        Beacons.startScan(Beacons.completeRawUUID(Dict.LOADER_ON_FIELD_ON_AIR))
         switchTopage(Main.LOADER_QUEUE_PAGE)
     }
 }

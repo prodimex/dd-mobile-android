@@ -2,7 +2,7 @@ package ru.prodimex.digitaldispatcher
 
 import kotlin.math.abs
 
-class Dictionary {
+class Dict {
     companion object {
         var signalsLangs = HashMap<String, String>()
 
@@ -25,6 +25,7 @@ class Dictionary {
         const val DRIVER_ON_FIELD_ON_AIR = "0e"
         const val LOADER_ON_FIELD_ON_AIR = "0f"
         const val SCANNER_ON_FIELD_ON_AIR = "10"
+        const val RECONNECT_TO_LOADER_IN_TO_LOADING_QUEUE = "11"
 
         val units = arrayOf("Кбайт", "Мбайт", "Гбайт", "Тбайт", "Пбайт", "Эбайт", "Збайт", "Ибайт")
 

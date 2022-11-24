@@ -26,6 +26,8 @@ open class LoaderAppController:AppController() {
             var number = Beacons.makeNumberFromUUID(_uuid)
             if(!driversOnField.contains(number)) {
                 driversOnField[number] = LoaderPagesListitem(number)
+                if(_uuid.indexOf(Dict.RECONNECT_TO_LOADER_IN_TO_LOADING_QUEUE) == 0)
+                    driversOnField[number]!!.PAGE_ID = Main.LOADER_LOADED_PAGE
                 Main.log("Обнаружен новый водитель и добавлен: $_uuid")
                 playAlertSoundAnd("Обнаружен новый водитель.")
             }
@@ -40,35 +42,36 @@ open class LoaderAppController:AppController() {
         }
 
         fun makeReconnectBeacon(_shortcut:String) {
-            var uuid = Beacons.completeRawUUID("${Dictionary.YOU_NEED_TO_RECONNECT}$_shortcut")
+            var uuid = Beacons.completeRawUUID("${Dict.YOU_NEED_TO_RECONNECT}$_shortcut")
             Main.log("makeReconnectBeacon $uuid")
             reconnectShortcuts[_shortcut] = Beacons.createBeacon(uuid)
         }
 
         fun processTheSignal(_uuid:String) {
-            Main.log("processTheSignal $_uuid - ${_uuid.indexOf(Dictionary.IM_WAITING_FOR_LOADER_SIGNAL)}")
+            Main.log("processTheSignal $_uuid - ${_uuid.indexOf(Dict.IM_WAITING_FOR_LOADER_SIGNAL)}")
 
             //При обнаружении водителя с просьбой о подключении заводим его карточку и читаем сигнал
-            if(_uuid.indexOf(Dictionary.CONNECT_TO_LOADER_SIGNAL) == 0) {
+            if(_uuid.indexOf(Dict.CONNECT_TO_LOADER_SIGNAL) == 0) {
                 checkDriverAvailability(_uuid)
             }
 
             //Если водитель получил сигнал переприсоединения он присылает соответствующий сигнал
-            if(_uuid.indexOf(Dictionary.RECONNECT_TO_LOADER) == 0) {
+            if(_uuid.indexOf(Dict.RECONNECT_TO_LOADER) == 0
+                || _uuid.indexOf(Dict.RECONNECT_TO_LOADER_IN_TO_LOADING_QUEUE) == 0) {
                 var shortCut = _uuid.slice(2..5)
                 if(reconnectShortcuts.contains(shortCut)) {
                     reconnectShortcuts.remove(shortCut)
-                    Beacons.killBeacon(Beacons.completeRawUUID("${Dictionary.YOU_NEED_TO_RECONNECT}$shortCut"))
+                    Beacons.killBeacon(Beacons.completeRawUUID("${Dict.YOU_NEED_TO_RECONNECT}$shortCut"))
                 }
                 checkDriverAvailability(_uuid.slice(0..1) + _uuid.slice(6.._uuid.length-1))
             }
 
             //При получении сигналов содержащих только шорткат проверяем на отсутствие карточки
             // и если её нет то запрашиваем данные
-            if(_uuid.indexOf(Dictionary.SEND_DRIVER_INFO_TO_LOADER) == 0
-                || _uuid.indexOf(Dictionary.IM_WAITING_FOR_LOADER_SIGNAL) == 0
-                || _uuid.indexOf(Dictionary.IM_DISMISSED_BUT_ON_FIELD) == 0
-                || _uuid.indexOf(Dictionary.IM_ON_LOADING) == 0) {
+            if(_uuid.indexOf(Dict.SEND_DRIVER_INFO_TO_LOADER) == 0
+                || _uuid.indexOf(Dict.IM_WAITING_FOR_LOADER_SIGNAL) == 0
+                || _uuid.indexOf(Dict.IM_DISMISSED_BUT_ON_FIELD) == 0
+                || _uuid.indexOf(Dict.IM_ON_LOADING) == 0) {
                 var shortCut = _uuid.slice(2..5)
                 Main.log("Only shorcutted signal $shortCut ${driversOnFieldByShortCut.contains(shortCut)}")
                 if (driversOnFieldByShortCut.contains(shortCut)) {

@@ -1,17 +1,11 @@
 package ru.prodimex.digitaldispatcher
 
 import android.Manifest
-import android.bluetooth.BluetoothManager
 import android.bluetooth.le.AdvertiseCallback
-import android.bluetooth.le.AdvertiseData
 import android.bluetooth.le.AdvertiseSettings
-import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
-import android.os.ParcelUuid
-import androidx.core.app.ActivityCompat
 import org.altbeacon.beacon.*
-import java.util.*
 
 
 class Beacons {
@@ -53,15 +47,18 @@ class Beacons {
             }
             //var dd = RangeNotifier { beacons, region ->  }
             //beaconManager.addRangeNotifier()
-            checkPermissions()
 
             makeFarmCode()
         }
 
         fun checkPermissions() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (Main.main.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    Main.main.requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), Main.PERMISSION_REQUEST_FINE_LOCATION)
+                if (Main.main.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                    || Main.main.checkSelfPermission(Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED
+                    || Main.main.checkSelfPermission(Manifest.permission.BLUETOOTH_ADVERTISE) != PackageManager.PERMISSION_GRANTED) {
+                    Main.main.requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.BLUETOOTH_SCAN,
+                        Manifest.permission.BLUETOOTH_ADVERTISE), Main.PERMISSION_REQUEST_FINE_LOCATION)
                 }
             }
         }
@@ -193,7 +190,7 @@ class Beacons {
         private fun makeFarmCode() {
             beaconFarmCode = ""
             UserData.tripFieldindex.forEach {
-                beaconFarmCode += Dictionary.farmIndexNumByChar["$it"]
+                beaconFarmCode += Dict.farmIndexNumByChar["$it"]
             }
             for (i in 0 until 10 - beaconFarmCode.length) beaconFarmCode += 0
         }
@@ -216,7 +213,7 @@ class Beacons {
         fun makeCodeFromNumber(_number:String):String {
             var result = ""
             for (i in 0 until _number.length)
-                result += Dictionary.carNumberHexsByChar[_number[i].toString()]
+                result += Dict.carNumberHexsByChar[_number[i].toString()]
 
             return result
         }
@@ -228,7 +225,7 @@ class Beacons {
 
             var number = ""
             for (i in 0 until numLength) {
-                number += Dictionary.carNumberCharsByHex[uuidTail.slice(i * 2..i * 2 + 1)]
+                number += Dict.carNumberCharsByHex[uuidTail.slice(i * 2..i * 2 + 1)]
             }
             return number
         }

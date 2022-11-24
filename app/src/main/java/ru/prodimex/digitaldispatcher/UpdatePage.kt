@@ -65,7 +65,7 @@ class UpdatePage:AppController() {
         setText(R.id.update_change_list, releaseChangesString)
 
         bytesTotal = _updateData["apkSize"].toString().toFloat()
-        bytesTotalString = "${Dictionary.fileSizeAsString(bytesTotal)}"
+        bytesTotalString = "${Dict.fileSizeAsString(bytesTotal)}"
         setText(R.id.update_weight_text, "Размер файла: $bytesTotalString")
 
         stopPreloading()
@@ -99,7 +99,7 @@ class UpdatePage:AppController() {
         scene.findViewById<LinearLayout>(R.id.update_download_progress_fg).layoutParams = progressLineParams
 
         scene.findViewById<TextView>(R.id.update_download_loaded_bytes_text).text =
-            "${Dictionary.fileSizeAsString(bytesTotal * (_percent.toFloat()/100f))} из $bytesTotalString"
+            "${Dict.fileSizeAsString(bytesTotal * (_percent.toFloat()/100f))} из $bytesTotalString"
 
         Main.log(_percent)
         Main.log(  "$fullProgressLineWidth ${(fullProgressLineWidth * (_percent/100))}")

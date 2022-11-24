@@ -1,12 +1,9 @@
 package ru.prodimex.digitaldispatcher
 
-import android.annotation.SuppressLint
 import android.os.Build
 import android.text.Html
 import android.view.View
 import android.widget.*
-import androidx.annotation.RequiresApi
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import org.altbeacon.beacon.Beacon
 
@@ -87,9 +84,9 @@ open class AppController {
         var code = _response["responseCode"].toString()
         val errText:TextView? = scene.findViewById(R.id.error_field_app_version)
         if (errText == null) {
-            Main.main.toastMe(Dictionary.getErrorByCode(code))
+            Main.main.toastMe(Dict.getErrorByCode(code))
         } else {
-            scene.findViewById<TextView>(R.id.error_field_app_version).text = Dictionary.getErrorByCode(code)
+            scene.findViewById<TextView>(R.id.error_field_app_version).text = Dict.getErrorByCode(code)
         }
     }
 
