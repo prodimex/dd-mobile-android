@@ -22,6 +22,7 @@ open class DriverAppController:AppController() {
         Dict.IM_DISMISSED_BUT_ON_FIELD to true,
         Dict.SEND_DRIVER_INFO_TO_LOADER to true,
         Dict.IM_ON_LOADING to true,
+        Dict.RECONNECT_TO_LOADER_AS_DISMISSED to true,
     )
 
     var infoView:LinearLayout? = null
@@ -55,6 +56,7 @@ open class DriverAppController:AppController() {
             if(uuid.indexOf(numberCode) == 2) {
                 if(DriverTripPage.currentRangingState == Dict.CONNECT_TO_LOADER_SIGNAL
                     || DriverTripPage.currentRangingState == Dict.RECONNECT_TO_LOADER
+                    || DriverTripPage.currentRangingState == Dict.RECONNECT_TO_LOADER_AS_DISMISSED
                     || DriverTripPage.currentRangingState == Dict.RECONNECT_TO_LOADER_IN_TO_LOADING_QUEUE) {
                     Main.log("myCarNumber $currentCarNumber $uuid $numberCode")
                     when (uuid.slice(0..1)) {
@@ -122,6 +124,9 @@ open class DriverAppController:AppController() {
                     Dict.GO_RETURN_TO_QUEUE -> {
                         returnToQueue()
                     }
+                    Dict.YOU_LOADED_GO_TO_FACTORY -> {
+                        setStateToLoadedAndDisconnect()
+                    }
                 }
             }
 
@@ -174,6 +179,23 @@ open class DriverAppController:AppController() {
         showAssignedStateActions()
     }
 
+    fun setStateToLoadedAndDisconnect() {
+        if(DriverTripPage.currentRangingState == Dict.IM_LOADED_AND_GO_TO_FACTORY)
+            return
+
+        DriverTripPage.currentRangingState = Dict.IM_LOADED_AND_GO_TO_FACTORY
+        Beacons.killAllBeacons()
+        Beacons.createBeacon(Beacons.completeRawUUID("${DriverTripPage.currentRangingState}${DriverTripPage.myShortCut}"))
+        playAlertSoundAnd("Вы погружены, отправляйтесь на завод.")
+        HTTPRequest("trips/logs-new",
+            _args = hashMapOf("id" to UserData.tripId, "status" to "loaded", "loggingTime" to "Mon Oct 31 2022 08:38:22 GMT+0300"),
+            _callback = fun(_resp: HashMap<String, Any>) {
+                Main.log(_resp)
+            }).execute()
+        onLoading = false
+        showAssignedStateActions()
+    }
+
     fun goToLoading() {
         if(DriverTripPage.currentRangingState == Dict.IM_ON_LOADING)
             return
@@ -192,14 +214,20 @@ open class DriverAppController:AppController() {
     }
 
     fun startReconnectionToLoader() {
-        if(DriverTripPage.currentRangingState == Dict.RECONNECT_TO_LOADER)
+        if(DriverTripPage.currentRangingState == Dict.RECONNECT_TO_LOADER
+            || DriverTripPage.currentRangingState == Dict.RECONNECT_TO_LOADER_IN_TO_LOADING_QUEUE
+            || DriverTripPage.currentRangingState == Dict.RECONNECT_TO_LOADER_AS_DISMISSED)
             return
 
         Main.main.toastMe("ПОГРУЗЧИК ЗАПРОСИЛ ОБНОВИТЬ ДАННЫЕ")
         DriverTripPage.toLoaderConnectionStarted = true
         DriverTripPage.toLoaderConnected = false
-        DriverTripPage.currentRangingState =
-            if(onLoading) Dict.RECONNECT_TO_LOADER_IN_TO_LOADING_QUEUE else Dict.RECONNECT_TO_LOADER
+
+        if(DriverTripPage.currentRangingState == Dict.IM_DISMISSED_BUT_ON_FIELD) {
+            DriverTripPage.currentRangingState = Dict.RECONNECT_TO_LOADER_AS_DISMISSED
+        } else {
+            DriverTripPage.currentRangingState = if(onLoading) Dict.RECONNECT_TO_LOADER_IN_TO_LOADING_QUEUE else Dict.RECONNECT_TO_LOADER
+        }
 
         showToLoaderConnectionActions()
 

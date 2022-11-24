@@ -28,6 +28,10 @@ open class LoaderAppController:AppController() {
                 driversOnField[number] = LoaderPagesListitem(number)
                 if(_uuid.indexOf(Dict.RECONNECT_TO_LOADER_IN_TO_LOADING_QUEUE) == 0)
                     driversOnField[number]!!.PAGE_ID = Main.LOADER_LOADED_PAGE
+
+                if(_uuid.indexOf(Dict.RECONNECT_TO_LOADER_AS_DISMISSED) == 0)
+                    driversOnField[number]!!.PAGE_ID = Main.LOADER_CANCELLED_PAGE
+
                 Main.log("Обнаружен новый водитель и добавлен: $_uuid")
                 playAlertSoundAnd("Обнаружен новый водитель.")
             }
@@ -57,6 +61,7 @@ open class LoaderAppController:AppController() {
 
             //Если водитель получил сигнал переприсоединения он присылает соответствующий сигнал
             if(_uuid.indexOf(Dict.RECONNECT_TO_LOADER) == 0
+                || _uuid.indexOf(Dict.RECONNECT_TO_LOADER_AS_DISMISSED) == 0
                 || _uuid.indexOf(Dict.RECONNECT_TO_LOADER_IN_TO_LOADING_QUEUE) == 0) {
                 var shortCut = _uuid.slice(2..5)
                 if(reconnectShortcuts.contains(shortCut)) {
@@ -71,6 +76,7 @@ open class LoaderAppController:AppController() {
             if(_uuid.indexOf(Dict.SEND_DRIVER_INFO_TO_LOADER) == 0
                 || _uuid.indexOf(Dict.IM_WAITING_FOR_LOADER_SIGNAL) == 0
                 || _uuid.indexOf(Dict.IM_DISMISSED_BUT_ON_FIELD) == 0
+                || _uuid.indexOf(Dict.IM_LOADED_AND_GO_TO_FACTORY) == 0
                 || _uuid.indexOf(Dict.IM_ON_LOADING) == 0) {
                 var shortCut = _uuid.slice(2..5)
                 Main.log("Only shorcutted signal $shortCut ${driversOnFieldByShortCut.contains(shortCut)}")

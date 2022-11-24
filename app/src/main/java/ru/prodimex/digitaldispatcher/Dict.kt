@@ -28,6 +28,10 @@ class Dict {
         const val RECONNECT_TO_LOADER_IN_TO_LOADING_QUEUE = "11"
 
         const val GO_RETURN_TO_QUEUE = "12"
+        const val YOU_LOADED_GO_TO_FACTORY = "13"
+        const val IM_LOADED_AND_GO_TO_FACTORY = "14"
+
+        const val RECONNECT_TO_LOADER_AS_DISMISSED = "15"
 
         val units = arrayOf("Кбайт", "Мбайт", "Гбайт", "Тбайт", "Пбайт", "Эбайт", "Збайт", "Ибайт")
 
@@ -108,6 +112,17 @@ class Dict {
             signalsLangs[GIVE_SHORTCUT_AND_WAIT_FOR_LOADER_SIGNAL] = "Погрузчик: получи шорткат и жди"
             signalsLangs[DISMISS_FROM_QUEUE] = "Погрузчик: отклоняю погрузку"
             signalsLangs[IM_DISMISSED_BUT_ON_FIELD] = "Водитель: меня отклонили"
+
+            signalsLangs[DRIVER_ON_FIELD_ON_AIR] = "Водитель: в эфире"
+            signalsLangs[LOADER_ON_FIELD_ON_AIR] = "Погрузчик: в эфире"
+            signalsLangs[SCANNER_ON_FIELD_ON_AIR] = "Сканер: в эфире"
+
+            signalsLangs[RECONNECT_TO_LOADER_IN_TO_LOADING_QUEUE] = "Водитель: переподключись в очередь на погрузку"
+            signalsLangs[GO_RETURN_TO_QUEUE] = "Водитель: возвращаюсь в очередь на погрузку"
+
+            signalsLangs[YOU_LOADED_GO_TO_FACTORY] = "Погрузчик: погрузка завершена, следуй на фабрику"
+            signalsLangs[IM_LOADED_AND_GO_TO_FACTORY] = "Водитель: я загружен, возвращаюсь на фабрику"
+            signalsLangs[RECONNECT_TO_LOADER_AS_DISMISSED] = "Водитель: переподключаюсь как отклонённый"
         }
 
         val daysOfWeek = arrayOf("", "пн", "вт", "ср", "чт", "пт", "сб", "вс", "", "", "", "", "", "")
