@@ -35,7 +35,7 @@ class BeaconScannerPage:AppController() {
 
     override fun scanObserver(beacons:Collection<Beacon>) {
         var pinged = mutableMapOf<String, Boolean>()
-        Main.log(beacons.size)
+        //Main.log(beacons.size)
         beacons.forEach {
             if(Beacons.beaconFarmCode.indexOf("${it.id2}${it.id3}") != 0)
                 return

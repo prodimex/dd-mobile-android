@@ -13,6 +13,7 @@ open class DriverAppController:AppController() {
         val numberCode:String get() = Beacons.makeCodeFromNumber(getSelectedCar())// = Beacons.makeCodeFromNumber(currentCarNumber)
         var loaderFinded = false
         var onLoading = false
+        var preloadingShowed = false
         fun getSelectedCar():String {
             return (UserData.cars[0])["number"].toString()
         }
@@ -106,7 +107,7 @@ open class DriverAppController:AppController() {
                     }
                 }
             }
-            Main.log(uuid.indexOf(DriverTripPage.myShortCut))
+            Main.log("scanObserver ${uuid.indexOf(DriverTripPage.myShortCut)}")
 
             if((uuid.indexOf(DriverTripPage.myShortCut) == 2 || uuid.indexOf(DriverTripPage.myShortCut) == numberCode.length + 2)
                 && commandsWithShortcuts.contains(DriverTripPage.currentRangingState)) {
@@ -253,7 +254,7 @@ open class DriverAppController:AppController() {
         DriverTripPage.toLoaderConnected = true
         DriverTripPage.toLoaderConnectionStarted = false
         currentTripState = 0
-        startSheduler()
+        //startSheduler()
 
         stopPreloading()
         if(actionsView != null) {
@@ -269,14 +270,14 @@ open class DriverAppController:AppController() {
 
     }
 
-    open fun startSheduler() {
+    /*open fun startSheduler() {
 
-    }
+    }*/
 
     open fun startPreloading() {
-
+        preloadingShowed = true
     }
     open fun stopPreloading() {
-
+        preloadingShowed = false
     }
 }

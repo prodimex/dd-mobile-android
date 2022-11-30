@@ -26,12 +26,11 @@ class DriverLoginPage:AppController() {
     var requestPasswordActionsView:LinearLayout? = null
 
     init {
-
         init(R.layout.driver_enter_page)
     }
 
     override fun init(_layoutId:Int) {
-        if(Main.getParam("userData") != "") {
+        if(Main.getParam("userData") != "" && Main.getParam("driverLoggedOuted") != "") {
             Main.log(Main.getParam("userData"))
             val userData:HashMap<String, Any>
                 = Gson().fromJson(Main.getParam("userData"), object : TypeToken<HashMap<String?, Any?>?>() {}.type)
@@ -175,7 +174,6 @@ class DriverLoginPage:AppController() {
             "token" to "0000",
             "notificationToken" to "",
         ), _callback = fun (_response:HashMap<String, Any>) {
-
             Main.log("Result ======== ")
             Main.log(_response)
             if(_response["result"] == "error") {
@@ -197,6 +195,7 @@ class DriverLoginPage:AppController() {
 
     private fun runApp(_userData:HashMap<String, Any>) {
         UserData.collectData(_userData)
+        Main.setParam("driverLoggedOuted", "true")
 
         Beacons.init()
         switchTopage(Main.TRIP_PAGE)

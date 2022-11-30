@@ -22,7 +22,7 @@ class Main : AppCompatActivity() {
     companion object {
         const val TRIP_PAGE = "TRIP_PAGE"
         const val PROFILE_PAGE = "PROFILE_PAGE"
-        const val LOGIN_PAGE = "LOGIN_PAGE"
+        const val DRIVER_LOGIN_PAGE = "DRIVER_LOGIN_PAGE"
         const val DRIVER_SETTINGS_PAGE = "DRIVER_SETTINGS_PAGE"
 
         const val BEACON_SCANNER_PAGE = "BEACON_SCANNER_PAGE"
@@ -115,7 +115,7 @@ class Main : AppCompatActivity() {
         findViewById<RelativeLayout>(R.id.root_layer).addView((layoutInflater.inflate(R.layout.role_selector, null) as View))
 
         setOnClick(R.id.select_scanner_role) { showPage(BEACON_SCANNER_PAGE) }
-        setOnClick(R.id.select_driver_mode) { showPage(LOGIN_PAGE) }
+        setOnClick(R.id.select_driver_mode) { showPage(DRIVER_LOGIN_PAGE) }
         setOnClick(R.id.select_loader_mode) { showPage(LOADER_ENTER_PAGE) }
     }
 
@@ -123,7 +123,7 @@ class Main : AppCompatActivity() {
         when (pageId) {
             TRIP_PAGE -> DriverTripPage().afterInit(TRIP_PAGE)
             PROFILE_PAGE -> DriverProfilePage().afterInit(PROFILE_PAGE)
-            LOGIN_PAGE -> DriverLoginPage().afterInit(LOGIN_PAGE)
+            DRIVER_LOGIN_PAGE -> DriverLoginPage().afterInit(DRIVER_LOGIN_PAGE)
             DRIVER_SETTINGS_PAGE -> DriverSettingsPage().afterInit(DRIVER_SETTINGS_PAGE)
 
             BEACON_SCANNER_PAGE -> BeaconScannerPage().afterInit(BEACON_SCANNER_PAGE)
@@ -251,7 +251,7 @@ class Main : AppCompatActivity() {
         when (AppConfig.APP_MODE) {
             AppConfig.DEV_MODE -> showPage(Main.ROLE_SELECTOR)
             AppConfig.LOADER_MODE -> showPage(Main.LOADER_ENTER_PAGE)
-            AppConfig.DRIVER_MODE -> showPage(Main.LOGIN_PAGE)
+            AppConfig.DRIVER_MODE -> showPage(Main.DRIVER_LOGIN_PAGE)
         }
     }
 

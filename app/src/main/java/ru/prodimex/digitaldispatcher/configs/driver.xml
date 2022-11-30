@@ -32,6 +32,7 @@
     <string name="login_page">АВТОРИЗАЦИЯ</string>
     <string name="driver_mode">РЕЖИМ ВОДИТЕЛЯ</string>
     <string name="loader_mode">РЕЖИМ ПОГРУЗЧИКА</string>
+    <string name="scanner_mode">РЕЖИМ СКАНЕРА</string>
     <string name="queue_page">ОЧЕРЕДЬ</string>
     <string name="enter">ВОЙТИ</string>
     <string name="get_password_button">ПОЛУЧИТЬ</string>
@@ -63,6 +64,7 @@
     <string name="change_loading_plan_underline_text"><u>Изменить план по загрузке</u></string>
     <string name="change_application_mode"><u>Изменить режим работы приложения</u></string>
     <string name="clear_cache"><u>Очистить кеш</u></string>
+    <string name="drop_drivers"><u>Сбросить водителей</u></string>
     <string name="driver_block_info">#1 ФИО: Оолонг Оолонгович Джизус\nСтатус: непонятно</string>
     <string name="enter_phone_hint">Введите номер телефона</string>
     <string name="enter_password_hint">Введите пароль</string>

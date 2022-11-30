@@ -90,13 +90,13 @@ class Dict {
                 carNumberCharsByHex[hex] = it.toString()
                 i++
             }
-            Main.log(farmIndexCharsByNum)
+            /*Main.log(farmIndexCharsByNum)
             Main.log(farmIndexNumByChar)
             Main.log(farmIndexHexByChar)
             Main.log("-----------------")
 
             Main.log(carNumberHexsByChar)
-            Main.log(carNumberCharsByHex)
+            Main.log(carNumberCharsByHex)*/
 
             signalsLangs[NEW_ITEM] = ""
             signalsLangs[CONNECT_TO_LOADER_SIGNAL] = "Водитель: подключи меня"

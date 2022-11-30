@@ -19,8 +19,9 @@
     <string name="remove">X</string>
     <string name="accept_connection">ЗАБЛОКИРОВАТЬ</string>
     <string name="preview_text">preview</string>
+    <string name="chose_your_role">Тест связи по роли:</string>
     <string name="drivers_pages_layouts">Макеты страниц водителя:</string>
-    <string name="scanner_mode">РЕЖИМ СКАНЕРА</string>
+    <string name="scanner">СКАНЕР</string>
     <string name="loader_pages_layouts">Макеты страниц погрузчика:</string>
     <string name="driver">ВОДИТЕЛЬ</string>
     <string name="profile">ПРОФИЛЬ</string>
@@ -31,6 +32,7 @@
     <string name="login_page">АВТОРИЗАЦИЯ</string>
     <string name="driver_mode">РЕЖИМ ВОДИТЕЛЯ</string>
     <string name="loader_mode">РЕЖИМ ПОГРУЗЧИКА</string>
+    <string name="scanner_mode">РЕЖИМ СКАНЕРА</string>
     <string name="queue_page">ОЧЕРЕДЬ</string>
     <string name="enter">ВОЙТИ</string>
     <string name="get_password_button">ПОЛУЧИТЬ</string>

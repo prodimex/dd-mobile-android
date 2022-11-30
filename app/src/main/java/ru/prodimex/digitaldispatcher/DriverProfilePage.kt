@@ -18,5 +18,10 @@ class DriverProfilePage:DriverAppController() {
         setText(R.id.profile_page_cars_numbers, "Номер АМ: <b>${UserData.carsNumbers}</b>")
         setText(R.id.profile_page_base_farm_name, "<b>${UserData.base_farm_name}</b>")
         setText(R.id.profile_page_base_farm_index, "Индекс хозяйства: <b>${UserData.base_farm_index}</b>")
+
+        setOnClick(R.id.profile_page_exit) {
+            Main.setParam("driverLoggedOuted", "")
+            switchTopage(Main.DRIVER_LOGIN_PAGE)
+        }
     }
 }

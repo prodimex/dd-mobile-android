@@ -80,7 +80,6 @@ class UserData {
         var dq_id = ""
 
         fun collectTripData(_data:HashMap<String, Any>) {
-            Main.log(_data)
             if (_data.contains("error"))
                 return
 
@@ -89,8 +88,8 @@ class UserData {
 
             tripData = _data
             if (_data["timeslot"]!!::class.simpleName == "ArrayList" && (_data["timeslot"]!! as ArrayList<Any>).size == 0) {
-                Main.log(_data)
-                Main.log((_data["timeslot"]!! as ArrayList<Any>).size)
+                //Main.log(_data)
+                //Main.log((_data["timeslot"]!! as ArrayList<Any>).size)
                 currentTrip = null
                 return
             }
