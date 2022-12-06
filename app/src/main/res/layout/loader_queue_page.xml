@@ -12,8 +12,8 @@
         android:gravity="top">
         <include layout="@layout/loader_top"/>
         <ScrollView
-            android:paddingHorizontal="5dp"
-            android:layout_marginTop="5dp"
+            android:paddingHorizontal="10dp"
+            android:layout_marginTop="10dp"
             android:layout_width="match_parent"
             android:layout_height="fill_parent">
             <LinearLayout

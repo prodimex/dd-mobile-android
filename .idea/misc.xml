@@ -4,14 +4,18 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Work/ddmoban/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.1725" />
+        <entry key="..\:/Work/ddmoban/app/src/main/res/drawable/button_background.xml" value="0.237" />
         <entry key="..\:/Work/ddmoban/app/src/main/res/drawable/ic_launcher_background.xml" value="0.223" />
         <entry key="..\:/Work/ddmoban/app/src/main/res/drawable/ic_prodimex_logo_108.xml" value="0.1725" />
+        <entry key="..\:/Work/ddmoban/app/src/main/res/drawable/loader_list_item.xml" value="0.237" />
         <entry key="..\:/Work/ddmoban/app/src/main/res/drawable/preloader_shape_bg.xml" value="0.1965" />
+        <entry key="..\:/Work/ddmoban/app/src/main/res/layout/alert_layout.xml" value="0.4114583333333333" />
         <entry key="..\:/Work/ddmoban/app/src/main/res/layout/app_version.xml" value="0.22395833333333334" />
         <entry key="..\:/Work/ddmoban/app/src/main/res/layout/driver_block.xml" value="0.225" />
         <entry key="..\:/Work/ddmoban/app/src/main/res/layout/driver_bottom.xml" value="0.225" />
         <entry key="..\:/Work/ddmoban/app/src/main/res/layout/driver_enter_page.xml" value="0.225" />
         <entry key="..\:/Work/ddmoban/app/src/main/res/layout/driver_login_password_actioons.xml" value="0.225" />
+        <entry key="..\:/Work/ddmoban/app/src/main/res/layout/driver_login_request_password_actions.xml" value="0.4114583333333333" />
         <entry key="..\:/Work/ddmoban/app/src/main/res/layout/driver_profile_page.xml" value="0.225" />
         <entry key="..\:/Work/ddmoban/app/src/main/res/layout/driver_settings_page.xml" value="0.225" />
         <entry key="..\:/Work/ddmoban/app/src/main/res/layout/driver_trip_page.xml" value="0.225" />
@@ -21,6 +25,7 @@
         <entry key="..\:/Work/ddmoban/app/src/main/res/layout/loader_queue_page.xml" value="0.225" />
         <entry key="..\:/Work/ddmoban/app/src/main/res/layout/loader_settings_page.xml" value="0.225" />
         <entry key="..\:/Work/ddmoban/app/src/main/res/layout/loader_top.xml" value="0.225" />
+        <entry key="..\:/Work/ddmoban/app/src/main/res/layout/main.xml" value="0.4114583333333333" />
         <entry key="..\:/Work/ddmoban/app/src/main/res/layout/queue_driver_list_item.xml" value="0.421875" />
         <entry key="..\:/Work/ddmoban/app/src/main/res/layout/role_selector.xml" value="0.225" />
         <entry key="..\:/Work/ddmoban/app/src/main/res/layout/root_layout.xml" value="0.24427083333333333" />

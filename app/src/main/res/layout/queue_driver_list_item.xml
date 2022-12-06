@@ -3,89 +3,100 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:paddingHorizontal="20dp"
-    android:padding="10dp"
-    android:background="@color/gray"
-    android:layout_marginBottom="100dp"
+    android:paddingHorizontal="10dp"
+    android:paddingTop="5dp"
+    android:background="@drawable/loader_list_item_background"
     android:orientation="vertical">
-
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        >
-        <LinearLayout
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/loader_car_number"
             android:layout_width="wrap_content"
+            android:textColor="@color/black"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:orientation="vertical">
-            <LinearLayout
-                android:id="@+id/loader_driver_preloader"
+            android:textSize="18dp"
+            android:text="0001: H482EF 56"/>
+        <TextView
+            android:id="@+id/loader_block_driver_name"
+            android:layout_width="wrap_content"
+            android:textColor="@color/text_gray"
+            android:layout_height="wrap_content"
+            android:textSize="16dp"
+            android:text="Водителев Водитель Водителевич"/>
+        <TextView
+            android:id="@+id/loader_queue_driver_fio"
+            android:layout_width="wrap_content"
+            android:textColor="@color/black"
+            android:layout_height="wrap_content"
+            android:textSize="14dp"
+            android:text="@string/preview_text"/>
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="10dp">
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:orientation="vertical">
+                <LinearLayout
+                    android:id="@+id/loader_driver_preloader"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14dp"
+                        android:textColor="@color/text_gray"
+                        android:text="@string/taking_driver_date"/>
+                    <ImageView
+                        android:id="@+id/loader_driver_preloader_image"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_centerInParent="true"
+                        android:layout_marginTop="7dp"
+                        android:layout_marginLeft="15dp"
+                        app:srcCompat="@drawable/preloader"
+                        app:tint="@color/button_background_press"/>
+                </LinearLayout>
+            </RelativeLayout>
+
+            <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
-                <TextView
+
+                <LinearLayout
+                    android:id="@+id/loader_driver_actions"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="18dp"
-                    android:textColor="@color/text_gray"
-                    android:text="@string/taking_driver_date"/>
-                <ImageView
-                    android:id="@+id/loader_driver_preloader_image"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_centerInParent="true"
-                    android:layout_marginTop="7dp"
-                    android:layout_marginLeft="15dp"
-                    app:srcCompat="@drawable/preloader"
-                    app:tint="@color/button_background_press"/>
-            </LinearLayout>
-            <LinearLayout
-                android:id="@+id/loader_driver_actions"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true">
-                <Button
-                    android:id="@+id/disconnect_button"
-                    android:layout_width="120dp"
-                    android:layout_height="48dp"
-                    android:layout_marginRight="5dp"
-                    android:background="@drawable/button_background_red"
-                    android:text="@string/disagree"
-                    android:textColor="@color/white"
-                    android:textSize="14sp" />
-                <Button
-                    android:id="@+id/connect_button"
-                    android:layout_width="120dp"
-                    android:layout_height="48dp"
-                    android:background="@drawable/button_background"
-                    android:text="@string/go_to_load"
-                    android:textColor="@color/white"
-                    android:layout_toRightOf="@id/connect_button"
-                    android:textSize="14sp" />
-            </LinearLayout>
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            >
-            <TextView
-                android:id="@+id/loader_queue_driver_id"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/black"
-                android:text="@string/preview_text"/>
-            <TextView
-                android:id="@+id/loader_queue_driver_fio"
-                android:layout_width="wrap_content"
-                android:textColor="@color/black"
-                android:layout_height="wrap_content"
-                android:text="@string/preview_text"/>
-            <TextView
-                android:id="@+id/loader_queue_driver_status"
-                android:layout_width="wrap_content"
-                android:textColor="@color/black"
-                android:layout_height="wrap_content"
-                android:text="@string/preview_text"/>
-        </LinearLayout>
-    </RelativeLayout>
+                    android:layout_alignParentRight="true">
+
+                    <Button
+                        android:id="@+id/disconnect_button"
+                        android:layout_width="100dp"
+                        android:layout_height="48dp"
+                        android:layout_marginRight="5dp"
+                        android:background="@drawable/button_background_red"
+                        android:text="@string/disagree"
+                        android:textColor="@color/white"
+                        android:textSize="12dp" />
+
+                    <Button
+                        android:id="@+id/connect_button"
+                        android:layout_width="100dp"
+                        android:layout_height="48dp"
+                        android:layout_toRightOf="@id/connect_button"
+                        android:background="@drawable/button_background"
+                        android:text="@string/go_to_load"
+                        android:textColor="@color/white"
+                        android:textSize="12dp" />
+                </LinearLayout>
+            </RelativeLayout>
+
+        </RelativeLayout>
+    </LinearLayout>
+
 </LinearLayout>

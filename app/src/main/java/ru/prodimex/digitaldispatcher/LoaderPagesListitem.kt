@@ -1,5 +1,7 @@
 package ru.prodimex.digitaldispatcher
 
+import android.os.Build
+import android.text.Html
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.LinearInterpolator
@@ -29,7 +31,7 @@ class LoaderPagesListitem(_number:String) {
             name = cacheData["name"].toString()
             patronymic = cacheData["patronymic"].toString()
         }
-        space.minimumHeight = 7
+        space.minimumHeight = 12
         updateView()
         LoaderAppController.driversOnFieldByShortCut[shortCut] = this
 
@@ -169,6 +171,8 @@ class LoaderPagesListitem(_number:String) {
 
         if(uuid.indexOf(Dict.IM_LOADED_AND_GO_TO_FACTORY) == 0 && driverState == Dict.YOU_LOADED_GO_TO_FACTORY) {
             setImInQueueAndWait(Main.LOADER_CANCELLED_PAGE, "Погрузка успешно завершена")
+            PAGE_ID = Main.LOADER_CANCELLED_PAGE
+            Beacons.killBeacon(currentBeacon)
         }
     }
 
@@ -208,19 +212,34 @@ class LoaderPagesListitem(_number:String) {
     }
 
     fun updateView() {
-        view.findViewById<TextView>(R.id.loader_queue_driver_id).text = shortCut + ": " + number
-        view.findViewById<TextView>(R.id.loader_queue_driver_fio).text = "$surname $name $patronymic"
-        view.findViewById<TextView>(R.id.loader_queue_driver_status).text = "$driverStatus"
+        setText(R.id.loader_car_number, "<b>$shortCut: $number</b>")
+        setText(R.id.loader_block_driver_name, "<b>$surname $name $patronymic</b>")
+
+        setText(R.id.loader_queue_driver_fio, "$driverStatus $PAGE_ID")
 
         if(PAGE_ID == Main.LOADER_LOADED_PAGE) {
             view.findViewById<Button>(R.id.disconnect_button).text = "В ОЧЕРЕДЬ"
             view.findViewById<Button>(R.id.connect_button).text = "ПОГРУЖЕН"
+
+            view.findViewById<Button>(R.id.disconnect_button).visibility = View.VISIBLE
+            view.findViewById<Button>(R.id.connect_button).visibility = View.VISIBLE
         } else if(PAGE_ID == Main.LOADER_QUEUE_PAGE) {
             view.findViewById<Button>(R.id.disconnect_button).text = "ОТКАЗАТЬ"
             view.findViewById<Button>(R.id.connect_button).text = "ЗАГРУЗИТЬ"
+
+            view.findViewById<Button>(R.id.disconnect_button).visibility = View.VISIBLE
+            view.findViewById<Button>(R.id.connect_button).visibility = View.VISIBLE
         } else {
             view.findViewById<Button>(R.id.disconnect_button).visibility = View.GONE
             view.findViewById<Button>(R.id.connect_button).visibility = View.GONE
+        }
+    }
+
+    fun setText(_id:Int, _text:String) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            (view.findViewById<TextView>(_id)).text = Html.fromHtml(_text, Html.FROM_HTML_MODE_COMPACT)
+        } else {
+            (view.findViewById<TextView>(_id)).text = Html.fromHtml(_text)
         }
     }
 }

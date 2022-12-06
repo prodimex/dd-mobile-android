@@ -11,6 +11,7 @@
     <color name="gray">#FFCCCCCC</color>
     <color name="debug">#FF2566DC</color>
     <color name="button_background">#FF0079ff</color>
+    <color name="loader_list_item_background">#FFdadada</color>
     <color name="button_background_press">#FF4aa2ff</color>
     <color name="button_background_red">#ff9D2623</color>
     <color name="button_background_red_press">#ffbD4643</color>

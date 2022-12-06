@@ -57,6 +57,8 @@ class DriverTripPage:DriverAppController() {
                 if(_response["responseCode"] == "401") {
                     Main.setParam("driverLoggedOuted", "")
                     switchTopage(Main.DRIVER_LOGIN_PAGE)
+                    Beacons.killAllBeacons()
+                    Beacons.stopScan()
                     PopupManager.showAlert("Авторизация утеряна, возможно имел место вход с другого устройства.")
                     showErrorByCode(_response)
                     return
@@ -153,6 +155,9 @@ class DriverTripPage:DriverAppController() {
     }
 
     fun showUpdateTripInfo() {
+        if(UserData.currentTripStatus > 2)
+            Beacons.killAllBeacons()
+
         if(currentTripState == 0 || currentTripState != UserData.currentTripStatus) {
             when(UserData.currentTripStatus) {
                 1, 2, 3, 4, 6 -> {

@@ -164,8 +164,6 @@ open class DriverAppController:AppController() {
         showAssignedStateActions()
     }
 
-
-
     fun returnToQueue() {
         if(DriverTripPage.currentRangingState == Dict.IM_WAITING_FOR_LOADER_SIGNAL)
             return
