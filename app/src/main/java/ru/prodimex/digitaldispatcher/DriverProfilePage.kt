@@ -22,8 +22,6 @@ class DriverProfilePage:DriverAppController() {
         setOnClick(R.id.profile_page_exit) {
             Main.setParam("driverLoggedOuted", "")
             switchTopage(Main.DRIVER_LOGIN_PAGE)
-            Beacons.killAllBeacons()
-            Beacons.stopScan()
         }
     }
 }

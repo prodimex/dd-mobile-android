@@ -29,6 +29,7 @@ class UpdateApp(_apkUrl:String, _scene:UpdatePage): AsyncTask<String, Int, Strin
         values[0]?.let { scene.showDownloadProgress(it) }
         Main.log(values)
     }
+    
     override fun doInBackground(vararg p0:String?):String {
         try {
             var url = URL(apkUrl)

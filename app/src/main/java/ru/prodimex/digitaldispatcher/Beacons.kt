@@ -26,6 +26,7 @@ class Beacons {
             if(initialized)
                 return
 
+            controller = null
             initialized = true
 
             beaconManager = BeaconManager.getInstanceForApplication(Main.main)
@@ -72,9 +73,8 @@ class Beacons {
             beaconManager.startMonitoring(region)
             beaconManager.startRangingBeacons(region)
 
-
             if(_immortal_uuid != null)
-                immortalBeacon = createBeacon(_immortal_uuid!!, true)
+                immortalBeacon = createBeaconTransmitter(_immortal_uuid!!)
         }
 
         fun stopScan() {
@@ -92,8 +92,7 @@ class Beacons {
                 immortalBeacon = null
             }
         }
-
-        fun createBeacon(_uuid:String, _immortal_beacon:Boolean = false): BeaconTransmitter {
+        private fun createBeaconTransmitter(_uuid:String): BeaconTransmitter {
             makeFarmCode()
             Main.log("createBeacon uuid $_uuid")
             Main.log("createBeacon id2+id3 ${beaconFarmCode.slice(0..4) + beaconFarmCode.slice(5..9)}")
@@ -165,11 +164,18 @@ class Beacons {
                     Main.log("Success start advertising")
                 }
             })
+            return beaconTransmitter
+        }
+        fun createBeacon(_uuid:String, _immortal_beacon:Boolean = false) {
+            if(beaconTransmitters.contains(_uuid)) {
+                Main.log("BEACON $_uuid ALREADY CREATED")
+                return
+            }
+
+            val beaconTransmitter = createBeaconTransmitter(_uuid)
 
             if(!_immortal_beacon)
                 beaconTransmitters[_uuid] = beaconTransmitter
-
-            return beaconTransmitter
         }
 
         fun killBeacon(_uuid: String) {

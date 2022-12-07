@@ -123,7 +123,18 @@ class Main : AppCompatActivity() {
         when (pageId) {
             TRIP_PAGE -> DriverTripPage().afterInit(TRIP_PAGE)
             PROFILE_PAGE -> DriverProfilePage().afterInit(PROFILE_PAGE)
-            DRIVER_LOGIN_PAGE -> DriverLoginPage().afterInit(DRIVER_LOGIN_PAGE)
+            DRIVER_LOGIN_PAGE -> {
+                Beacons.killAllBeacons()
+                Beacons.stopScan()
+                UserData.tripData = null
+                UserData.currentTripStatus = 0
+                if(Beacons.immortalBeacon != null) {
+                    Beacons.immortalBeacon!!.stopAdvertising()
+                    Beacons.immortalBeacon = null
+                }
+
+                DriverLoginPage().afterInit(DRIVER_LOGIN_PAGE)
+            }
             DRIVER_SETTINGS_PAGE -> DriverSettingsPage().afterInit(DRIVER_SETTINGS_PAGE)
 
             BEACON_SCANNER_PAGE -> BeaconScannerPage().afterInit(BEACON_SCANNER_PAGE)

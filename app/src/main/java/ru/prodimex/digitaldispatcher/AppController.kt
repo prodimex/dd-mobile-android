@@ -35,7 +35,6 @@ open class AppController {
     open fun switchTopage(_pageId:String) {
         if(currentPageId == _pageId)
             return
-
         Main.log("PAGE SWITCHED TO: $currentPageId")
         pageKilled = true
         scene.showPage(_pageId)

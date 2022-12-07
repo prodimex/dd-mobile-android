@@ -48,7 +48,9 @@ open class LoaderAppController:AppController() {
         fun makeReconnectBeacon(_shortcut:String) {
             var uuid = Beacons.completeRawUUID("${Dict.YOU_NEED_TO_RECONNECT}$_shortcut")
             Main.log("makeReconnectBeacon $uuid")
-            reconnectShortcuts[_shortcut] = Beacons.createBeacon(uuid)
+            Beacons.createBeacon(uuid)
+            reconnectShortcuts[_shortcut] = Beacons.beaconTransmitters[uuid]!!
+
         }
 
         fun processTheSignal(_uuid:String) {

@@ -50,6 +50,7 @@ class DriverTripPage:DriverAppController() {
 
     fun pingTrip() {
         pingCounter++
+        Main.log("pingCounter $pingCounter")
         HTTPRequest("users/trip", _requestMethod = "GET", _callback = fun (_response:HashMap<String, Any>) {
             Main.log(" - ping - ")
             Main.log(_response)
@@ -57,8 +58,6 @@ class DriverTripPage:DriverAppController() {
                 if(_response["responseCode"] == "401") {
                     Main.setParam("driverLoggedOuted", "")
                     switchTopage(Main.DRIVER_LOGIN_PAGE)
-                    Beacons.killAllBeacons()
-                    Beacons.stopScan()
                     PopupManager.showAlert("Авторизация утеряна, возможно имел место вход с другого устройства.")
                     showErrorByCode(_response)
                     return
