@@ -11,6 +11,8 @@ open class LoaderAppController:AppController() {
         var driverShortCutMem = 0
 
         var driversOnField:MutableMap<String, LoaderPagesListitem> = hashMapOf()
+        var driversOnArchive:MutableMap<String, LoaderPagesListitem> = hashMapOf()
+
         var driversOnFieldByShortCut:MutableMap<String, LoaderPagesListitem> = hashMapOf()
         var reconnectShortcuts:MutableMap<String, BeaconTransmitter> = hashMapOf()
 
@@ -118,6 +120,12 @@ open class LoaderAppController:AppController() {
                 listContainer.removeView(it.value.space)
             }
         }
+        driversOnArchive.forEach {
+            if(it.value.view.parent != null) {
+                listContainer.removeView(it.value.view)
+                listContainer.removeView(it.value.space)
+            }
+        }
 
         super.switchTopage(_pageId)
     }
@@ -132,24 +140,30 @@ open class LoaderAppController:AppController() {
     }
 
     var dc = HashMap<String, Int>() // счетчики водителей
+    private fun processDriverOnPage(driver:LoaderPagesListitem) {
+        driver.updateView()
+        if(!dc.contains(driver.PAGE_ID))
+            dc[driver.PAGE_ID] = 0
+
+        dc[driver.PAGE_ID] = dc[driver.PAGE_ID]!! + 1
+
+        if(driver.view.parent != listContainer && driver.PAGE_ID == currentPageId) {
+            listContainer.addView(driver.view)
+            listContainer.addView(driver.space)
+        }
+        if(driver.view.parent == listContainer && driver.PAGE_ID != currentPageId) {
+            listContainer.removeView(driver.view)
+            listContainer.removeView(driver.space)
+        }
+    }
     override fun updateView() {
         super.updateView()
         dc = HashMap()
         driversOnField.forEach {
-            it.value.updateView()
-            if(!dc.contains(it.value.PAGE_ID))
-                dc[it.value.PAGE_ID] = 0
-
-            dc[it.value.PAGE_ID] = dc[it.value.PAGE_ID]!! + 1
-
-            if(it.value.view.parent != listContainer && it.value.PAGE_ID == currentPageId) {
-                listContainer.addView(it.value.view)
-                listContainer.addView(it.value.space)
-            }
-            if(it.value.view.parent == listContainer && it.value.PAGE_ID != currentPageId) {
-                listContainer.removeView(it.value.view)
-                listContainer.removeView(it.value.space)
-            }
+            processDriverOnPage(it.value)
+        }
+        driversOnArchive.forEach {
+            processDriverOnPage(it.value)
         }
 
         scene.findViewById<TextView>(R.id.queue_counter_text).text =

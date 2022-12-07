@@ -190,6 +190,8 @@ open class DriverAppController:AppController() {
             _args = hashMapOf("id" to UserData.tripId, "status" to "loaded", "loggingTime" to "Mon Oct 31 2022 08:38:22 GMT+0300"),
             _callback = fun(_resp: HashMap<String, Any>) {
                 Main.log(_resp)
+                DriverTripPage.toLoaderConnected = false
+                DriverTripPage.toLoaderConnectionStarted = false
             }).execute()
         onLoading = false
         showAssignedStateActions()

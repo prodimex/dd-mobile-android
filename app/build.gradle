@@ -10,8 +10,8 @@ android {
         applicationId "ru.prodimex.digitaldispatcher"
         minSdk 21
         targetSdk 29
-        versionCode 5048
-        versionName "5.0.48"
+        versionCode 5051
+        versionName "5.0.51"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

@@ -1,5 +1,6 @@
 package ru.prodimex.digitaldispatcher
 
+import android.content.Loader
 import android.os.Build
 import android.text.Html
 import android.view.View
@@ -163,6 +164,9 @@ class LoaderPagesListitem(_number:String) {
 
         if(uuid.indexOf(Dict.IM_DISMISSED_BUT_ON_FIELD) == 0 && driverState == Dict.DISMISS_FROM_QUEUE) {
             setImInQueueAndWait(Main.LOADER_CANCELLED_PAGE, "Погрузка запрещена")
+
+            LoaderAppController.driversOnField.remove(number)
+            LoaderAppController.driversOnArchive[number] = this
         }
 
         Main.log("=============================================")
@@ -215,7 +219,7 @@ class LoaderPagesListitem(_number:String) {
         setText(R.id.loader_car_number, "<b>$shortCut: $number</b>")
         setText(R.id.loader_block_driver_name, "<b>$surname $name $patronymic</b>")
 
-        setText(R.id.loader_queue_driver_fio, "$driverStatus $PAGE_ID")
+        setText(R.id.loader_queue_driver_fio, "$driverStatus")
 
         if(PAGE_ID == Main.LOADER_LOADED_PAGE) {
             view.findViewById<Button>(R.id.disconnect_button).text = "В ОЧЕРЕДЬ"
