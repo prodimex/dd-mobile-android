@@ -55,6 +55,7 @@ class UserData {
 
             base_farm_name = base_farm["name"].toString()
             base_farm_index = base_farm["alternative_name"].toString()
+            tripFieldindex = base_farm["alternative_name"].toString()
 
             carsNumbers = ""
             if(cars.size > 0) {

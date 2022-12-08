@@ -68,6 +68,27 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
+                <RelativeLayout
+                    android:id="@+id/online_indicator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp">
+                    <Button
+                        android:id="@+id/online_indicator_dot"
+                        android:layout_width="11dp"
+                        android:layout_height="11dp"
+                        android:layout_marginLeft="2dp"
+                        android:layout_marginTop="37dp"
+                        android:background="@drawable/online_circle"></Button>
+                    <TextView
+                        android:id="@+id/online_indicator_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="17dp"
+                        android:layout_marginTop="34dp"
+                        android:text="pingCounter"
+                        android:textColor="@color/text_gray"
+                        android:textSize="12dp" />
+                </RelativeLayout>
                 <LinearLayout
                     android:id="@+id/loader_driver_actions"
                     android:layout_width="wrap_content"
@@ -83,7 +104,6 @@
                         android:text="@string/disagree"
                         android:textColor="@color/white"
                         android:textSize="12dp" />
-
                     <Button
                         android:id="@+id/connect_button"
                         android:layout_width="100dp"

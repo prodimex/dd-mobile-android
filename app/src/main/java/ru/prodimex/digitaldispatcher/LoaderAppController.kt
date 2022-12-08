@@ -55,6 +55,7 @@ open class LoaderAppController:AppController() {
 
         }
 
+        var driversPings:MutableMap<String, Boolean> = hashMapOf()
         fun processTheSignal(_uuid:String) {
             Main.log("processTheSignal $_uuid - ${_uuid.indexOf(Dict.IM_WAITING_FOR_LOADER_SIGNAL)}")
 
@@ -86,6 +87,7 @@ open class LoaderAppController:AppController() {
                 Main.log("Only shorcutted signal $shortCut ${driversOnFieldByShortCut.contains(shortCut)}")
                 if (driversOnFieldByShortCut.contains(shortCut)) {
                     driversOnFieldByShortCut[shortCut]!!.receiveUIIDs(_uuid)
+                    driversPings[shortCut] = true
                 } else {
                     if(!reconnectShortcuts.contains(shortCut))
                         makeReconnectBeacon(shortCut)
@@ -132,9 +134,18 @@ open class LoaderAppController:AppController() {
 
     override fun scanObserver(beacons: Collection<Beacon>) {
         super.scanObserver(beacons)
+        driversPings.clear()
+        driversOnFieldByShortCut.forEach {
+            driversPings[it.value.shortCut] = false
+        }
         beacons.forEach {
             if(Beacons.beaconFarmCode.indexOf("${it.id2.toString() + it.id3.toString()}") == 0)
                 processTheSignal(it.id1.toString())
+        }
+        driversPings.forEach {
+            if(!it.value) {
+                driversOnFieldByShortCut[it.key]!!.ping()
+            }
         }
         updateView()
     }

@@ -108,6 +108,11 @@ class DriverTripPage:DriverAppController() {
             return
         }
 
+        //currentTripState = 0
+        onLoading = false
+        toLoaderConnected = false
+        toLoaderConnectionStarted = false
+
         takeNewTripStarted = true
         startPreloading()
 

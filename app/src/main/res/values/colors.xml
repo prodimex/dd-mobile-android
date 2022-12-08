@@ -9,6 +9,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="red_silver">#FFf7f3f7</color>
     <color name="gray">#FFCCCCCC</color>
+    <color name="green">#FF65bf26</color>
     <color name="debug">#FF2566DC</color>
     <color name="button_background">#FF0079ff</color>
     <color name="loader_list_item_background">#FFdadada</color>

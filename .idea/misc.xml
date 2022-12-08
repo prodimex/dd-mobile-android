@@ -8,6 +8,8 @@
         <entry key="..\:/Work/ddmoban/app/src/main/res/drawable/ic_launcher_background.xml" value="0.223" />
         <entry key="..\:/Work/ddmoban/app/src/main/res/drawable/ic_prodimex_logo_108.xml" value="0.1725" />
         <entry key="..\:/Work/ddmoban/app/src/main/res/drawable/loader_list_item.xml" value="0.237" />
+        <entry key="..\:/Work/ddmoban/app/src/main/res/drawable/loader_list_item_background.xml" value="0.14" />
+        <entry key="..\:/Work/ddmoban/app/src/main/res/drawable/online_circle.xml" value="0.14" />
         <entry key="..\:/Work/ddmoban/app/src/main/res/drawable/preloader_shape_bg.xml" value="0.1965" />
         <entry key="..\:/Work/ddmoban/app/src/main/res/layout/alert_layout.xml" value="0.4114583333333333" />
         <entry key="..\:/Work/ddmoban/app/src/main/res/layout/app_version.xml" value="0.22395833333333334" />
@@ -31,6 +33,7 @@
         <entry key="..\:/Work/ddmoban/app/src/main/res/layout/root_layout.xml" value="0.24427083333333333" />
         <entry key="..\:/Work/ddmoban/app/src/main/res/layout/scanner_page_layout.xml" value="0.225" />
         <entry key="..\:/Work/ddmoban/app/src/main/res/layout/scanner_page_list_item.xml" value="0.5" />
+        <entry key="..\:/Work/ddmoban/app/src/main/res/layout/trip_actions_trip_not_set.xml" value="0.1875" />
         <entry key="..\:/Work/ddmoban/app/src/main/res/layout/trip_info_block.xml" value="0.27291666666666664" />
         <entry key="..\:/Work/ddmoban/app/src/main/res/layout/update_page.xml" value="0.225" />
         <entry key="..\:/Work/ddmoban/app/src/main/res/layout/yes_no_popup.xml" value="0.421875" />

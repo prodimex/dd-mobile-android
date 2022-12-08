@@ -81,7 +81,12 @@ class LoaderPagesListitem(_number:String) {
         Beacons.createBeacon(currentBeacon)
     }
 
+    var pingCounter = 0
+    fun ping() {
+        pingCounter ++
+    }
     fun receiveUIIDs(_uuid:String) {
+        pingCounter = 0
         var uuid = _uuid
         if(uuid.indexOf(Dict.SEND_DRIVER_INFO_TO_LOADER) == 0
             && driverState == Dict.GIVE_SHORTCUT_TO_DRIVER_AND_RETURN_DRIVER_INFO) {
@@ -221,22 +226,24 @@ class LoaderPagesListitem(_number:String) {
 
         setText(R.id.loader_queue_driver_fio, "$driverStatus")
 
+        view.findViewById<Button>(R.id.disconnect_button).visibility = View.VISIBLE
+        view.findViewById<Button>(R.id.connect_button).visibility = View.VISIBLE
+        view.findViewById<RelativeLayout>(R.id.online_indicator).visibility = View.VISIBLE
+
         if(PAGE_ID == Main.LOADER_LOADED_PAGE) {
             view.findViewById<Button>(R.id.disconnect_button).text = "В ОЧЕРЕДЬ"
             view.findViewById<Button>(R.id.connect_button).text = "ПОГРУЖЕН"
-
-            view.findViewById<Button>(R.id.disconnect_button).visibility = View.VISIBLE
-            view.findViewById<Button>(R.id.connect_button).visibility = View.VISIBLE
         } else if(PAGE_ID == Main.LOADER_QUEUE_PAGE) {
             view.findViewById<Button>(R.id.disconnect_button).text = "ОТКАЗАТЬ"
             view.findViewById<Button>(R.id.connect_button).text = "ЗАГРУЗИТЬ"
-
-            view.findViewById<Button>(R.id.disconnect_button).visibility = View.VISIBLE
-            view.findViewById<Button>(R.id.connect_button).visibility = View.VISIBLE
         } else {
             view.findViewById<Button>(R.id.disconnect_button).visibility = View.GONE
             view.findViewById<Button>(R.id.connect_button).visibility = View.GONE
+            view.findViewById<RelativeLayout>(R.id.online_indicator).visibility = View.GONE
         }
+
+        view.findViewById<Button>(R.id.online_indicator_dot).isEnabled = pingCounter <= 5
+        view.findViewById<TextView>(R.id.online_indicator_text).text = if (pingCounter <= 5)  "На связи $pingCounter" else "Связь отсутствует $pingCounter"
     }
 
     fun setText(_id:Int, _text:String) {

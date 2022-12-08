@@ -132,6 +132,9 @@ class Main : AppCompatActivity() {
                     Beacons.immortalBeacon!!.stopAdvertising()
                     Beacons.immortalBeacon = null
                 }
+                DriverAppController.onLoading = false
+                DriverTripPage.toLoaderConnected = false
+                DriverTripPage.toLoaderConnectionStarted = false
 
                 DriverLoginPage().afterInit(DRIVER_LOGIN_PAGE)
             }
