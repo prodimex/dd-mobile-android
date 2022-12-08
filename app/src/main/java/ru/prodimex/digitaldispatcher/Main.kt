@@ -8,9 +8,11 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.os.StrictMode
+import android.view.Gravity
 import android.view.View
 import android.widget.Button
 import android.widget.RelativeLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -133,6 +135,7 @@ class Main : AppCompatActivity() {
                     Beacons.immortalBeacon = null
                 }
                 DriverAppController.onLoading = false
+                DriverAppController.loaderFinded = false
                 DriverTripPage.toLoaderConnected = false
                 DriverTripPage.toLoaderConnectionStarted = false
 
@@ -196,7 +199,12 @@ class Main : AppCompatActivity() {
         //unregisterReceiver(mReceiver)
     }
 
-    fun toastMe(_str:String) { Toast.makeText(this, _str, Toast.LENGTH_SHORT).show() }
+    fun toastMe(_str:String) {
+        var toast = Toast.makeText(this, _str, Toast.LENGTH_SHORT)
+        val v = toast.view!!.findViewById<View>(android.R.id.message) as TextView
+        if (v != null) v.gravity = Gravity.CENTER
+        toast.show()
+    }
 
     fun setOnClick(_btnId:Int, _callback:(()->Unit)) {
         (findViewById<Button>(_btnId)).setOnClickListener { _callback.invoke() }

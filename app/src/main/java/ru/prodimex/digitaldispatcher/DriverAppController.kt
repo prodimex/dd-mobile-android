@@ -138,6 +138,7 @@ open class DriverAppController:AppController() {
                     DriverTripPage.toLoaderConnectionStarted = true
                     DriverTripPage.toLoaderConnected = false
                     DriverTripPage.currentRangingState = Dict.CONNECT_TO_LOADER_SIGNAL
+                    loaderFinded = false
                     showToLoaderConnectionActions()
 
                     var uuid = DriverTripPage.currentRangingState + currentCarNumber.length.let { Integer.toHexString(it).uppercase()} + numberCode
