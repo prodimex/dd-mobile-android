@@ -112,6 +112,8 @@ class DriverTripPage:DriverAppController() {
         onLoading = false
         toLoaderConnected = false
         toLoaderConnectionStarted = false
+        currentRangingState == ""
+        loaderFinded = false
 
         takeNewTripStarted = true
         startPreloading()

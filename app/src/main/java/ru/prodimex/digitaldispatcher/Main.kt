@@ -138,7 +138,7 @@ class Main : AppCompatActivity() {
                 DriverAppController.loaderFinded = false
                 DriverTripPage.toLoaderConnected = false
                 DriverTripPage.toLoaderConnectionStarted = false
-
+                DriverTripPage.currentRangingState = ""
                 DriverLoginPage().afterInit(DRIVER_LOGIN_PAGE)
             }
             DRIVER_SETTINGS_PAGE -> DriverSettingsPage().afterInit(DRIVER_SETTINGS_PAGE)
