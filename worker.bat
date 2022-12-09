@@ -63,12 +63,15 @@ cls
 Echo ===========================================================================
 Echo    [%ESC%[36m 1 %ESC%[0m] Build loader debug app and install and run
 Echo    [%ESC%[36m 11 %ESC%[0m] Prepare debug to upload loader
+Echo    [%ESC%[36m 12 %ESC%[0m] Switch to loader
 Echo.
 Echo    [%ESC%[36m 2 %ESC%[0m] Build driver debug app and install and run
 Echo    [%ESC%[36m 21 %ESC%[0m] Prepare debug to upload driver
+Echo    [%ESC%[36m 22 %ESC%[0m] Switch to driver
 Echo.
 Echo    [%ESC%[36m 3 %ESC%[0m] Build develop debug app and install and run
 Echo    [%ESC%[36m 31 %ESC%[0m] Prepare debug to upload develop
+Echo    [%ESC%[36m 32 %ESC%[0m] Switch to develop
 Echo.
 Echo    [%ESC%[36m 41 %ESC%[0m] Prepare release to upload loader
 Echo    [%ESC%[36m 42 %ESC%[0m] Prepare release to upload driver
@@ -94,12 +97,21 @@ if %Input% == 11 (
     GOTO :COMPILATION_SELECTOR
 )
 
+if %Input% == 12 (
+    CALL :SWITCH_APP_TO_MODE loader
+    GOTO :COMPILATION_SELECTOR
+)
+
 if %Input% == 2 (
     CALL :CHANGE_BUILD_CONFIG driver
     GOTO :DEV_BUILD_AND_INSTALL_AND_RUN
 )
 if %Input% == 21 (
     CALL :BUILD_APP_TO_MODE_BY_VERSION debug driver
+    GOTO :COMPILATION_SELECTOR
+)
+if %Input% == 22 (
+    CALL :SWITCH_APP_TO_MODE driver
     GOTO :COMPILATION_SELECTOR
 )
 
@@ -110,6 +122,10 @@ if %Input% == 3 (
 
 if %Input% == 31 (
     CALL :BUILD_APP_TO_MODE_BY_VERSION debug develop
+    GOTO :COMPILATION_SELECTOR
+)
+if %Input% == 32 (
+    CALL :SWITCH_APP_TO_MODE develop
     GOTO :COMPILATION_SELECTOR
 )
 
@@ -178,6 +194,22 @@ GOTO :COMPILATION_SELECTOR
    :: start cmd /k "cscript /nologo upver.vbs  > .\app\build.txt && cd app && ren build.gradle build.gradle.bkup && del build.gradle.bkup && ren build.txt build.gradle && exit"
 ::)
 
+:SWITCH_APP_TO_MODE
+    Set BuildVersion=%1
+    Echo %ESC%[41m Switch application to %BuildVersion% started %ESC%[0m
+
+    del .\app\src\main\java\ru\prodimex\digitaldispatcher\AppConfig.kt
+    copy .\app\src\main\java\ru\prodimex\digitaldispatcher\configs\%BuildVersion%.txt .\app\src\main\java\ru\prodimex\digitaldispatcher\AppConfig.kt
+
+    del .\app\src\main\res\values\strings.xml
+    Echo .\app\src\main\res\values\%BuildVersion%.xml
+    copy .\app\src\main\java\ru\prodimex\digitaldispatcher\configs\%BuildVersion%.xml .\app\src\main\res\values\strings.xml
+
+    del .\app\src\main\res\drawable-v24\ic_launcher_foreground.xml
+    Echo .\app\src\main\java\ru\prodimex\digitaldispatcher\configs\icon_%BuildVersion%.xml
+    copy .\app\src\main\java\ru\prodimex\digitaldispatcher\configs\icon_%BuildVersion%.xml .\app\src\main\res\drawable-v24\ic_launcher_foreground.xml
+    Echo   %ESC%[42m BUILD CONFIGURATION CHANGED TO %BuildVersion% %ESC%[0m
+EXIT /b
 
 :BUILD_APP_TO_MODE_BY_VERSION
     Set Mode=%1
