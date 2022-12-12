@@ -97,7 +97,7 @@ class Beacons {
             Main.log("createBeacon uuid $_uuid")
             Main.log("createBeacon id2+id3 ${beaconFarmCode.slice(0..4) + beaconFarmCode.slice(5..9)}")
             val beacon = Beacon.Builder().setId1(_uuid).setId2(beaconFarmCode.slice(0..4)).setId3(beaconFarmCode.slice(5..9))
-                .setManufacturer(0x4C).setTxPower(0).build()
+                .setManufacturer(0x4C).setTxPower(-65).build()
 
             /*var bluetoothManager: BluetoothManager = Main.main.applicationContext.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
             var bluetoothAdapter = bluetoothManager.adapter
@@ -151,10 +151,11 @@ class Beacons {
             val beaconTransmitter = BeaconTransmitter(Main.main.applicationContext, beaconParser)
 
             Main.log("beaconTransmitter.advertiseMode ${beaconTransmitter.advertiseMode}")
-            beaconTransmitter.advertiseMode = AdvertiseSettings.ADVERTISE_MODE_LOW_LATENCY
+            beaconTransmitter.advertiseMode = AdvertiseSettings.ADVERTISE_MODE_BALANCED
             beaconTransmitter.advertiseTxPowerLevel = AdvertiseSettings.ADVERTISE_TX_POWER_HIGH
-            Main.log("${beaconTransmitter.advertiseTxPowerLevel} = ${AdvertiseSettings.ADVERTISE_TX_POWER_HIGH}")
-            Main.log("${beaconTransmitter.advertiseMode} = ${AdvertiseSettings.ADVERTISE_MODE_LOW_LATENCY}")
+            Main.log("ADVERTISE_MODE_BALANCED ${beaconTransmitter.advertiseMode} = ${AdvertiseSettings.ADVERTISE_MODE_LOW_LATENCY}")
+            Main.log("ADVERTISE_TX_POWER_HIGH ${beaconTransmitter.advertiseTxPowerLevel} = ${AdvertiseSettings.ADVERTISE_TX_POWER_HIGH}")
+
             //beaconTransmitter.advertiseTxPowerLevel
             beaconTransmitter.startAdvertising(beacon, object : AdvertiseCallback() {
                 override fun onStartFailure(errorCode: Int) {

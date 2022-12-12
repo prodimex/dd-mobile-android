@@ -6,6 +6,9 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import org.altbeacon.beacon.Beacon
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.HashMap
 
 open class DriverAppController:AppController() {
     companion object {
@@ -187,8 +190,12 @@ open class DriverAppController:AppController() {
         Beacons.killAllBeacons()
         Beacons.createBeacon(Beacons.completeRawUUID("${DriverTripPage.currentRangingState}${DriverTripPage.myShortCut}"))
         playAlertSoundAnd("Вы погружены, отправляйтесь на завод.")
+
+        var d = Date()
+        var timeZone = SimpleDateFormat("z", Locale("en")).format(d).replace(":", "")
+        var date = SimpleDateFormat("EEE MMM d yyy HH:mm:ss", Locale("en")).format(d) + " $timeZone"
         HTTPRequest("trips/logs-new",
-            _args = hashMapOf("id" to UserData.tripId, "status" to "loaded", "loggingTime" to "Mon Oct 31 2022 08:38:22 GMT+0300"),
+            _args = hashMapOf("id" to UserData.tripId, "status" to "loaded", "loggingTime" to date),
             _callback = fun(_resp: HashMap<String, Any>) {
                 Main.log(_resp)
                 DriverTripPage.toLoaderConnected = false
