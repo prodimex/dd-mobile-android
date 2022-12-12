@@ -1,5 +1,7 @@
 package ru.prodimex.digitaldispatcher
 
+import org.altbeacon.beacon.Beacon
+
 class LoaderSettingsPage:LoaderAppController() {
     companion object {
 
@@ -25,8 +27,17 @@ class LoaderSettingsPage:LoaderAppController() {
             PopupManager.showAlert("Водители очищены.", "")
         }
 
+        setOnClick(R.id.upload_logs) {
+
+        }
+
         highlightButton(R.id.settings_button)
         highlightIcon(R.id.settings_ico)
+    }
+
+    override fun scanObserver(beacons: Collection<Beacon>) {
+        super.scanObserver(beacons)
+        updateView()
     }
 
     override fun updateView() {
@@ -35,6 +46,7 @@ class LoaderSettingsPage:LoaderAppController() {
         Beacons.beaconTransmitters.forEach {
             text += "${it.key}<br>"
         }
+        text += "маяков в эфире: $beaconsOnAir <br>"
         text += if(Beacons.scanStarted) "Сканирование запущено<br>" else "Сканирование не запущено<br>"
         text += "Код индекса хохяйства: ${Beacons.beaconFarmCode}<br>"
         setText(R.id.settings_debug_text, text)

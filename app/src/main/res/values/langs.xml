@@ -64,6 +64,7 @@
     <string name="change_application_mode"><u>Изменить режим работы приложения</u></string>
     <string name="clear_cache"><u>Очистить кеш</u></string>
     <string name="drop_drivers"><u>Сбросить водителей</u></string>
+    <string name="upload_logs">Выгрузить логи</string>
     <string name="driver_block_info">#1 ФИО: Оолонг Оолонгович Джизус\nСтатус: непонятно</string>
     <string name="enter_phone_hint">Введите номер телефона</string>
     <string name="enter_password_hint">Введите пароль</string>
@@ -84,6 +85,6 @@
     <string name="unload">Разгрузка:</string>
     <string name="unload_preview"><b>11:00 - 11:30</b> вт., 11 октября</string>
 
-    <string name="random_header"><b>Insightful APK Analyzer</b></string>
+    <string name="random_header"><b>Функции отладки</b></string>
     <string name="random_big_text">Find opportunities to optimize your Android app size by inspecting the contents of your app APK file or Android App Bundle. Inspect the manifest file, resources, and DEX files. Compare two APKs or Android App Bundles to see how your app size changed between app versions.</string>
 </resources>

@@ -117,7 +117,13 @@ class LoaderPagesListitem(_number:String) {
                 surname = "${fioArray[0].slice(0..0).uppercase()}${fioArray[0].slice(1 until fioArray[0].length)}"
                 name = "${fioArray[1].slice(0..0).uppercase()}${fioArray[1].slice(1 until fioArray[1].length)}"
                 patronymic = "${fioArray[2].slice(0..0).uppercase()}${fioArray[2].slice(1 until fioArray[2].length)}"
-                LoaderAppController.driversInfoCache[number] = hashMapOf("surname" to surname, "name" to name, "patronymic" to patronymic) //LinkedTreeMap<String, Any>()
+
+                var driverCache = LinkedTreeMap<String, Any>()
+                driverCache["surname"] = surname
+                driverCache["name"] = name
+                driverCache["patronymic"] = patronymic
+                LoaderAppController.driversInfoCache[number] = driverCache
+
                 Main.setParam("driversInfoCache", Gson().toJson(LoaderAppController.driversInfoCache))
 
                 dataLine.forEach { fio += Dict.farmIndexCharByHex }

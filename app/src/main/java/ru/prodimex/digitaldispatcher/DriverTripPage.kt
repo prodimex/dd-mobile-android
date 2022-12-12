@@ -112,7 +112,7 @@ class DriverTripPage:DriverAppController() {
         onLoading = false
         toLoaderConnected = false
         toLoaderConnectionStarted = false
-        currentRangingState == ""
+        currentRangingState = ""
         loaderFinded = false
 
         takeNewTripStarted = true
@@ -280,6 +280,7 @@ class DriverTripPage:DriverAppController() {
             scene.findViewById<LinearLayout>(R.id.trip_page_actions_container).addView(actionsView)
             setOnClick(R.id.disconnect_from_loader_button) {
                 currentRangingState = ""
+                loaderFinded = true
                 Beacons.killAllBeacons()
                 showAssignedStateActions()
             }

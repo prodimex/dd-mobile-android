@@ -13,8 +13,9 @@ open class AppController {
     var scanStarted = false
     var rootLayer:RelativeLayout = scene.findViewById(R.id.root_layer)
     var currentPageId = ""
+    var beaconsOnAir = 0
     open fun scanObserver(beacons:Collection<Beacon>) {
-
+        beaconsOnAir = beacons.size
     }
 
     var pageKilled = false
