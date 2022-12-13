@@ -54,6 +54,14 @@
                     android:text="10/10"
                     />
             </LinearLayout>
+            <TextView
+                android:id="@+id/scanner_stats"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="10dp"
+                android:text="beaconManager.foregroundBetweenScanPeriod"
+                android:textColor="@color/text_gray">
+            </TextView>
             <ScrollView
                 android:layout_marginHorizontal="5dp"
                 android:layout_width="match_parent"

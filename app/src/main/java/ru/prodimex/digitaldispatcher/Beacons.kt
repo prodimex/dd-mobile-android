@@ -1,11 +1,17 @@
 package ru.prodimex.digitaldispatcher
 
 import android.Manifest
+import android.bluetooth.BluetoothManager
 import android.bluetooth.le.AdvertiseCallback
+import android.bluetooth.le.AdvertiseData
 import android.bluetooth.le.AdvertiseSettings
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
+import android.os.ParcelUuid
+import androidx.core.app.ActivityCompat
 import org.altbeacon.beacon.*
+import java.util.*
 
 
 class Beacons {
@@ -31,7 +37,7 @@ class Beacons {
 
             beaconManager = BeaconManager.getInstanceForApplication(Main.main)
             beaconManager.beaconParsers.clear()
-            beaconManager.beaconParsers.add(BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"))
+            beaconManager.beaconParsers.add(beaconParser)
 
             beaconManager.getRegionViewModel(region).rangedBeacons.observe(Main.main) { beacons ->
                 if(controller != null)
@@ -97,9 +103,29 @@ class Beacons {
             Main.log("createBeacon uuid $_uuid")
             Main.log("createBeacon id2+id3 ${beaconFarmCode.slice(0..4) + beaconFarmCode.slice(5..9)}")
             val beacon = Beacon.Builder().setId1(_uuid).setId2(beaconFarmCode.slice(0..4)).setId3(beaconFarmCode.slice(5..9))
-                .setManufacturer(0x4C).setTxPower(-65).build()
+                //.setManufacturer(0x4C).setTxPower(-65).build()
+                .setManufacturer(0x000C).setTxPower(-65).build()
 
-            /*var bluetoothManager: BluetoothManager = Main.main.applicationContext.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
+                        val beaconTransmitter = BeaconTransmitter(Main.main.applicationContext, beaconParser)
+
+            Main.log("beaconTransmitter.advertiseMode ${beaconTransmitter.advertiseMode}")
+            beaconTransmitter.advertiseMode = AdvertiseSettings.ADVERTISE_MODE_BALANCED
+            beaconTransmitter.advertiseTxPowerLevel = AdvertiseSettings.ADVERTISE_TX_POWER_HIGH
+            Main.log("ADVERTISE_MODE_BALANCED ${beaconTransmitter.advertiseMode} = ${AdvertiseSettings.ADVERTISE_MODE_LOW_LATENCY}")
+            Main.log("ADVERTISE_TX_POWER_HIGH ${beaconTransmitter.advertiseTxPowerLevel} = ${AdvertiseSettings.ADVERTISE_TX_POWER_HIGH}")
+
+            beaconTransmitter.startAdvertising(beacon, object : AdvertiseCallback() {
+                override fun onStartFailure(errorCode: Int) {
+                    Main.log("Error from start advertising $errorCode")
+                }
+                override fun onStartSuccess(settingsInEffect: AdvertiseSettings) {
+                    Main.log("Success start advertising")
+                }
+            })
+
+            /*
+            var bluetoothManager: BluetoothManager = Main.main.applicationContext.getSystemService(
+                Context.BLUETOOTH_SERVICE) as BluetoothManager
             var bluetoothAdapter = bluetoothManager.adapter
             var bluetoothAdvertiser = bluetoothAdapter.bluetoothLeAdvertiser
 
@@ -115,6 +141,17 @@ class Beacons {
                 .setConnectable(false)
                 .build()
 
+
+            val pUuid = ParcelUuid(UUID.fromString("cdb7950d-73f1-4d4d-8e47-c090502dbd63"))
+            val pServiceDataUuid = ParcelUuid(UUID.fromString("0000950d-0000-1000-8000-00805f9b34fb"))
+
+            var adData: AdvertiseData = AdvertiseData.Builder()
+                .setIncludeDeviceName(false)
+                .setIncludeTxPowerLevel(false)
+                .addServiceUuid(pUuid)
+                .addServiceData(pServiceDataUuid, "D".toByteArray())
+                .build()
+
             if (ActivityCompat.checkSelfPermission( Main.main.applicationContext, Manifest.permission.BLUETOOTH_ADVERTISE ) != PackageManager.PERMISSION_GRANTED ) {
                 // TODO: Consider calling
                 //    ActivityCompat#requestPermissions
@@ -125,15 +162,6 @@ class Beacons {
                 // for ActivityCompat#requestPermissions for more details.
                 //return
             }
-            val pUuid = ParcelUuid(UUID.fromString("cdb7950d-73f1-4d4d-8e47-c090502dbd63"))
-            val pServiceDataUuid = ParcelUuid(UUID.fromString("0000950d-0000-1000-8000-00805f9b34fb"))
-
-            var adData:AdvertiseData = AdvertiseData.Builder()
-                .setIncludeDeviceName(false)
-                .setIncludeTxPowerLevel(false)
-                .addServiceUuid(pUuid)
-                .addServiceData(pServiceDataUuid, "D".toByteArray())
-                .build()
             bluetoothAdvertiser.startAdvertising(settings, adData, object : AdvertiseCallback() {
                 override fun onStartFailure(errorCode: Int) {
                     Main.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA $errorCode")
@@ -141,30 +169,17 @@ class Beacons {
                 override fun onStartSuccess(settingsInEffect: AdvertiseSettings) {
                     Main.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA Success start advertising")
                 }
-            });*/
+            })*/
+
+                /*.startAdvertising(settings, adData, object : AdvertiseCallback() {
+
+                })*/
 
 
             //BluetoothManager bluetoothManager = (BluetoothManager) this.getApplicationContext().getSystemService(Context.BLUETOOTH_SERVICE);
             //BluetoothAdapter ;
             //BluetoothLeAdvertiser bluetoothAdvertiser = bluetoothAdapter.getBluetoothLeAdvertiser()
 
-            val beaconTransmitter = BeaconTransmitter(Main.main.applicationContext, beaconParser)
-
-            Main.log("beaconTransmitter.advertiseMode ${beaconTransmitter.advertiseMode}")
-            beaconTransmitter.advertiseMode = AdvertiseSettings.ADVERTISE_MODE_BALANCED
-            beaconTransmitter.advertiseTxPowerLevel = AdvertiseSettings.ADVERTISE_TX_POWER_HIGH
-            Main.log("ADVERTISE_MODE_BALANCED ${beaconTransmitter.advertiseMode} = ${AdvertiseSettings.ADVERTISE_MODE_LOW_LATENCY}")
-            Main.log("ADVERTISE_TX_POWER_HIGH ${beaconTransmitter.advertiseTxPowerLevel} = ${AdvertiseSettings.ADVERTISE_TX_POWER_HIGH}")
-
-            //beaconTransmitter.advertiseTxPowerLevel
-            beaconTransmitter.startAdvertising(beacon, object : AdvertiseCallback() {
-                override fun onStartFailure(errorCode: Int) {
-                    Main.log("Error from start advertising $errorCode")
-                }
-                override fun onStartSuccess(settingsInEffect: AdvertiseSettings) {
-                    Main.log("Success start advertising")
-                }
-            })
             return beaconTransmitter
         }
         fun createBeacon(_uuid:String, _immortal_beacon:Boolean = false) {

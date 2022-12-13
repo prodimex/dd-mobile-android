@@ -66,5 +66,17 @@ class BeaconScannerPage:AppController() {
                 online++
         }
         scene.findViewById<TextView>(R.id.online_offline_drivers_counter).text = "$online/${drivers.size} Поле:$fieldId / ${Beacons.beaconFarmCode}"
+
+        var t = "FBSP: ${Beacons.beaconManager.foregroundBetweenScanPeriod} "
+        t += "FSP: ${Beacons.beaconManager.foregroundScanPeriod} "
+        t += "FSFF: ${Beacons.beaconManager.foregroundServiceStartFailed()} "
+        t += "BGM: ${Beacons.beaconManager.backgroundMode} "
+        t += "MRGS: ${Beacons.beaconManager.monitoredRegions} "
+
+        t += "LAY: ${Beacons.beaconParser.layout} "
+        t += "POWCORR: ${Beacons.beaconParser.powerCorrection} "
+        t += "ID: ${Beacons.beaconParser.identifier} "
+
+        scene.findViewById<TextView>(R.id.scanner_stats).text = t
     }
 }
