@@ -73,10 +73,11 @@ class BeaconScannerPage:AppController() {
         t += "BGM: ${Beacons.beaconManager.backgroundMode} "
         t += "MRGS: ${Beacons.beaconManager.monitoredRegions} "
 
+        /*
         t += "LAY: ${Beacons.beaconParser.layout} "
         t += "POWCORR: ${Beacons.beaconParser.powerCorrection} "
         t += "ID: ${Beacons.beaconParser.identifier} "
-
+*/
         scene.findViewById<TextView>(R.id.scanner_stats).text = t
     }
 }

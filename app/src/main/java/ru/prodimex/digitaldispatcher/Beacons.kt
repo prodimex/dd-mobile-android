@@ -1,15 +1,17 @@
 package ru.prodimex.digitaldispatcher
 
 import android.Manifest
-import android.bluetooth.BluetoothManager
+import android.R
+import android.app.NotificationManager
 import android.bluetooth.le.AdvertiseCallback
-import android.bluetooth.le.AdvertiseData
 import android.bluetooth.le.AdvertiseSettings
 import android.content.Context
+import android.content.Context.NOTIFICATION_SERVICE
 import android.content.pm.PackageManager
 import android.os.Build
-import android.os.ParcelUuid
-import androidx.core.app.ActivityCompat
+import android.util.Log
+import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat.getSystemService
 import org.altbeacon.beacon.*
 import java.util.*
 
@@ -20,7 +22,8 @@ class Beacons {
         var immortalBeacon:BeaconTransmitter? = null
         var controller:AppController? = null
 
-        val beaconParser = BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24")
+        //val beaconParser = BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24")
+        val beaconParser = BeaconParser().setBeaconLayout("m:2-3=beac,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25")
 
         val region = Region("all-beacons", null, null, null)
         val beaconTransmitters: MutableMap<String, BeaconTransmitter> = mutableMapOf()
@@ -39,11 +42,17 @@ class Beacons {
             beaconManager.beaconParsers.clear()
             beaconManager.beaconParsers.add(beaconParser)
 
-            beaconManager.getRegionViewModel(region).rangedBeacons.observe(Main.main) { beacons ->
+            //setupForegroundService()
+            beaconManager.setEnableScheduledScanJobs(false)
+            beaconManager.setBackgroundBetweenScanPeriod(0)
+            beaconManager.setBackgroundScanPeriod(1100)
+
+            beaconManager.getRegionViewModel(region).rangedBeacons.observeForever { beacons ->
+                Main.log("rangedBeacons.observeForever ${beacons.size}")
                 if(controller != null)
                     controller!!.scanObserver(beacons)
             }
-            beaconManager.getRegionViewModel(region).regionState.observe(Main.main) { state ->
+            beaconManager.getRegionViewModel(region).regionState.observeForever { state ->
                 if (state == MonitorNotifier.INSIDE) {
                     Main.log("Detected beacons(s)")
                 } else {
@@ -58,16 +67,39 @@ class Beacons {
             makeFarmCode()
         }
 
+        fun startBg() {
+            beaconManager = BeaconManager.getInstanceForApplication(Main.main)
+            beaconManager.beaconParsers.clear()
+            beaconManager.beaconParsers.add(beaconParser)
+
+            beaconManager.getRegionViewModel(region).regionState.observeForever { beacons ->
+                Log.d("MOMOZODO", "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP Beacons detected ${beacons}")
+            }
+            beaconManager.startMonitoring(region)
+        }
+
         fun checkPermissions() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (Main.main.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                    || Main.main.checkSelfPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED
                     || Main.main.checkSelfPermission(Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED
                     || Main.main.checkSelfPermission(Manifest.permission.BLUETOOTH_ADVERTISE) != PackageManager.PERMISSION_GRANTED) {
                     Main.main.requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_BACKGROUND_LOCATION,
                         Manifest.permission.BLUETOOTH_SCAN,
                         Manifest.permission.BLUETOOTH_ADVERTISE), Main.PERMISSION_REQUEST_FINE_LOCATION)
                 }
             }
+            /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (
+
+                    Main.main.checkSelfPermission(Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED
+                    || Main.main.checkSelfPermission(Manifest.permission.BLUETOOTH_ADVERTISE) != PackageManager.PERMISSION_GRANTED) {
+                    Main.main.requestPermissions(arrayOf(
+                        Manifest.permission.BLUETOOTH_SCAN,
+                        Manifest.permission.BLUETOOTH_ADVERTISE), Main.PERMISSION_REQUEST_FINE_LOCATION)
+                }
+            }*/
         }
 
         fun startScan(_immortal_uuid:String? = null) {
@@ -80,7 +112,7 @@ class Beacons {
             beaconManager.startRangingBeacons(region)
 
             if(_immortal_uuid != null)
-                immortalBeacon = createBeaconTransmitter(_immortal_uuid!!)
+                immortalBeacon = createBeaconTransmitter(_immortal_uuid)
         }
 
         fun stopScan() {
@@ -98,30 +130,54 @@ class Beacons {
                 immortalBeacon = null
             }
         }
-        private fun createBeaconTransmitter(_uuid:String): BeaconTransmitter {
+        fun createBeaconTransmitter(_uuid:String): BeaconTransmitter {
             makeFarmCode()
             Main.log("createBeacon uuid $_uuid")
             Main.log("createBeacon id2+id3 ${beaconFarmCode.slice(0..4) + beaconFarmCode.slice(5..9)}")
-            val beacon = Beacon.Builder().setId1(_uuid).setId2(beaconFarmCode.slice(0..4)).setId3(beaconFarmCode.slice(5..9))
-                //.setManufacturer(0x4C).setTxPower(-65).build()
-                .setManufacturer(0x000C).setTxPower(-65).build()
 
-                        val beaconTransmitter = BeaconTransmitter(Main.main.applicationContext, beaconParser)
 
-            Main.log("beaconTransmitter.advertiseMode ${beaconTransmitter.advertiseMode}")
-            beaconTransmitter.advertiseMode = AdvertiseSettings.ADVERTISE_MODE_BALANCED
+            val beacon = Beacon.Builder()
+                .setId1(_uuid)
+                //.setId1("2f234454-cf6d-4a0f-adf2-f4911ba9ffa6")
+                .setId2(beaconFarmCode.slice(0..4))
+                .setId3(beaconFarmCode.slice(5..9))
+                .setManufacturer(0x0118)
+                .setBeaconTypeCode(3)
+                .setTxPower(-59)
+                .setDataFields(mutableListOf(0))
+
+                .build()
+
+            val beaconTransmitter = BeaconTransmitter(Main.main.applicationContext, beaconParser)
+            beaconTransmitter.advertiseMode = AdvertiseSettings.ADVERTISE_MODE_LOW_LATENCY
             beaconTransmitter.advertiseTxPowerLevel = AdvertiseSettings.ADVERTISE_TX_POWER_HIGH
-            Main.log("ADVERTISE_MODE_BALANCED ${beaconTransmitter.advertiseMode} = ${AdvertiseSettings.ADVERTISE_MODE_LOW_LATENCY}")
-            Main.log("ADVERTISE_TX_POWER_HIGH ${beaconTransmitter.advertiseTxPowerLevel} = ${AdvertiseSettings.ADVERTISE_TX_POWER_HIGH}")
 
             beaconTransmitter.startAdvertising(beacon, object : AdvertiseCallback() {
                 override fun onStartFailure(errorCode: Int) {
                     Main.log("Error from start advertising $errorCode")
+                    Main.main.toastMe("Ошибка начала вещания (код ${errorCode})")
                 }
                 override fun onStartSuccess(settingsInEffect: AdvertiseSettings) {
                     Main.log("Success start advertising")
                 }
             })
+
+            //val beaconTransmitter = BeaconTransmitter(Main.main.applicationContext, beaconParser)
+
+            Main.log("beaconTransmitter.advertiseMode ${beaconTransmitter.advertiseMode}")
+
+            Main.log("ADVERTISE_MODE_LOW_LATENCY ${beaconTransmitter.advertiseMode} = ${AdvertiseSettings.ADVERTISE_MODE_LOW_LATENCY}")
+            Main.log("ADVERTISE_TX_POWER_HIGH ${beaconTransmitter.advertiseTxPowerLevel} = ${AdvertiseSettings.ADVERTISE_TX_POWER_HIGH}")
+
+            /*beaconTransmitter.startAdvertising(beacon, object : AdvertiseCallback() {
+                override fun onStartFailure(errorCode: Int) {
+                    Main.log("Error from start advertising $errorCode")
+                    Main.main.toastMe("Ошибка начала вещания (код ${errorCode})")
+                }
+                override fun onStartSuccess(settingsInEffect: AdvertiseSettings) {
+                    Main.log("Success start advertising")
+                }
+            })*/
 
             /*
             var bluetoothManager: BluetoothManager = Main.main.applicationContext.getSystemService(
@@ -253,3 +309,4 @@ class Beacons {
         }
     }
 }
+

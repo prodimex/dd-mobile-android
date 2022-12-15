@@ -31,6 +31,12 @@ class LoaderSettingsPage:LoaderAppController() {
 
         }
 
+        var i = 50
+        setOnClick(R.id.add_beacon) {
+            i ++
+            var bcn = Beacons.createBeaconTransmitter("${i}000000-0000-0000-0000-000000000000")
+        }
+
         highlightButton(R.id.settings_button)
         highlightIcon(R.id.settings_ico)
     }

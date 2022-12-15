@@ -58,5 +58,4 @@
             tools:replace="android:exported"
             tools:node="merge" />
     </application>
-
 </manifest>

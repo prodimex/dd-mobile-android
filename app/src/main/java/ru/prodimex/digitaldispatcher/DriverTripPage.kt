@@ -155,6 +155,9 @@ class DriverTripPage:DriverAppController() {
     }
 
     override fun switchTopage(_pageId: String) {
+        if(currentPageId == _pageId)
+            return
+
         killViews()
         timer.cancel()
         super.switchTopage(_pageId)

@@ -44,6 +44,7 @@ class DriverSettingsPage:DriverAppController() {
         setOnClick(R.id.set_current_trip_to_discarded) {
 
         }
+
         setOnClick(R.id.show_sample_alert) {
             PopupManager.showAlert("Не протестировано плохое соединение, нет возможности выбрать машину, выбирается всегда первая машина, не обрабатывается вход с другого устройства, нет возможности запуска без интернета", "Осталось доделать")
         }

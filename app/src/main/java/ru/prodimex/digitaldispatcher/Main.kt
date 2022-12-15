@@ -199,6 +199,7 @@ class Main : AppCompatActivity() {
     }
 
     override fun onStop() {
+        Main.log("=================== onStop")
         super.onStop()
         //unregisterReceiver(mReceiver)
     }
@@ -269,6 +270,7 @@ class Main : AppCompatActivity() {
     }
 
     override fun onDestroy() {
+        Main.log("=================== onDestroy")
         Beacons.killAllBeacons()
         super.onDestroy()
     }

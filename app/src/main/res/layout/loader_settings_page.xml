@@ -40,7 +40,8 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/text_url_blue"
                     android:text="@string/exit_underline_text"
-                    android:layout_marginTop="50dp"
+                    android:layout_marginTop="15dp"
+                    android:paddingVertical="7dp"
                     android:textSize="18dp"/>
                 <TextView
                     android:id="@+id/change_loading_plan"
@@ -48,7 +49,7 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/text_url_blue"
                     android:text="@string/change_loading_plan_underline_text"
-                    android:layout_marginTop="30dp"
+                    android:paddingVertical="7dp"
                     android:textSize="18dp"/>
                 <TextView
                     android:id="@+id/change_application_mode"
@@ -56,7 +57,7 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/text_url_blue"
                     android:text="@string/change_application_mode"
-                    android:layout_marginTop="30dp"
+                    android:paddingVertical="7dp"
                     android:textSize="18dp"/>
                 <TextView
                     android:id="@+id/clear_cache"
@@ -64,8 +65,7 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/text_url_blue"
                     android:text="@string/clear_cache"
-                    android:paddingVertical="10dp"
-                    android:layout_marginTop="10dp"
+                    android:paddingVertical="7dp"
                     android:textSize="18dp"/>
                 <TextView
                     android:id="@+id/drop_drivers"
@@ -73,9 +73,17 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/text_url_blue"
                     android:text="@string/drop_drivers"
-                    android:paddingVertical="10dp"
-                    android:layout_marginTop="10dp"
+                    android:paddingVertical="7dp"
                     android:textSize="18dp"/>
+                <Button
+                    android:id="@+id/add_beacon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/button_background"
+                    android:text="@string/add_beacon"
+                    android:paddingHorizontal="30dp"
+                    android:layout_marginTop="15dp"
+                    />
                 <Button
                     android:id="@+id/upload_logs"
                     android:layout_width="wrap_content"
