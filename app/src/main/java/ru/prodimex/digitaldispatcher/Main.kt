@@ -132,6 +132,10 @@ class Main : AppCompatActivity() {
             DRIVER_LOGIN_PAGE -> {
                 Beacons.killAllBeacons()
                 Beacons.stopScan()
+                if(Beacons.immortalBeacon != null) {
+                    Beacons.immortalBeacon!!.stopAdvertising()
+                    Beacons.immortalBeacon = null
+                }
                 UserData.tripData = null
                 UserData.currentTripStatus = 0
                 if(Beacons.immortalBeacon != null) {
@@ -201,7 +205,13 @@ class Main : AppCompatActivity() {
     override fun onStop() {
         Main.log("=================== onStop")
         super.onStop()
+        Beacons.stopScan()
         //unregisterReceiver(mReceiver)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Beacons.startScan()
     }
 
     fun toastMe(_str:String) {

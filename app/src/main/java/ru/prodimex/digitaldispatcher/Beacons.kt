@@ -103,7 +103,7 @@ class Beacons {
         }
 
         fun startScan(_immortal_uuid:String? = null) {
-            if(scanStarted)
+            if(scanStarted || !initialized)
                 return
 
             Main.log("Scan started!")
@@ -124,11 +124,6 @@ class Beacons {
             beaconManager.stopMonitoring(region)
             beaconManager.stopRangingBeacons(region)
             Main.log("beaconManager.foregroundBetweenScanPeriod ${beaconManager.foregroundBetweenScanPeriod}")
-
-            if(immortalBeacon != null) {
-                immortalBeacon!!.stopAdvertising()
-                immortalBeacon = null
-            }
         }
         fun createBeaconTransmitter(_uuid:String): BeaconTransmitter {
             makeFarmCode()
