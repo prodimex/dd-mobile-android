@@ -115,6 +115,9 @@ open class LoaderAppController:AppController() {
     }
 
     override fun switchTopage(_pageId: String) {
+        if(currentPageId == _pageId)
+            return
+
         Beacons.controller = null
         driversOnField.forEach {
             if(it.value.view.parent != null) {
