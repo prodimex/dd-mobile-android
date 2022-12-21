@@ -203,15 +203,15 @@ class Main : AppCompatActivity() {
     }
 
     override fun onStop() {
-        Main.log("=================== onStop")
+        log("=================== onStop Intent.ACTION_SCREEN_OFF:${intent.action}")
         super.onStop()
-        Beacons.stopScan()
         //unregisterReceiver(mReceiver)
     }
 
     override fun onResume() {
-        super.onResume()
+        log("=================== onResume Intent.ACTION_SCREEN_OFF:${intent.action}")
         Beacons.startScan()
+        super.onResume()
     }
 
     fun toastMe(_str:String) {

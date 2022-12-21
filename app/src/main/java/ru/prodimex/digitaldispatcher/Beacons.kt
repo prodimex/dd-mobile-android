@@ -2,17 +2,23 @@ package ru.prodimex.digitaldispatcher
 
 import android.Manifest
 import android.R
+import android.app.Notification
+import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.bluetooth.le.AdvertiseCallback
 import android.bluetooth.le.AdvertiseSettings
 import android.content.Context
 import android.content.Context.NOTIFICATION_SERVICE
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat.getSystemService
 import org.altbeacon.beacon.*
+import java.sql.Time
 import java.util.*
 
 
@@ -52,30 +58,41 @@ class Beacons {
                 if(controller != null)
                     controller!!.scanObserver(beacons)
             }
+
             beaconManager.getRegionViewModel(region).regionState.observeForever { state ->
                 if (state == MonitorNotifier.INSIDE) {
                     Main.log("Detected beacons(s)")
                 } else {
                     Main.log("Stopped detecteing beacons")
-                    /*_controller.scanStarted = false
-                     _controller.updateView()*/
+                    stopScan()
+                    PopupManager.showAlert("Сканирование приостановлено, по неизвестной причине и автоматически перезапущено.")
+
+                    Timer().schedule(object:TimerTask() { override fun run() { startScan() }}, 200)
                 }
             }
-            //var dd = RangeNotifier { beacons, region ->  }
-            //beaconManager.addRangeNotifier()
 
             makeFarmCode()
         }
 
-        fun startBg() {
-            beaconManager = BeaconManager.getInstanceForApplication(Main.main)
-            beaconManager.beaconParsers.clear()
-            beaconManager.beaconParsers.add(beaconParser)
+        @RequiresApi(Build.VERSION_CODES.O)
+        fun setupForegroundService() {
+            val builder = Notification.Builder(Main.main, "ПРОДИМЕКС")
+            //builder.setSmallIcon(org.altbeacon.beacon.R.drawable.ic_launcher_background)
+            builder.setContentTitle("Поиск сигнала")
+            val intent = Intent(Main.main, BaconsBgActivity::class.java)
+            val pendingIntent = PendingIntent.getActivity(
+                Main.main, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT + PendingIntent.FLAG_IMMUTABLE
+            )
+            builder.setContentIntent(pendingIntent);
+            val channel =  NotificationChannel("prodimex-notification-id",
+                "Уведомление PRODIMEX", NotificationManager.IMPORTANCE_DEFAULT)
+            channel.setDescription("My Notification Channel Description")
 
-            beaconManager.getRegionViewModel(region).regionState.observeForever { beacons ->
-                Log.d("MOMOZODO", "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP Beacons detected ${beacons}")
-            }
-            beaconManager.startMonitoring(region)
+            val notificationManager = Main.main.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+
+            notificationManager.createNotificationChannel(channel);
+            builder.setChannelId(channel.getId());
+            BeaconManager.getInstanceForApplication(Main.main).enableForegroundServiceScanning(builder.build(), 456);
         }
 
         fun checkPermissions() {
@@ -103,6 +120,7 @@ class Beacons {
         }
 
         fun startScan(_immortal_uuid:String? = null) {
+            Main.log("${scanStarted} ${initialized}")
             if(scanStarted || !initialized)
                 return
 
