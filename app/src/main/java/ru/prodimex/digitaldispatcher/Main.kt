@@ -47,8 +47,11 @@ class Main : AppCompatActivity() {
         var logCounter = 0
         val sessionLogs:ArrayList<String> = arrayListOf()
         fun log(_str:Any) {
-            println("#${logCounter++} MOMOZODO: $_str")
+            println("#${logCounter++} ${sessionLogs.size} MOMOZODO: $_str")
             sessionLogs.add("$_str")
+            while (sessionLogs.size > 5000)
+                sessionLogs.removeAt(0)
+
         }
         val PERMISSION_REQUEST_FINE_LOCATION = 1
         val PERMISSION_BLUETOOTH_SCAN = 2

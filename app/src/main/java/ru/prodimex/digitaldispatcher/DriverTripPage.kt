@@ -40,13 +40,9 @@ class DriverTripPage:DriverAppController() {
         }
 
         timer = Timer()
-        timer.scheduleAtFixedRate(object : TimerTask() { override fun run() { pingTrip() }}, 0, 1000)
+        timer.scheduleAtFixedRate(object : TimerTask() { override fun run() { pingTrip() }}, 0, 3000)
         pingTrip()
     }
-
-    /*override fun startSheduler() {
-
-    }*/
 
     fun pingTrip() {
         pingCounter++
