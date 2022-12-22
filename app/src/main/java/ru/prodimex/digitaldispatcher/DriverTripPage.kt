@@ -164,7 +164,12 @@ class DriverTripPage:DriverAppController() {
             Beacons.killAllBeacons()
 
         if(currentTripState == 0 || currentTripState != UserData.currentTripStatus) {
-            when(UserData.currentTripStatus) {
+            var status = UserData.currentTripStatus
+            if(pendingRequests.contains(UserData.tripId)) {
+                status = 2
+                loaderFinded = true
+            }
+            when(status) {
                 1, 2, 3, 4, 6 -> {
                     showUpdateTripInfoBlock()
                 }
@@ -180,6 +185,11 @@ class DriverTripPage:DriverAppController() {
         }
     }
 
+    override fun createPendingRequest(_tripId: String, _status: String, _date: String) {
+        super.createPendingRequest(_tripId, _status, _date)
+        setText(R.id.trip_page_trip_status,"СТАТУС: <b>ЗАГРУЖЕН</b>")
+    }
+
     fun showUpdateTripInfoBlock() {
         takeNewTripStarted = false
         if(infoView == null) {
@@ -188,8 +198,11 @@ class DriverTripPage:DriverAppController() {
         }
 
         setText(R.id.trip_page_header,"РЕЙС: <b>${ UserData.dq_id}</b>")
-        setText(R.id.trip_page_trip_status,"СТАТУС: <b>${UserData.tripStatuses[UserData.currentTripStatus]!!["name"]!!.uppercase()}</b>")
-        infoView!!.findViewById<TextView>(R.id.trip_page_trip_status).setTextColor(ContextCompat.getColor(scene.applicationContext, Dict.statusColors[UserData.currentTripStatus]!!))
+
+        var status = if(pendingRequests.contains(UserData.tripId)) 2 else UserData.currentTripStatus
+
+        setText(R.id.trip_page_trip_status,"СТАТУС: <b>${UserData.tripStatuses[status]!!["name"]!!.uppercase()}</b>")
+        infoView!!.findViewById<TextView>(R.id.trip_page_trip_status).setTextColor(ContextCompat.getColor(scene.applicationContext, Dict.statusColors[status]!!))
 
         var loadDate = "<b>${UserData.currentTrip!!["loading_time_from"]}</b>-<b>${UserData.currentTrip!!["loading_time_to"]}</b>"
         val formatter = SimpleDateFormat("yyyy-MM-dd")
@@ -209,7 +222,11 @@ class DriverTripPage:DriverAppController() {
     }
     fun showUpdateActions() {
         if(currentTripState == 0 || currentTripState != UserData.currentTripStatus) {
-            when(UserData.currentTripStatus) {
+            var status = UserData.currentTripStatus
+            if(pendingRequests.contains(UserData.tripId))
+                status = 2
+
+            when(status) {
                 1 -> {
                     showAssignedStateActions()
                 }

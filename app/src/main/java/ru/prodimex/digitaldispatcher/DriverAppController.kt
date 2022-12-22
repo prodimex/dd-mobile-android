@@ -5,6 +5,7 @@ import android.net.Uri
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import com.google.gson.Gson
 import org.altbeacon.beacon.Beacon
 import java.text.SimpleDateFormat
 import java.util.*
@@ -17,8 +18,46 @@ open class DriverAppController:AppController() {
         var loaderFinded = false
         var onLoading = false
         var preloadingShowed = false
+        var pendingRequests:HashMap<String, HashMap<String, String>> = hashMapOf()
         fun getSelectedCar():String {
             return (UserData.cars[0])["number"].toString()
+        }
+
+        var pendingTimer:Timer? = null
+
+        fun pendingRequestsRun() {
+            if(pendingRequests.size > 0 && pendingTimer == null) {
+                pendingTimer = Timer()
+                pendingTimer!!.scheduleAtFixedRate(object : TimerTask() { override fun run() {
+                    if(pendingRequests.size > 0) {
+                        var req:HashMap<String, String> = pendingRequests.values.first()
+                        HTTPRequest("trips/logs-new",
+                            _args = hashMapOf(
+                                "id" to req["tripId"].toString(),
+                                "status" to req["status"].toString(),
+                                "loggingTime" to req["date"].toString()),
+                            _callback = fun(_resp: HashMap<String, Any>) {
+                                Main.log("-1-1-1-1--1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1")
+                                Main.log("$_resp")
+                                if(_resp["result"]  == "error") {
+                                    //createPendingRequest(UserData.tripId, "loaded", date)
+                                } else {
+                                    pendingRequests.remove(req["tripId"])
+                                    Main.setParam("driverPendingRequests", Gson().toJson(pendingRequests))
+                                    if(pendingRequests.size == 0) {
+                                        pendingTimer!!.cancel()
+                                        pendingTimer = null
+                                    }
+                                }
+                                DriverTripPage.toLoaderConnected = false
+                                DriverTripPage.toLoaderConnectionStarted = false
+                            }).execute()
+                    } else {
+                        pendingTimer!!.cancel()
+                        pendingTimer = null
+                    }
+                }}, 0, 3000)
+            }
         }
     }
 
@@ -195,14 +234,26 @@ open class DriverAppController:AppController() {
         var timeZone = SimpleDateFormat("z", Locale("en")).format(d).replace(":", "")
         var date = SimpleDateFormat("EEE MMM d yyy HH:mm:ss", Locale("en")).format(d) + " $timeZone"
         HTTPRequest("trips/logs-new",
-            _args = hashMapOf("id" to UserData.tripId, "status" to "loaded", "loggingTime" to date),
+            _args = hashMapOf(
+                "id" to UserData.tripId,
+                "status" to "loaded",
+                "loggingTime" to date),
             _callback = fun(_resp: HashMap<String, Any>) {
-                Main.log(_resp)
+                if(_resp["result"]  == "error") {
+                    createPendingRequest(UserData.tripId, "loaded", date)
+                }
                 DriverTripPage.toLoaderConnected = false
                 DriverTripPage.toLoaderConnectionStarted = false
             }).execute()
         onLoading = false
         showAssignedStateActions()
+    }
+
+    open fun createPendingRequest(_tripId:String, _status:String, _date:String) {
+        Main.main.toastMe("createPendingRequest $_tripId, $_status, $_date")
+        pendingRequests[_tripId] = hashMapOf("tripId" to _tripId, "status" to _status, "date" to _date)
+        Main.setParam("driverPendingRequests", Gson().toJson(pendingRequests))
+        pendingRequestsRun()
     }
 
     fun goToLoading() {
@@ -252,6 +303,7 @@ open class DriverAppController:AppController() {
         PopupManager.showAlert(_msg)
         val notification: Uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val r = RingtoneManager.getRingtone(Main.main.applicationContext, notification)
+        Main.main.toastMe(_msg)
         r.play()
     }
 
@@ -274,13 +326,10 @@ open class DriverAppController:AppController() {
     open fun showToLoaderConnectionActions() {
 
     }
+
     open fun showAssignedStateActions() {
 
     }
-
-    /*open fun startSheduler() {
-
-    }*/
 
     open fun startPreloading() {
         preloadingShowed = true

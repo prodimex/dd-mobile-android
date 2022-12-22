@@ -65,7 +65,8 @@ class Beacons {
                 } else {
                     Main.log("Stopped detecteing beacons")
                     stopScan()
-                    PopupManager.showAlert("Сканирование приостановлено, по неизвестной причине и автоматически перезапущено.")
+                    //PopupManager.showAlert("Сканирование приостановлено, по неизвестной причине и автоматически перезапущено.")
+                    Main.main.toastMe("Сканирование приостановлено, по неизвестной причине и автоматически перезапущено.")
 
                     Timer().schedule(object:TimerTask() { override fun run() { startScan() }}, 200)
                 }

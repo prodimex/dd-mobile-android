@@ -10,6 +10,7 @@ import android.widget.TextView
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.vicmikhailau.maskededittext.MaskedEditText
+import java.sql.Driver
 
 
 class DriverLoginPage:AppController() {
@@ -36,6 +37,7 @@ class DriverLoginPage:AppController() {
                 = Gson().fromJson(Main.getParam("userData"), object : TypeToken<HashMap<String?, Any?>?>() {}.type)
 
 
+
             if(Main.getParam("tripData") != "") {
                 val tripData:HashMap<String, Any>
                         = Gson().fromJson(Main.getParam("tripData"), object : TypeToken<HashMap<String?, Any?>?>() {}.type)
@@ -46,7 +48,17 @@ class DriverLoginPage:AppController() {
             HTTPRequest.token_type = Main.getParam("token_type").toString()
             HTTPRequest.nodeServerUrl =  Main.getParam("server") + "/mobile/"
 
+            if(Main.getParam("driverPendingRequests") != "") {
+                val pendingRequests:HashMap<String, HashMap<String, String>>
+                        = Gson().fromJson(Main.getParam("driverPendingRequests"), object : TypeToken<HashMap<String, HashMap<String, String>>?>() {}.type)
+
+                Main.log("pendingRequests pendingRequests pendingRequests pendingRequests pendingRequests pendingRequests pendingRequests ${pendingRequests}")
+                DriverAppController.pendingRequests = pendingRequests
+            }
+
             runApp(userData)
+
+            DriverAppController.pendingRequestsRun()
         } else {
             showLayout(_layoutId)
             phoneField = scene.findViewById(R.id.user_phone)
