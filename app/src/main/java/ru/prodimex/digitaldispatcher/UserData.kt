@@ -110,5 +110,15 @@ class UserData {
         fun toNode(_node:Any?):LinkedTreeMap<String, Any> {
             return _node as LinkedTreeMap<String, Any>
         }
+
+        fun makeShortCut(_tripId:String):String {
+            /*LoaderAppController.driverShortCutMem ++
+            var str = LoaderAppController.driverShortCutMem.toString()
+            for (i in 0 until 4 - str.length) str = "0$str"
+            Main.log(str)*/
+
+            var dq_id_hex = Integer.toHexString(_tripId.toInt())
+            return "${Integer.toHexString(dq_id_hex.length)}$dq_id_hex"
+        }
     }
 }

@@ -15,7 +15,7 @@ class DriverTripPage:DriverAppController() {
     companion object {
         var pingCounter = 0
         var currentRangingState = ""
-        var myShortCut = ""
+        //var myShortCut = ""
         var toLoaderConnected = false
         var toLoaderConnectionStarted = false
     }
@@ -349,12 +349,18 @@ class DriverTripPage:DriverAppController() {
         currentRangingState = Dict.CONNECT_TO_LOADER_SIGNAL
         showToLoaderConnectionActions()
 
-        var uuid = currentRangingState
-        uuid += currentCarNumber.length.let {Integer.toHexString(it).uppercase()}
-        uuid += Beacons.makeCodeFromNumber(currentCarNumber)
+        var dq_id = Integer.toHexString(UserData.dq_id.toInt())
+        dq_id = "${Integer.toHexString(dq_id.length)}$dq_id"
+
+        var uuid = currentRangingState +
+            currentCarNumber.length.let {Integer.toHexString(it).uppercase()} +
+                Beacons.makeCodeFromNumber(currentCarNumber) + dq_id
+
         uuid = Beacons.completeRawUUID(uuid)
 
-        Main.log(" ======================= ++++ $uuid")
+        Main.log(" ======================= ++++ $uuid ${UserData.dq_id} $dq_id")
+
+        var tripId = Beacons.getTripIdFromUUID(uuid)
         Beacons.createBeacon(uuid)
     }
 

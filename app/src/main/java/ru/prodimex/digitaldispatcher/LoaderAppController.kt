@@ -5,6 +5,7 @@ import android.net.Uri
 import android.widget.TextView
 import org.altbeacon.beacon.Beacon
 import org.altbeacon.beacon.BeaconTransmitter
+import java.math.BigInteger
 
 open class LoaderAppController:AppController() {
     companion object {
@@ -25,9 +26,11 @@ open class LoaderAppController:AppController() {
         }
 
         fun checkDriverAvailability(_uuid:String) {
+            Main.log(_uuid)
             var number = Beacons.makeNumberFromUUID(_uuid)
+            var tripId = Beacons.getTripIdFromUUID(_uuid)
             if(!driversOnField.contains(number)) {
-                driversOnField[number] = LoaderPagesListitem(number)
+                driversOnField[number] = LoaderPagesListitem(number, tripId)
                 if(_uuid.indexOf(Dict.RECONNECT_TO_LOADER_IN_TO_LOADING_QUEUE) == 0)
                     driversOnField[number]!!.PAGE_ID = Main.LOADER_LOADED_PAGE
 
@@ -68,12 +71,12 @@ open class LoaderAppController:AppController() {
             if(_uuid.indexOf(Dict.RECONNECT_TO_LOADER) == 0
                 || _uuid.indexOf(Dict.RECONNECT_TO_LOADER_AS_DISMISSED) == 0
                 || _uuid.indexOf(Dict.RECONNECT_TO_LOADER_IN_TO_LOADING_QUEUE) == 0) {
-                var shortCut = _uuid.slice(2..5)
+                var shortCut = getShortCutFromUUID(_uuid)
                 if(reconnectShortcuts.contains(shortCut)) {
                     reconnectShortcuts.remove(shortCut)
                     Beacons.killBeacon(Beacons.completeRawUUID("${Dict.YOU_NEED_TO_RECONNECT}$shortCut"))
                 }
-                checkDriverAvailability(_uuid.slice(0..1) + _uuid.slice(6.._uuid.length-1))
+                checkDriverAvailability(_uuid)
             }
 
             //При получении сигналов содержащих только шорткат проверяем на отсутствие карточки
@@ -83,7 +86,7 @@ open class LoaderAppController:AppController() {
                 || _uuid.indexOf(Dict.IM_DISMISSED_BUT_ON_FIELD) == 0
                 || _uuid.indexOf(Dict.IM_LOADED_AND_GO_TO_FACTORY) == 0
                 || _uuid.indexOf(Dict.IM_ON_LOADING) == 0) {
-                var shortCut = _uuid.slice(2..5)
+                var shortCut = getShortCutFromUUID(_uuid)
                 Main.log("Only shorcutted signal $shortCut ${driversOnFieldByShortCut.contains(shortCut)}")
                 if (driversOnFieldByShortCut.contains(shortCut)) {
                     driversOnFieldByShortCut[shortCut]!!.receiveUIIDs(_uuid)
@@ -93,6 +96,15 @@ open class LoaderAppController:AppController() {
                         makeReconnectBeacon(shortCut)
                 }
             }
+        }
+
+        private fun getShortCutFromUUID(_uuid: String):String {
+            Main.log("getShortCutFromUUID $_uuid")
+            var shortCut = _uuid.slice(2..2) +
+                    _uuid.replace("-", "", true)
+                        .slice(3..BigInteger(_uuid.slice(2..2), 16).toInt() + 2)
+            Main.log("getShortCutFromUUID shortCut $shortCut")
+            return shortCut
         }
     }
 
@@ -135,11 +147,14 @@ open class LoaderAppController:AppController() {
         super.switchTopage(_pageId)
     }
 
-    override fun scanObserver(beacons: Collection<Beacon>) {
+    override fun scanObserver(beacons:Collection<Beacon>) {
         super.scanObserver(beacons)
         driversPings.clear()
         driversOnFieldByShortCut.forEach {
-            driversPings[it.value.shortCut] = false
+            var dq_id_hex = Integer.toHexString(it.value.tripId.toInt())
+            dq_id_hex = "${Integer.toHexString(dq_id_hex.length)}$dq_id_hex"
+
+            driversPings[dq_id_hex] = false
         }
         beacons.forEach {
             if(Beacons.beaconFarmCode.indexOf("${it.id2.toString() + it.id3.toString()}") == 0)
@@ -147,6 +162,7 @@ open class LoaderAppController:AppController() {
         }
         driversPings.forEach {
             if(!it.value) {
+                Main.log(it.key)
                 driversOnFieldByShortCut[it.key]!!.ping()
             }
         }

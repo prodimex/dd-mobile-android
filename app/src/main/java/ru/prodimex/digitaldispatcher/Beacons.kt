@@ -18,6 +18,8 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat.getSystemService
 import org.altbeacon.beacon.*
+import java.lang.Long.parseLong
+import java.math.BigInteger
 import java.sql.Time
 import java.util.*
 
@@ -320,6 +322,23 @@ class Beacons {
                 number += Dict.carNumberCharsByHex[uuidTail.slice(i * 2..i * 2 + 1)]
             }
             return number
+        }
+
+        fun getTripIdFromUUID(_uuid:String):String {
+            Main.log("getTripIdFromUUID $_uuid")
+            var uuidTail = _uuid.slice (   3.._uuid.length-1)
+            var numLength = _uuid.slice(2..2).toInt()
+            uuidTail = uuidTail.replace("-", "", true)
+            uuidTail = uuidTail.slice(numLength * 2..uuidTail.length - 1)
+
+            var tripIdNumlength = BigInteger(uuidTail.get(0).toString(), 16).toInt()
+            uuidTail = uuidTail.slice(1..tripIdNumlength)
+
+            Main.log("getTripIdFromUUID ${uuidTail} $tripIdNumlength")
+
+            var tripId = BigInteger(uuidTail, 16).toString()
+            Main.log("getTripIdFromUUID ${uuidTail} $tripIdNumlength $tripId")
+            return tripId
         }
     }
 }

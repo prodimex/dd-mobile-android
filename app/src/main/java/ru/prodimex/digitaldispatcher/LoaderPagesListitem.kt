@@ -11,12 +11,13 @@ import android.widget.*
 import com.google.gson.Gson
 import com.google.gson.internal.LinkedTreeMap
 
-class LoaderPagesListitem(_number:String) {
+class LoaderPagesListitem(_number:String, _tripId:String) {
     var PAGE_ID = Main.LOADER_QUEUE_PAGE
     val number = _number
+    val tripId = _tripId
     var driverState = Dict.NEW_ITEM
     var view: LinearLayout = Main.main.layoutInflater.inflate(R.layout.queue_driver_list_item, null) as LinearLayout
-    var shortCut = makeShortCut()
+    //var shortCut = makeShortCut()
     var currentBeacon = ""
 
     var surname = ""
@@ -34,7 +35,10 @@ class LoaderPagesListitem(_number:String) {
         }
         space.minimumHeight = 12
         updateView()
-        LoaderAppController.driversOnFieldByShortCut[shortCut] = this
+
+        var dq_id_hex = Integer.toHexString(tripId.toInt())
+        dq_id_hex = "${Integer.toHexString(dq_id_hex.length)}$dq_id_hex"
+        LoaderAppController.driversOnFieldByShortCut[dq_id_hex] = this
 
         view.findViewById<Button>(R.id.disconnect_button).setOnClickListener {
             if(PAGE_ID == Main.LOADER_LOADED_PAGE) {
@@ -76,7 +80,11 @@ class LoaderPagesListitem(_number:String) {
     var recievedData = HashMap<String, String>()
     fun startBeacon() {
         currentBeacon = driverState
-        currentBeacon += Beacons.makeCodeFromNumber(number) + shortCut
+
+        var dq_id_hex = Integer.toHexString(tripId.toInt())
+        dq_id_hex = "${Integer.toHexString(dq_id_hex.length)}$dq_id_hex"
+
+        currentBeacon += Beacons.makeCodeFromNumber(number) + dq_id_hex
         currentBeacon = Beacons.completeRawUUID(currentBeacon)
         Beacons.createBeacon(currentBeacon)
     }
@@ -86,10 +94,11 @@ class LoaderPagesListitem(_number:String) {
         pingCounter ++
     }
     fun receiveUIIDs(_uuid:String) {
+        Main.log("receiveUIIDs $_uuid $driverState")
         pingCounter = 0
         var uuid = _uuid
         if(uuid.indexOf(Dict.SEND_DRIVER_INFO_TO_LOADER) == 0
-            && driverState == Dict.GIVE_SHORTCUT_TO_DRIVER_AND_RETURN_DRIVER_INFO) {
+            && driverState == Dict.GIVE_ME_DRIVER_INFO) {
             Beacons.killBeacon(currentBeacon)
             Main.log("Получаем данные от водителя")
             driverStatus = "Передаёт данные"
@@ -145,7 +154,7 @@ class LoaderPagesListitem(_number:String) {
                     || uuid.indexOf(Dict.RECONNECT_TO_LOADER) == 0
                     || uuid.indexOf(Dict.RECONNECT_TO_LOADER_AS_DISMISSED) == 0
                     || uuid.indexOf(Dict.RECONNECT_TO_LOADER_IN_TO_LOADING_QUEUE) == 0)
-            && (driverState != Dict.GIVE_SHORTCUT_TO_DRIVER_AND_RETURN_DRIVER_INFO
+            && (driverState != Dict.GIVE_ME_DRIVER_INFO
                     && driverState != Dict.GIVE_SHORTCUT_AND_WAIT_FOR_LOADER_SIGNAL)) {
             Beacons.killBeacon(currentBeacon)
 
@@ -158,7 +167,7 @@ class LoaderPagesListitem(_number:String) {
             if(LoaderAppController.driversInfoCache.contains(number)) {
                 driverState = Dict.GIVE_SHORTCUT_AND_WAIT_FOR_LOADER_SIGNAL
             } else {
-                driverState = Dict.GIVE_SHORTCUT_TO_DRIVER_AND_RETURN_DRIVER_INFO
+                driverState = Dict.GIVE_ME_DRIVER_INFO
             }
 
             startBeacon()
@@ -192,6 +201,7 @@ class LoaderPagesListitem(_number:String) {
     }
 
     fun setImInQueueAndWait(_newPageId:String, _newDriverStatus:String) {
+        Main.log("setImInQueueAndWait --------- ")
         PAGE_ID = _newPageId
         Beacons.killBeacon(currentBeacon)
         driverState = Dict.SILENCE
@@ -218,16 +228,8 @@ class LoaderPagesListitem(_number:String) {
         view.findViewById<ImageView>(R.id.loader_driver_preloader_image).clearAnimation()
     }
 
-    fun makeShortCut():String {
-        LoaderAppController.driverShortCutMem++
-        var str = LoaderAppController.driverShortCutMem.toString()
-        for (i in 0 until 4 - str.length) str = "0$str"
-        Main.log(str)
-        return str
-    }
-
     fun updateView() {
-        setText(R.id.loader_car_number, "<b>$shortCut: $number</b>")
+        setText(R.id.loader_car_number, "<b>АМ: $number Номер рейса: $tripId</b>")
         setText(R.id.loader_block_driver_name, "<b>$surname $name $patronymic</b>")
 
         setText(R.id.loader_queue_driver_fio, "$driverStatus")

@@ -8,7 +8,7 @@ class Dict {
 
         const val NEW_ITEM = "00"
         const val CONNECT_TO_LOADER_SIGNAL = "01"
-        const val GIVE_SHORTCUT_TO_DRIVER_AND_RETURN_DRIVER_INFO = "02"
+        const val GIVE_ME_DRIVER_INFO = "02"
         const val SEND_DRIVER_INFO_TO_LOADER = "03"
         const val STOP_SENDING_DATA_AND_WAIT = "04"
         const val IM_WAITING_FOR_LOADER_SIGNAL = "05"
@@ -18,7 +18,7 @@ class Dict {
         const val GO_TO_LOADING = "09"
         const val IM_ON_LOADING = "0a"
 
-        const val GIVE_SHORTCUT_AND_WAIT_FOR_LOADER_SIGNAL = "0b"
+        const val GIVE_SHORTCUT_AND_WAIT_FOR_LOADER_SIGNAL = "0b"//todo refactor
         const val DISMISS_FROM_QUEUE = "0c"
         const val IM_DISMISSED_BUT_ON_FIELD = "0d"
 
@@ -100,7 +100,7 @@ class Dict {
 
             signalsLangs[NEW_ITEM] = ""
             signalsLangs[CONNECT_TO_LOADER_SIGNAL] = "Водитель: подключи меня"
-            signalsLangs[GIVE_SHORTCUT_TO_DRIVER_AND_RETURN_DRIVER_INFO] = "Погрузчик: получи шорткат и вышли мне инфу о себе"
+            signalsLangs[GIVE_ME_DRIVER_INFO] = "Погрузчик: получи шорткат и вышли мне инфу о себе"
             signalsLangs[SEND_DRIVER_INFO_TO_LOADER] = "Водитель: передаю информацию о себе"
             signalsLangs[STOP_SENDING_DATA_AND_WAIT] = "Погрузчик: я получил инфу, жди"
             signalsLangs[IM_WAITING_FOR_LOADER_SIGNAL] = "Водитель: жду сигнала"
