@@ -1,12 +1,12 @@
-package ru.prodimex.digitaldispatcher
+package ru.prodimex.digitaldispatcher.uitools
 
 import android.os.Build
 import android.text.Html
 import android.view.View
-import android.widget.Button
 import android.widget.RelativeLayout
 import android.widget.TextView
-import org.w3c.dom.Text
+import ru.prodimex.digitaldispatcher.Main
+import ru.prodimex.digitaldispatcher.R
 
 class PopupManager {
     companion object {

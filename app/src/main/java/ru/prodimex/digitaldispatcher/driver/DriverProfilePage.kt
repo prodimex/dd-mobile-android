@@ -1,6 +1,11 @@
-package ru.prodimex.digitaldispatcher
+package ru.prodimex.digitaldispatcher.driver
 
-class DriverProfilePage:DriverAppController() {
+import ru.prodimex.digitaldispatcher.Dict
+import ru.prodimex.digitaldispatcher.Main
+import ru.prodimex.digitaldispatcher.R
+import ru.prodimex.digitaldispatcher.UserData
+
+class DriverProfilePage: DriverAppController() {
     companion object {
 
     }
@@ -21,7 +26,7 @@ class DriverProfilePage:DriverAppController() {
 
         setOnClick(R.id.profile_page_exit) {
             Main.setParam("driverLoggedOuted", "")
-            switchTopage(Main.DRIVER_LOGIN_PAGE)
+            switchTopage(Dict.DRIVER_LOGIN_PAGE)
         }
     }
 }

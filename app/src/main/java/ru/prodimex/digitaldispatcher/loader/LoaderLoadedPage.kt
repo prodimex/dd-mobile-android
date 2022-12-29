@@ -1,6 +1,8 @@
-package ru.prodimex.digitaldispatcher
+package ru.prodimex.digitaldispatcher.loader
 
-class LoaderLoadedPage:LoaderAppController() {
+import ru.prodimex.digitaldispatcher.R
+
+class LoaderLoadedPage: LoaderAppController() {
     companion object {
 
     }

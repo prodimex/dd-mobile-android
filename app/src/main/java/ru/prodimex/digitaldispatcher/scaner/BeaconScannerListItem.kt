@@ -1,4 +1,4 @@
-package ru.prodimex.digitaldispatcher
+package ru.prodimex.digitaldispatcher.scaner
 
 import android.annotation.SuppressLint
 import android.view.View
@@ -6,6 +6,10 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.Space
 import android.widget.TextView
+import ru.prodimex.digitaldispatcher.Beacons
+import ru.prodimex.digitaldispatcher.Dict
+import ru.prodimex.digitaldispatcher.Main
+import ru.prodimex.digitaldispatcher.R
 
 
 class BeaconScannerListItem(_scene: BeaconScannerPage, _uuid:String) {
@@ -80,7 +84,11 @@ class BeaconScannerListItem(_scene: BeaconScannerPage, _uuid:String) {
     fun updateView() {
         view.findViewById<TextView>(R.id.driver_number).text = "$number $action ${Dict.signalsLangs[action.toString()]}"
         view.findViewById<TextView>(R.id.ping_count).text = "$pingCounter $uuid"
-        view.findViewById<TextView>(R.id.offline_ping_count).text = "$offlinePingCounter - ${Beacons.makeNumberFromUUID(uuid)}"
+        view.findViewById<TextView>(R.id.offline_ping_count).text = "$offlinePingCounter - ${
+            Beacons.makeNumberFromUUID(
+                uuid
+            )
+        }"
         if(online) {
             view.setBackgroundColor(0xFFCCCCCC.toInt())
         } else {

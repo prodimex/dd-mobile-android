@@ -1,4 +1,4 @@
-package ru.prodimex.digitaldispatcher
+package ru.prodimex.digitaldispatcher.driver
 
 import android.content.Context
 import android.text.InputType
@@ -10,10 +10,11 @@ import android.widget.TextView
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.vicmikhailau.maskededittext.MaskedEditText
-import java.sql.Driver
+import ru.prodimex.digitaldispatcher.*
+import ru.prodimex.digitaldispatcher.uitools.PreloadingButton
 
 
-class DriverLoginPage:AppController() {
+class DriverLoginPage: AppController() {
     companion object {
 
     }
@@ -21,8 +22,8 @@ class DriverLoginPage:AppController() {
     var phoneField:MaskedEditText? = null
     var passwordText:EditText? = null
     var errorField:TextView? = null
-    var loginButton:PreloadingButton? = null
-    var requestButton:PreloadingButton? = null
+    var loginButton: PreloadingButton? = null
+    var requestButton: PreloadingButton? = null
     var passwordActionsView:LinearLayout? = null
     var requestPasswordActionsView:LinearLayout? = null
 
@@ -93,18 +94,6 @@ class DriverLoginPage:AppController() {
         vis(R.id.error_field, false)
         errorField = scene.findViewById(R.id.error_field)
         enableInput(true)
-        /*
-            "phone" to "7 985 773 94 31",
-            "password" to "373369",
-            "token" to "0000",
-            "notificationToken" to "",
-
-            Пряхин: 79036396165
-            Пароль: 802697
-
-            Бугорский Владимир Анатольевич 79036396179
-            Пароль: 899012
-        */
     }
 
     fun showPasswordRequestActions() {
@@ -210,7 +199,7 @@ class DriverLoginPage:AppController() {
         Main.setParam("driverLoggedOuted", "true")
 
         Beacons.init()
-        switchTopage(Main.TRIP_PAGE)
+        switchTopage(Dict.TRIP_PAGE)
         var uuid = Dict.DRIVER_ON_FIELD_ON_AIR
         uuid += DriverAppController.currentCarNumber.length.let { Integer.toHexString(it).uppercase()}
         uuid += DriverAppController.numberCode

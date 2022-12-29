@@ -1,4 +1,4 @@
-package ru.prodimex.digitaldispatcher
+package ru.prodimex.digitaldispatcher.loader
 
 
 import android.text.InputFilter.AllCaps
@@ -6,14 +6,16 @@ import android.text.InputFilter.LengthFilter
 import android.widget.EditText
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import ru.prodimex.digitaldispatcher.*
 
 
-class LoaderEnterPage:AppController() {
+class LoaderEnterPage: AppController() {
     companion object {
 
     }
     init {
-        LoaderAppController.driversInfoCache = Gson().fromJson(Main.sharedPref.getString("driversInfoCache", "{}"),
+        LoaderAppController.driversInfoCache = Gson().fromJson(
+            Main.sharedPref.getString("driversInfoCache", "{}"),
             object: TypeToken<HashMap<String?, Any?>?>() {}.type)
 
         if(Main.getParam("tripFieldindex") != "" && Main.getParam("appEntered") != "") {
@@ -46,6 +48,6 @@ class LoaderEnterPage:AppController() {
 
         Beacons.init()
         Beacons.startScan(Beacons.completeRawUUID(Dict.LOADER_ON_FIELD_ON_AIR))
-        switchTopage(Main.LOADER_QUEUE_PAGE)
+        switchTopage(Dict.LOADER_QUEUE_PAGE)
     }
 }

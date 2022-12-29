@@ -1,8 +1,13 @@
-package ru.prodimex.digitaldispatcher
+package ru.prodimex.digitaldispatcher.loader
 
 import org.altbeacon.beacon.Beacon
+import ru.prodimex.digitaldispatcher.Beacons
+import ru.prodimex.digitaldispatcher.Dict
+import ru.prodimex.digitaldispatcher.Main
+import ru.prodimex.digitaldispatcher.uitools.PopupManager
+import ru.prodimex.digitaldispatcher.R
 
-class LoaderSettingsPage:LoaderAppController() {
+class LoaderSettingsPage: LoaderAppController() {
     companion object {
 
     }
@@ -11,10 +16,10 @@ class LoaderSettingsPage:LoaderAppController() {
 
         setOnClick(R.id.change_farm_index) {
             Main.setParam("appEntered", "")
-            switchTopage(Main.LOADER_ENTER_PAGE)
+            switchTopage(Dict.LOADER_ENTER_PAGE)
         }
         setOnClick(R.id.change_application_mode) {
-            scene.showPage(Main.ROLE_SELECTOR)
+            scene.showPage(Dict.ROLE_SELECTOR)
         }
         setOnClick(R.id.clear_cache) {
             Main.setParam("driversInfoCache", "{}")

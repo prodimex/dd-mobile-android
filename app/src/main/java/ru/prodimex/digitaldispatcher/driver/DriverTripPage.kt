@@ -1,4 +1,4 @@
-package ru.prodimex.digitaldispatcher
+package ru.prodimex.digitaldispatcher.driver
 
 import android.view.View
 import android.view.animation.Animation
@@ -8,10 +8,12 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import ru.prodimex.digitaldispatcher.*
+import ru.prodimex.digitaldispatcher.uitools.PopupManager
 import java.text.SimpleDateFormat
 import java.util.*
 
-class DriverTripPage:DriverAppController() {
+class DriverTripPage: DriverAppController() {
     companion object {
         var pingCounter = 0
         var currentRangingState = ""
@@ -53,7 +55,7 @@ class DriverTripPage:DriverAppController() {
             if(_response["result"] == "error") {
                 if(_response["responseCode"] == "401") {
                     Main.setParam("driverLoggedOuted", "")
-                    switchTopage(Main.DRIVER_LOGIN_PAGE)
+                    switchTopage(Dict.DRIVER_LOGIN_PAGE)
                     PopupManager.showAlert("Авторизация утеряна, возможно имел место вход с другого устройства.")
                     showErrorByCode(_response)
                     return
@@ -100,7 +102,10 @@ class DriverTripPage:DriverAppController() {
         if(takeNewTripStarted) return
 
         if(UserData.cars.size == 0) {
-            PopupManager.showAlert("Невозможно взять рейс, к вашему профилю не прикреплён автомобиль, обратитесь к диспетчеру.", "Автомобиль не назначен")
+            PopupManager.showAlert(
+                "Невозможно взять рейс, к вашему профилю не прикреплён автомобиль, обратитесь к диспетчеру.",
+                "Автомобиль не назначен"
+            )
             return
         }
 
@@ -174,10 +179,10 @@ class DriverTripPage:DriverAppController() {
                     showUpdateTripInfoBlock()
                 }
                 5 -> {
-                    setText(R.id.trip_page_header,"РЕЙС <b>${ UserData.dq_id}</b><br>ЗАВЕРШЁН.<br>ВЫ ГОТОВЫ ВЗЯТЬ<br>НОВЫЙ РЕЙС?")
+                    setText(R.id.trip_page_header,"РЕЙС <b>${UserData.dq_id}</b><br>ЗАВЕРШЁН.<br>ВЫ ГОТОВЫ ВЗЯТЬ<br>НОВЫЙ РЕЙС?")
                 }
                 7 -> {
-                    setText(R.id.trip_page_header,"РЕЙС <b>${ UserData.dq_id}</b><br>ОТМЕНЁН.<br>ВЫ ГОТОВЫ ВЗЯТЬ<br>НОВЫЙ РЕЙС?")
+                    setText(R.id.trip_page_header,"РЕЙС <b>${UserData.dq_id}</b><br>ОТМЕНЁН.<br>ВЫ ГОТОВЫ ВЗЯТЬ<br>НОВЫЙ РЕЙС?")
                 }
             }
             if(takeNewTripStarted) return
@@ -197,7 +202,7 @@ class DriverTripPage:DriverAppController() {
             scene.findViewById<LinearLayout>(R.id.trip_page_info_container).addView(infoView)
         }
 
-        setText(R.id.trip_page_header,"РЕЙС: <b>${ UserData.dq_id}</b>")
+        setText(R.id.trip_page_header,"РЕЙС: <b>${UserData.dq_id}</b>")
 
         var status = if(pendingRequests.contains(UserData.tripId)) 2 else UserData.currentTripStatus
 
@@ -349,18 +354,14 @@ class DriverTripPage:DriverAppController() {
         currentRangingState = Dict.CONNECT_TO_LOADER_SIGNAL
         showToLoaderConnectionActions()
 
-        var dq_id = Integer.toHexString(UserData.dq_id.toInt())
-        dq_id = "${Integer.toHexString(dq_id.length)}$dq_id"
-
-        var uuid = currentRangingState +
+        var uuid = currentRangingState + UserData.makeShortCut(UserData.dq_id) +
             currentCarNumber.length.let {Integer.toHexString(it).uppercase()} +
-                Beacons.makeCodeFromNumber(currentCarNumber) + dq_id
+                Beacons.makeCodeFromNumber(currentCarNumber)
 
         uuid = Beacons.completeRawUUID(uuid)
 
-        Main.log(" ======================= ++++ $uuid ${UserData.dq_id} $dq_id")
+        Main.log(" ======================= ++++ $uuid ${UserData.dq_id} ${UserData.makeShortCut(UserData.dq_id)}")
 
-        var tripId = Beacons.getTripIdFromUUID(uuid)
         Beacons.createBeacon(uuid)
     }
 

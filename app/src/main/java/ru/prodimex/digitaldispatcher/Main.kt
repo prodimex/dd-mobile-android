@@ -17,30 +17,26 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
+import ru.prodimex.digitaldispatcher.driver.*
+import ru.prodimex.digitaldispatcher.loader.*
+import ru.prodimex.digitaldispatcher.scaner.BeaconScannerPage
 import java.io.File
 
+/*
+    "phone" to "7 985 773 94 31",
+    "password" to "373369",
+    "token" to "0000",
+    "notificationToken" to "",
+
+    Пряхин: 79036396165
+    Пароль: 802697
+
+    Бугорский Владимир Анатольевич 79036396179
+    Пароль: 899012
+*/
 
 class Main : AppCompatActivity() {
     companion object {
-        const val TRIP_PAGE = "TRIP_PAGE"
-        const val PROFILE_PAGE = "PROFILE_PAGE"
-        const val DRIVER_LOGIN_PAGE = "DRIVER_LOGIN_PAGE"
-        const val DRIVER_SETTINGS_PAGE = "DRIVER_SETTINGS_PAGE"
-
-        const val BEACON_SCANNER_PAGE = "BEACON_SCANNER_PAGE"
-
-
-        const val LOADER_ENTER_PAGE = "LOADER_ENTER_PAGE"
-        const val LOADER_QUEUE_PAGE = "LOADER_QUEUE_PAGE"
-        const val LOADER_LOADED_PAGE = "LOADER_LOADED_PAGE"
-        const val LOADER_CANCELLED_PAGE = "LOADER_CANCELLED_PAGE"
-        const val LOADER_SETTINGS_PAGE = "LOADER_SETTINGS_PAGE"
-
-        const val UPDATE_PAGE = "UPDATE_PAGE"
-
-        const val ROLE_SELECTOR = "ROLE_SELECTOR"
-
-
         lateinit var sharedPref: SharedPreferences
         lateinit var main:Main
 
@@ -56,13 +52,6 @@ class Main : AppCompatActivity() {
         val PERMISSION_REQUEST_FINE_LOCATION = 1
         val PERMISSION_BLUETOOTH_SCAN = 2
         val PERMISSION_BLUETOOTH_ADVERTISE = 3
-        /*val carNumberChars = mapOf(
-            "0" to "00", "1" to "01", "2" to "02", "3" to "03", "4" to "04", "5" to "05", "6" to "06",
-            "7" to "07", "8" to "08", "9" to "09",
-            "А" to "0A", "В" to "0B", "Е" to "0C", "К" to "0D", "М" to "0E", "Н" to "0F", "О" to "10",
-            "Р" to "11", "С" to "12", "Т" to "13", "У" to "14", "Х" to "15", " " to "16"
-        )
-        var charByHexForCarNumbers = HashMap<String, String>()*/
 
         fun getParam(_key:String):String {
             return sharedPref.getString(_key, "").toString()
@@ -87,7 +76,7 @@ class Main : AppCompatActivity() {
         main = this
         sharedPref = getSharedPreferences("ProdimexLocalStorage", MODE_PRIVATE)
         Beacons.checkPermissions()
-        showPage(UPDATE_PAGE)
+        showPage(Dict.UPDATE_PAGE)
 
         currentApiVersion = Build.VERSION.SDK_INT
         if(currentApiVersion!! >= Build.VERSION_CODES.KITKAT) {
@@ -112,16 +101,16 @@ class Main : AppCompatActivity() {
         findViewById<RelativeLayout>(R.id.root_layer).removeAllViews()
         findViewById<RelativeLayout>(R.id.root_layer).addView((layoutInflater.inflate(R.layout.role_selector, null) as View))
 
-        setOnClick(R.id.select_scanner_role) { showPage(BEACON_SCANNER_PAGE) }
-        setOnClick(R.id.select_driver_mode) { showPage(DRIVER_LOGIN_PAGE) }
-        setOnClick(R.id.select_loader_mode) { showPage(LOADER_ENTER_PAGE) }
+        setOnClick(R.id.select_scanner_role) { showPage(Dict.BEACON_SCANNER_PAGE) }
+        setOnClick(R.id.select_driver_mode) { showPage(Dict.DRIVER_LOGIN_PAGE) }
+        setOnClick(R.id.select_loader_mode) { showPage(Dict.LOADER_ENTER_PAGE) }
     }
 
     fun showPage(pageId:String) {
         when (pageId) {
-            TRIP_PAGE -> DriverTripPage().afterInit(TRIP_PAGE)
-            PROFILE_PAGE -> DriverProfilePage().afterInit(PROFILE_PAGE)
-            DRIVER_LOGIN_PAGE -> {
+            Dict.TRIP_PAGE -> DriverTripPage().afterInit(pageId)
+            Dict.PROFILE_PAGE -> DriverProfilePage().afterInit(pageId)
+            Dict.DRIVER_LOGIN_PAGE -> {
                 Beacons.killAllBeacons()
                 Beacons.stopScan()
                 if(Beacons.immortalBeacon != null) {
@@ -139,21 +128,21 @@ class Main : AppCompatActivity() {
                 DriverTripPage.toLoaderConnected = false
                 DriverTripPage.toLoaderConnectionStarted = false
                 DriverTripPage.currentRangingState = ""
-                DriverLoginPage().afterInit(DRIVER_LOGIN_PAGE)
+                DriverLoginPage().afterInit(pageId)
             }
-            DRIVER_SETTINGS_PAGE -> DriverSettingsPage().afterInit(DRIVER_SETTINGS_PAGE)
+            Dict.DRIVER_SETTINGS_PAGE -> DriverSettingsPage().afterInit(pageId)
 
-            BEACON_SCANNER_PAGE -> BeaconScannerPage().afterInit(BEACON_SCANNER_PAGE)
+            Dict.BEACON_SCANNER_PAGE -> BeaconScannerPage().afterInit(pageId)
 
-            LOADER_ENTER_PAGE -> LoaderEnterPage().afterInit(LOADER_ENTER_PAGE)
-            LOADER_QUEUE_PAGE -> LoaderQueuePage().afterInit(LOADER_QUEUE_PAGE)
-            LOADER_LOADED_PAGE -> LoaderLoadedPage().afterInit(LOADER_LOADED_PAGE)
-            LOADER_CANCELLED_PAGE -> LoaderCancelledPage().afterInit(LOADER_CANCELLED_PAGE)
-            LOADER_SETTINGS_PAGE -> LoaderSettingsPage().afterInit(LOADER_SETTINGS_PAGE)
+            Dict.LOADER_ENTER_PAGE -> LoaderEnterPage().afterInit(pageId)
+            Dict.LOADER_QUEUE_PAGE -> LoaderQueuePage().afterInit(pageId)
+            Dict.LOADER_LOADED_PAGE -> LoaderLoadedPage().afterInit(pageId)
+            Dict.LOADER_CANCELLED_PAGE -> LoaderCancelledPage().afterInit(pageId)
+            Dict.LOADER_SETTINGS_PAGE -> LoaderSettingsPage().afterInit(pageId)
 
-            UPDATE_PAGE -> UpdatePage().afterInit(UPDATE_PAGE)
+            Dict.UPDATE_PAGE -> UpdatePage().afterInit(pageId)
 
-            ROLE_SELECTOR -> showRoleSelector()
+            Dict.ROLE_SELECTOR -> showRoleSelector()
         }
     }
     @SuppressLint("MissingPermission")
@@ -163,7 +152,7 @@ class Main : AppCompatActivity() {
             .setMessage("Для корректной работы приложения необходимо включить Bluetooth-адаптер.")
             .setPositiveButton("ВКЛЮЧИТЬ") { dialog, which ->
                 BluetoothAdapter.getDefaultAdapter().enable()
-                main.toastMe("Bluetooth включен!")
+                toastMe("Bluetooth включен!")
             }.setCancelable(false)
             .setIcon(android.R.drawable.ic_dialog_alert)
             .show()
@@ -274,16 +263,16 @@ class Main : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        Main.log("=================== onDestroy")
+        log("=================== onDestroy")
         Beacons.killAllBeacons()
         super.onDestroy()
     }
 
     fun runApplication() {
         when (AppConfig.APP_MODE) {
-            AppConfig.DEV_MODE -> showPage(Main.ROLE_SELECTOR)
-            AppConfig.LOADER_MODE -> showPage(Main.LOADER_ENTER_PAGE)
-            AppConfig.DRIVER_MODE -> showPage(Main.DRIVER_LOGIN_PAGE)
+            AppConfig.DEV_MODE -> showPage(Dict.ROLE_SELECTOR)
+            AppConfig.LOADER_MODE -> showPage(Dict.LOADER_ENTER_PAGE)
+            AppConfig.DRIVER_MODE -> showPage(Dict.DRIVER_LOGIN_PAGE)
         }
     }
 

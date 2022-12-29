@@ -1,7 +1,10 @@
-package ru.prodimex.digitaldispatcher
+package ru.prodimex.digitaldispatcher.scaner
 import org.altbeacon.beacon.*
 import android.widget.TextView
-class BeaconScannerPage:AppController() {
+import ru.prodimex.digitaldispatcher.*
+import ru.prodimex.digitaldispatcher.R
+
+class BeaconScannerPage: AppController() {
     companion object {
         val fieldId = "МДА"
         val drivers:MutableMap<String, BeaconScannerListItem> = mutableMapOf()

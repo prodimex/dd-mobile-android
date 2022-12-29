@@ -1,6 +1,5 @@
-package ru.prodimex.digitaldispatcher
+package ru.prodimex.digitaldispatcher.loader
 
-import android.content.Loader
 import android.os.Build
 import android.text.Html
 import android.view.View
@@ -10,14 +9,17 @@ import android.view.animation.RotateAnimation
 import android.widget.*
 import com.google.gson.Gson
 import com.google.gson.internal.LinkedTreeMap
+import ru.prodimex.digitaldispatcher.*
+import ru.prodimex.digitaldispatcher.uitools.PopupManager
+import java.math.BigInteger
 
-class LoaderPagesListitem(_number:String, _tripId:String) {
-    var PAGE_ID = Main.LOADER_QUEUE_PAGE
+class LoaderPagesListitem(_number:String, _shortCut:String) {
+    var PAGE_ID = Dict.LOADER_QUEUE_PAGE
     val number = _number
-    val tripId = _tripId
+    val tripId = BigInteger(_shortCut.slice(1.._shortCut.length-1), 16).toString()
     var driverState = Dict.NEW_ITEM
     var view: LinearLayout = Main.main.layoutInflater.inflate(R.layout.queue_driver_list_item, null) as LinearLayout
-    //var shortCut = makeShortCut()
+    var shortCut = _shortCut//UserData.makeShortCut(_tripId)
     var currentBeacon = ""
 
     var surname = ""
@@ -36,57 +38,43 @@ class LoaderPagesListitem(_number:String, _tripId:String) {
         space.minimumHeight = 12
         updateView()
 
-        var dq_id_hex = Integer.toHexString(tripId.toInt())
-        dq_id_hex = "${Integer.toHexString(dq_id_hex.length)}$dq_id_hex"
-        LoaderAppController.driversOnFieldByShortCut[dq_id_hex] = this
+        LoaderAppController.driversOnFieldByShortCut[shortCut] = this
 
         view.findViewById<Button>(R.id.disconnect_button).setOnClickListener {
-            if(PAGE_ID == Main.LOADER_LOADED_PAGE) {
+            if(PAGE_ID == Dict.LOADER_LOADED_PAGE) {
                 PopupManager.showYesNoDialog("Вернуть АМ <b>$number</b> в очередь?", "") {
-                    driverState = Dict.GO_RETURN_TO_QUEUE
-                    startBeacon()
-                    startPreloading()
+                    startBeacon(Dict.GO_RETURN_TO_QUEUE)
                 }
             }
-            if(PAGE_ID == Main.LOADER_QUEUE_PAGE) {
+            if(PAGE_ID == Dict.LOADER_QUEUE_PAGE) {
                 PopupManager.showYesNoDialog("Отказать АМ <b>$number</b> в погрузке?", "") {
-                    driverState = Dict.DISMISS_FROM_QUEUE
-                    startBeacon()
-                    startPreloading()
+                    startBeacon(Dict.DISMISS_FROM_QUEUE)
                 }
             }
         }
 
         view.findViewById<Button>(R.id.connect_button).setOnClickListener {
-            if(PAGE_ID == Main.LOADER_LOADED_PAGE) {
+            if(PAGE_ID == Dict.LOADER_LOADED_PAGE) {
                 PopupManager.showYesNoDialog("Перенести АМ <b>$number</b> в статус загружен?", "") {
-                    setImInQueueAndWait(Main.LOADER_CANCELLED_PAGE, "Погрузка успешно завершена")
-
-                    driverState = Dict.YOU_LOADED_GO_TO_FACTORY
-                    startBeacon()
-                    startPreloading()
+                    setImInQueueAndWait(Dict.LOADER_CANCELLED_PAGE, "Погрузка успешно завершена")
+                    startBeacon(Dict.YOU_LOADED_GO_TO_FACTORY)
                 }
             }
-            if(PAGE_ID == Main.LOADER_QUEUE_PAGE) {
+            if(PAGE_ID == Dict.LOADER_QUEUE_PAGE) {
                 PopupManager.showYesNoDialog("Отправить АМ <b>$number</b> на погрузку?", "") {
-                    driverState = Dict.GO_TO_LOADING
-                    startBeacon()
-                    startPreloading()
+                    startBeacon(Dict.GO_TO_LOADING)
                 }
             }
         }
     }
 
     var recievedData = HashMap<String, String>()
-    fun startBeacon() {
-        currentBeacon = driverState
-
-        var dq_id_hex = Integer.toHexString(tripId.toInt())
-        dq_id_hex = "${Integer.toHexString(dq_id_hex.length)}$dq_id_hex"
-
-        currentBeacon += Beacons.makeCodeFromNumber(number) + dq_id_hex
-        currentBeacon = Beacons.completeRawUUID(currentBeacon)
+    fun startBeacon(_newState:String) {
+        driverState = _newState
+        currentBeacon = Beacons.completeRawUUID(driverState + shortCut)// + Beacons.makeCodeFromNumber(number)
         Beacons.createBeacon(currentBeacon)
+
+        startPreloading()
     }
 
     var pingCounter = 0
@@ -98,13 +86,24 @@ class LoaderPagesListitem(_number:String, _tripId:String) {
         pingCounter = 0
         var uuid = _uuid
         if(uuid.indexOf(Dict.SEND_DRIVER_INFO_TO_LOADER) == 0
-            && driverState == Dict.GIVE_ME_DRIVER_INFO) {
+            && driverState == Dict.GIVE_ME_DRIVER_INFO
+        ) {
             Beacons.killBeacon(currentBeacon)
-            Main.log("Получаем данные от водителя")
             driverStatus = "Передаёт данные"
-            var cur = _uuid.slice(6..6)
-            var tot = _uuid.slice(7..7)
-            uuid = uuid.slice(8.._uuid.length - 1).replace("-", "", true)
+
+            Main.log("Получаем данные от водителя")
+            Main.log(uuid)
+            uuid = uuid.replace("-", "", true)
+            var shortCut = UserData.getShortCutFromUUIDTail(_uuid.slice(2..uuid.length - 1))
+            Main.log("shortCut ${shortCut}")
+            var scLength = BigInteger(shortCut.get(0).toString(), 16).toInt()
+            Main.log("scLength ${scLength}")
+            var cur = uuid.slice(scLength + 3..scLength + 3)
+            var tot = uuid.slice(scLength + 4..scLength + 4)
+            Main.log("$cur $tot ${recievedData.size} $uuid")
+
+            uuid = uuid.slice(scLength + 5..uuid.length - 1)
+            Main.log("uuid ${uuid}")
             recievedData[cur] = uuid
             if(recievedData.size - 1 == tot.toInt()) {
                 Main.log("Данные получены")
@@ -133,20 +132,24 @@ class LoaderPagesListitem(_number:String, _tripId:String) {
                 driverCache["patronymic"] = patronymic
                 LoaderAppController.driversInfoCache[number] = driverCache
 
-                Main.setParam("driversInfoCache", Gson().toJson(LoaderAppController.driversInfoCache))
+                Main.setParam(
+                    "driversInfoCache",
+                    Gson().toJson(LoaderAppController.driversInfoCache)
+                )
 
                 dataLine.forEach { fio += Dict.farmIndexCharByHex }
                 stopPreloading()
 
-                driverState = Dict.STOP_SENDING_DATA_AND_WAIT
-                startBeacon()
+                startBeacon(Dict.STOP_SENDING_DATA_AND_WAIT)
+                stopPreloading()
             }
             Main.log("$cur $tot ${recievedData.size} $uuid")
+
         }
 
         if(uuid.indexOf(Dict.IM_WAITING_FOR_LOADER_SIGNAL) == 0
             && (driverState == Dict.STOP_SENDING_DATA_AND_WAIT
-                    || driverState == Dict.GIVE_SHORTCUT_AND_WAIT_FOR_LOADER_SIGNAL)) {
+                    || driverState == Dict.I_KNOW_YOU_WAIT_FOR_LOADER_SIGNAL)) {
             setImInQueueAndWait(PAGE_ID, "Ожидает погрузки в очереди")
         }
 
@@ -155,38 +158,37 @@ class LoaderPagesListitem(_number:String, _tripId:String) {
                     || uuid.indexOf(Dict.RECONNECT_TO_LOADER_AS_DISMISSED) == 0
                     || uuid.indexOf(Dict.RECONNECT_TO_LOADER_IN_TO_LOADING_QUEUE) == 0)
             && (driverState != Dict.GIVE_ME_DRIVER_INFO
-                    && driverState != Dict.GIVE_SHORTCUT_AND_WAIT_FOR_LOADER_SIGNAL)) {
+                    && driverState != Dict.I_KNOW_YOU_WAIT_FOR_LOADER_SIGNAL)) {
             Beacons.killBeacon(currentBeacon)
 
-            PAGE_ID = if(uuid.indexOf(Dict.RECONNECT_TO_LOADER_IN_TO_LOADING_QUEUE) == 0) Main.LOADER_LOADED_PAGE
-                else if(uuid.indexOf(Dict.RECONNECT_TO_LOADER_AS_DISMISSED) == 0) Main.LOADER_CANCELLED_PAGE
-                else Main.LOADER_QUEUE_PAGE
+            PAGE_ID = if(uuid.indexOf(Dict.RECONNECT_TO_LOADER_IN_TO_LOADING_QUEUE) == 0) Dict.LOADER_LOADED_PAGE
+                else if(uuid.indexOf(Dict.RECONNECT_TO_LOADER_AS_DISMISSED) == 0) Dict.LOADER_CANCELLED_PAGE
+                else Dict.LOADER_QUEUE_PAGE
 
-            Main.log("СОЗДАЕМ ОТВЕТНЫЙ БИКОН ДЛЯ ПЕРЕДАЧИ ШОРТКАТА ВОДИТЕЛЮ")
-
+            Main.log("СОЗДАЕМ ОТВЕТНЫЙ БИКОН ДЛЯ ПЕРЕДАЧИ ШОРТКАТА ВОДИТЕЛЮ $number")
             if(LoaderAppController.driversInfoCache.contains(number)) {
-                driverState = Dict.GIVE_SHORTCUT_AND_WAIT_FOR_LOADER_SIGNAL
+                startBeacon(Dict.I_KNOW_YOU_WAIT_FOR_LOADER_SIGNAL)
             } else {
-                driverState = Dict.GIVE_ME_DRIVER_INFO
+                startBeacon(Dict.GIVE_ME_DRIVER_INFO)
             }
-
-            startBeacon()
-            startPreloading()
         }
 
         if(uuid.indexOf(Dict.IM_WAITING_FOR_LOADER_SIGNAL) == 0 && driverState == Dict.GO_RETURN_TO_QUEUE) {
-            setImInQueueAndWait(Main.LOADER_QUEUE_PAGE, "Ожидает погрузки в очереди")
+            setImInQueueAndWait(Dict.LOADER_QUEUE_PAGE, "Ожидает погрузки в очереди")
         }
 
         if(uuid.indexOf(Dict.IM_ON_LOADING) == 0 && driverState == Dict.GO_TO_LOADING) {
-            setImInQueueAndWait(Main.LOADER_LOADED_PAGE, "На загрузке")
+            setImInQueueAndWait(Dict.LOADER_LOADED_PAGE, "На загрузке")
         }
 
         if(uuid.indexOf(Dict.IM_DISMISSED_BUT_ON_FIELD) == 0 && driverState == Dict.DISMISS_FROM_QUEUE) {
-            setImInQueueAndWait(Main.LOADER_CANCELLED_PAGE, "Погрузка запрещена")
+            setImInQueueAndWait(Dict.LOADER_CANCELLED_PAGE, "Погрузка запрещена")
 
             LoaderAppController.driversOnField.remove(number)
-            LoaderAppController.driversOnArchive[number] = this
+            LoaderAppController.driversOnFieldByShortCut.remove(shortCut)
+            LoaderAppController.driversPings.remove(shortCut)
+
+            LoaderAppController.driversOnArchive[shortCut] = this
         }
 
         Main.log("=============================================")
@@ -194,14 +196,14 @@ class LoaderPagesListitem(_number:String, _tripId:String) {
         Main.log(driverState)
 
         if(uuid.indexOf(Dict.IM_LOADED_AND_GO_TO_FACTORY) == 0 && driverState == Dict.YOU_LOADED_GO_TO_FACTORY) {
-            setImInQueueAndWait(Main.LOADER_CANCELLED_PAGE, "Погрузка успешно завершена")
-            PAGE_ID = Main.LOADER_CANCELLED_PAGE
+            setImInQueueAndWait(Dict.LOADER_CANCELLED_PAGE, "Погрузка успешно завершена")
+            PAGE_ID = Dict.LOADER_CANCELLED_PAGE
             Beacons.killBeacon(currentBeacon)
         }
     }
 
     fun setImInQueueAndWait(_newPageId:String, _newDriverStatus:String) {
-        Main.log("setImInQueueAndWait --------- ")
+        Main.log("setImInQueueAndWait --------- $currentBeacon")
         PAGE_ID = _newPageId
         Beacons.killBeacon(currentBeacon)
         driverState = Dict.SILENCE
@@ -238,10 +240,10 @@ class LoaderPagesListitem(_number:String, _tripId:String) {
         view.findViewById<Button>(R.id.connect_button).visibility = View.VISIBLE
         view.findViewById<RelativeLayout>(R.id.online_indicator).visibility = View.VISIBLE
 
-        if(PAGE_ID == Main.LOADER_LOADED_PAGE) {
+        if(PAGE_ID == Dict.LOADER_LOADED_PAGE) {
             view.findViewById<Button>(R.id.disconnect_button).text = "В ОЧЕРЕДЬ"
             view.findViewById<Button>(R.id.connect_button).text = "ПОГРУЖЕН"
-        } else if(PAGE_ID == Main.LOADER_QUEUE_PAGE) {
+        } else if(PAGE_ID == Dict.LOADER_QUEUE_PAGE) {
             view.findViewById<Button>(R.id.disconnect_button).text = "ОТКАЗАТЬ"
             view.findViewById<Button>(R.id.connect_button).text = "ЗАГРУЗИТЬ"
         } else {

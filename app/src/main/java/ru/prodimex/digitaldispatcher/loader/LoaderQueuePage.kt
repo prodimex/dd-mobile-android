@@ -1,8 +1,8 @@
-package ru.prodimex.digitaldispatcher
+package ru.prodimex.digitaldispatcher.loader
 
-import android.widget.*
+import ru.prodimex.digitaldispatcher.R
 
-class LoaderQueuePage:LoaderAppController() {
+class LoaderQueuePage: LoaderAppController() {
     companion object {
 
     }

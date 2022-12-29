@@ -3,6 +3,7 @@ package ru.prodimex.digitaldispatcher
 import android.telephony.PhoneNumberUtils
 import com.google.gson.Gson
 import com.google.gson.internal.LinkedTreeMap
+import java.math.BigInteger
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -119,6 +120,16 @@ class UserData {
 
             var dq_id_hex = Integer.toHexString(_tripId.toInt())
             return "${Integer.toHexString(dq_id_hex.length)}$dq_id_hex"
+        }
+
+        fun getShortCutFromUUIDTail(_uuidTail:String):String {
+            var uuidTail = _uuidTail.replace("-", "", true)
+            Main.log("getShortCutFromUUIDTail ${uuidTail}")
+            var numLength = BigInteger(uuidTail.get(0).toString(), 16).toInt()
+            Main.log("getShortCutFromUUIDTail ${numLength}")
+            uuidTail = uuidTail.slice(1..numLength)
+
+            return "$numLength$uuidTail"
         }
     }
 }

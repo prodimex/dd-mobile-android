@@ -4,6 +4,23 @@ import kotlin.math.abs
 
 class Dict {
     companion object {
+        const val TRIP_PAGE = "TRIP_PAGE"
+        const val PROFILE_PAGE = "PROFILE_PAGE"
+        const val DRIVER_LOGIN_PAGE = "DRIVER_LOGIN_PAGE"
+        const val DRIVER_SETTINGS_PAGE = "DRIVER_SETTINGS_PAGE"
+
+        const val BEACON_SCANNER_PAGE = "BEACON_SCANNER_PAGE"
+
+        const val LOADER_ENTER_PAGE = "LOADER_ENTER_PAGE"
+        const val LOADER_QUEUE_PAGE = "LOADER_QUEUE_PAGE"
+        const val LOADER_LOADED_PAGE = "LOADER_LOADED_PAGE"
+        const val LOADER_CANCELLED_PAGE = "LOADER_CANCELLED_PAGE"
+        const val LOADER_SETTINGS_PAGE = "LOADER_SETTINGS_PAGE"
+
+        const val UPDATE_PAGE = "UPDATE_PAGE"
+
+        const val ROLE_SELECTOR = "ROLE_SELECTOR"
+
         var signalsLangs = HashMap<String, String>()
 
         const val NEW_ITEM = "00"
@@ -18,7 +35,7 @@ class Dict {
         const val GO_TO_LOADING = "09"
         const val IM_ON_LOADING = "0a"
 
-        const val GIVE_SHORTCUT_AND_WAIT_FOR_LOADER_SIGNAL = "0b"//todo refactor
+        const val I_KNOW_YOU_WAIT_FOR_LOADER_SIGNAL = "0b"//todo refactor
         const val DISMISS_FROM_QUEUE = "0c"
         const val IM_DISMISSED_BUT_ON_FIELD = "0d"
 
@@ -58,12 +75,6 @@ class Dict {
         val farmIndexHexByChar:HashMap<String, String> = hashMapOf()
         val farmIndexCharByHex:HashMap<String, String> = hashMapOf()
 
-        /*val carNumberChars = mapOf(
-            "0" to "00", "1" to "01", "2" to "02", "3" to "03", "4" to "04", "5" to "05", "6" to "06",
-            "7" to "07", "8" to "08", "9" to "09",
-            "А" to "0A", "В" to "0B", "Е" to "0C", "К" to "0D", "М" to "0E", "Н" to "0F", "О" to "10",
-            "Р" to "11", "С" to "12", "Т" to "13", "У" to "14", "Х" to "15", " " to "16"
-        )*/
         private val carNumbersChars = "0123456789АВЕКМНОРСТУХ "
         val carNumberCharsByHex:HashMap<String, String> = hashMapOf()
         val carNumberHexsByChar:HashMap<String, String> = hashMapOf()
@@ -90,13 +101,6 @@ class Dict {
                 carNumberCharsByHex[hex] = it.toString()
                 i++
             }
-            /*Main.log(farmIndexCharsByNum)
-            Main.log(farmIndexNumByChar)
-            Main.log(farmIndexHexByChar)
-            Main.log("-----------------")
-
-            Main.log(carNumberHexsByChar)
-            Main.log(carNumberCharsByHex)*/
 
             signalsLangs[NEW_ITEM] = ""
             signalsLangs[CONNECT_TO_LOADER_SIGNAL] = "Водитель: подключи меня"
@@ -109,7 +113,7 @@ class Dict {
             signalsLangs[RECONNECT_TO_LOADER] = "Водитель: переподключаюсь"
             signalsLangs[GO_TO_LOADING] = "Погрузчик: отправляйся на погрузку"
             signalsLangs[IM_ON_LOADING] = "Водитель: я на погрузке"
-            signalsLangs[GIVE_SHORTCUT_AND_WAIT_FOR_LOADER_SIGNAL] = "Погрузчик: получи шорткат и жди"
+            signalsLangs[I_KNOW_YOU_WAIT_FOR_LOADER_SIGNAL] = "Погрузчик: я тебя узнал, жди сигнала"
             signalsLangs[DISMISS_FROM_QUEUE] = "Погрузчик: отклоняю погрузку"
             signalsLangs[IM_DISMISSED_BUT_ON_FIELD] = "Водитель: меня отклонили"
 

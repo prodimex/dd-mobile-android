@@ -1,4 +1,4 @@
-package ru.prodimex.digitaldispatcher
+package ru.prodimex.digitaldispatcher.uitools
 
 import android.view.View
 import android.view.animation.Animation

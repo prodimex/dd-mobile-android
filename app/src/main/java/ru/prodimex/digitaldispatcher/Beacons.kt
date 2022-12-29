@@ -313,14 +313,18 @@ class Beacons {
         }
 
         fun makeNumberFromUUID(_uuid:String):String {
-            var uuidTail = _uuid.slice (   3.._uuid.length-1)
-            var numLength = _uuid.slice(2..2).toInt()
-            uuidTail = uuidTail.replace("-", "", true)
+            Main.log("makeNumberFromUUID $_uuid")
+            var uuidTail = _uuid.replace("-", "", true)
+            var sclength = uuidTail.slice(2..2).toInt()
 
+            uuidTail = uuidTail.slice (3 + sclength..uuidTail.length-1)
+            var numLength = uuidTail.slice(0..0).toInt()
+            uuidTail = uuidTail.slice(1..uuidTail.length-1)
             var number = ""
             for (i in 0 until numLength) {
                 number += Dict.carNumberCharsByHex[uuidTail.slice(i * 2..i * 2 + 1)]
             }
+            Main.log("number $number")
             return number
         }
 

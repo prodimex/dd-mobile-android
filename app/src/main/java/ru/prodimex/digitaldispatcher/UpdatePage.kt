@@ -80,7 +80,7 @@ class UpdatePage:AppController() {
             progressLineParams = scene.findViewById<LinearLayout>(R.id.update_download_progress_fg).layoutParams as LayoutParams
             fullProgressLineWidth = progressLineParams!!.width.toFloat()
             showDownloadProgress(0)
-            var updater = UpdateApp(_updateData["apkUrl"].toString(), this)
+            var updater = UpdateDownloader(_updateData["apkUrl"].toString(), this)
             updater.execute()
         }
     }

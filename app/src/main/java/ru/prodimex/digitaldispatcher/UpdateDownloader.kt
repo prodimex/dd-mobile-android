@@ -11,7 +11,7 @@ import java.io.FileOutputStream
 import java.net.HttpURLConnection
 import java.net.URL
 
-class UpdateApp(_apkUrl:String, _scene:UpdatePage): AsyncTask<String, Int, String>() {
+class UpdateDownloader(_apkUrl:String, _scene:UpdatePage): AsyncTask<String, Int, String>() {
     private var wakeLock:WakeLock? = null
     val apkUrl = _apkUrl
     val scene = _scene

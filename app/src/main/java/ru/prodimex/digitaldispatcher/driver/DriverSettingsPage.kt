@@ -1,10 +1,14 @@
-package ru.prodimex.digitaldispatcher
+package ru.prodimex.digitaldispatcher.driver
 
 import org.altbeacon.beacon.Beacon
+import ru.prodimex.digitaldispatcher.Beacons
+import ru.prodimex.digitaldispatcher.Main
+import ru.prodimex.digitaldispatcher.uitools.PopupManager
+import ru.prodimex.digitaldispatcher.R
 import java.text.SimpleDateFormat
 import java.util.*
 
-class DriverSettingsPage:DriverAppController() {
+class DriverSettingsPage: DriverAppController() {
     companion object {
 
     }
@@ -46,7 +50,10 @@ class DriverSettingsPage:DriverAppController() {
         }
 
         setOnClick(R.id.show_sample_alert) {
-            PopupManager.showAlert("Не протестировано плохое соединение, нет возможности выбрать машину, выбирается всегда первая машина, не обрабатывается вход с другого устройства, нет возможности запуска без интернета", "Осталось доделать")
+            PopupManager.showAlert(
+                "Не протестировано плохое соединение, нет возможности выбрать машину, выбирается всегда первая машина, не обрабатывается вход с другого устройства, нет возможности запуска без интернета",
+                "Осталось доделать"
+            )
         }
     }
     override fun scanObserver(beacons: Collection<Beacon>) {
