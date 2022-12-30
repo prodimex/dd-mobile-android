@@ -69,13 +69,13 @@ class Dict {
             return "${"%.2f".format(bytes)} ${units[i]}"
         }
 
-        private val farmIndexChars = "0123456789АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯABCDEFGHIJKLMNOPQRSTUVWXYZ -|"
+        private const val farmIndexChars = "0123456789АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯABCDEFGHIJKLMNOPQRSTUVWXYZ -|"
         val farmIndexCharsByNum:HashMap<String, String> = hashMapOf()
         val farmIndexNumByChar:HashMap<String, String> = hashMapOf()
         val farmIndexHexByChar:HashMap<String, String> = hashMapOf()
         val farmIndexCharByHex:HashMap<String, String> = hashMapOf()
 
-        private val carNumbersChars = "0123456789АВЕКМНОРСТУХ "
+        private const val carNumbersChars = "0123456789АВЕКМНОРСТУХ "
         val carNumberCharsByHex:HashMap<String, String> = hashMapOf()
         val carNumberHexsByChar:HashMap<String, String> = hashMapOf()
 

@@ -131,17 +131,13 @@ class Main : AppCompatActivity() {
                 DriverLoginPage().afterInit(pageId)
             }
             Dict.DRIVER_SETTINGS_PAGE -> DriverSettingsPage().afterInit(pageId)
-
             Dict.BEACON_SCANNER_PAGE -> BeaconScannerPage().afterInit(pageId)
-
             Dict.LOADER_ENTER_PAGE -> LoaderEnterPage().afterInit(pageId)
             Dict.LOADER_QUEUE_PAGE -> LoaderQueuePage().afterInit(pageId)
             Dict.LOADER_LOADED_PAGE -> LoaderLoadedPage().afterInit(pageId)
             Dict.LOADER_CANCELLED_PAGE -> LoaderCancelledPage().afterInit(pageId)
             Dict.LOADER_SETTINGS_PAGE -> LoaderSettingsPage().afterInit(pageId)
-
             Dict.UPDATE_PAGE -> UpdatePage().afterInit(pageId)
-
             Dict.ROLE_SELECTOR -> showRoleSelector()
         }
     }

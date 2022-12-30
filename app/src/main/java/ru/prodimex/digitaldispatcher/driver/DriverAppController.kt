@@ -16,7 +16,8 @@ import kotlin.collections.HashMap
 open class DriverAppController: AppController() {
     companion object {
         val currentCarNumber:String get() = getSelectedCar()
-        val numberCode:String get() = Beacons.makeCodeFromNumber(getSelectedCar())// = Beacons.makeCodeFromNumber(currentCarNumber)
+        val numberCode:String get() = currentCarNumber.length.let { Integer.toHexString(it).uppercase() } +
+                Beacons.makeCodeFromNumber(getSelectedCar())// = Beacons.makeCodeFromNumber(currentCarNumber)
         var loaderFinded = false
         var onLoading = false
         var preloadingShowed = false
@@ -100,8 +101,10 @@ open class DriverAppController: AppController() {
             if(Beacons.beaconFarmCode.indexOf("${it.id2.toString() + it.id3.toString()}") != 0)
                 return
 
+
             var uuid = it.id1.toString().replace("-", "", true)
-            //if(uuid.indexOf(numberCode) == 2) {
+            Main.log("scanObserver ${Dict.signalsLangs[uuid.slice(0..1)]} $uuid")
+
             if(uuid.indexOf(UserData.makeShortCut(UserData.dq_id)) == 2) {
                 if(DriverTripPage.currentRangingState == Dict.CONNECT_TO_LOADER_SIGNAL
                     || DriverTripPage.currentRangingState == Dict.RECONNECT_TO_LOADER
@@ -110,29 +113,19 @@ open class DriverAppController: AppController() {
                 ) {
                     Main.log("myCarNumber $currentCarNumber $uuid $numberCode")
                     when (uuid.slice(0..1)) {
-                        Dict.I_KNOW_YOU_WAIT_FOR_LOADER_SIGNAL -> {
-                            var ix = 2 + currentCarNumber.length * 2
-                            //DriverTripPage.myShortCut = uuid.slice(ix..ix + 3)
-                            waitForSignal()
-                        }
+                        Dict.I_KNOW_YOU_WAIT_FOR_LOADER_SIGNAL -> { waitForSignal() }
                         Dict.GIVE_ME_DRIVER_INFO -> {
-                            var ix = 2 + currentCarNumber.length * 2
-                            //DriverTripPage.myShortCut = uuid.slice(ix..ix + 3)
                             DriverTripPage.currentRangingState = Dict.SEND_DRIVER_INFO_TO_LOADER
 
                             var uuidHead = DriverTripPage.currentRangingState + UserData.makeShortCut(UserData.dq_id)
 
-
-
-                            //uuidHead += DriverTripPage.myShortCut
-
                             var fio = "${UserData.surname}|${UserData.name}|${UserData.patronymic}".uppercase()
                             var fioCode = ""
                             fio.forEach { fioCode += Dict.farmIndexHexByChar[it.toString()] }
-                            Main.log("Generater driver data")
+                            Main.log("Generate driver data")
                             var maxInfoLength = 32 - uuidHead.length - 2
                             var totalChunks = Math.ceil((fioCode.length.toFloat()/maxInfoLength.toFloat()).toDouble()).toInt()
-                            Main.log("$fio $fioCode ${fioCode.length} ${maxInfoLength} ${fioCode.length.toFloat() / maxInfoLength.toFloat()} $totalChunks")
+                            Main.log("driver data $fio $fioCode ${fioCode.length} ${maxInfoLength} ${fioCode.length.toFloat() / maxInfoLength.toFloat()} $totalChunks")
                             Beacons.killAllBeacons()
                             for(i in 0 until totalChunks) {
                                 var newUUID = "$uuidHead$i${totalChunks - 1}"
@@ -153,37 +146,19 @@ open class DriverAppController: AppController() {
                 }
                 if(DriverTripPage.currentRangingState == Dict.SEND_DRIVER_INFO_TO_LOADER) {
                     when (uuid.slice(0..1)) {
-                        Dict.STOP_SENDING_DATA_AND_WAIT -> {
-                            waitForSignal()
-                        }
+                        Dict.STOP_SENDING_DATA_AND_WAIT -> { waitForSignal() }
                     }
                 }
             }
-            Main.log("scanObserver ${uuid.indexOf(UserData.makeShortCut(UserData.dq_id))}")
 
-            if((uuid.indexOf(UserData.makeShortCut(UserData.dq_id)) == 2 || uuid.indexOf(
-                    UserData.makeShortCut(
-                        UserData.dq_id
-                    )
-                ) == numberCode.length + 2)
-                && commandsWithShortcuts.contains(DriverTripPage.currentRangingState)) {
+            if(uuid.indexOf(UserData.makeShortCut(UserData.dq_id)) == 2) {
                 Main.log("Получен сигнал с шорткатом $uuid")
                 when (uuid.slice(0..1)) {
-                    Dict.DISMISS_FROM_QUEUE -> {
-                        youDismissed()
-                    }
-                    Dict.YOU_NEED_TO_RECONNECT -> {
-                        startReconnectionToLoader()
-                    }
-                    Dict.GO_TO_LOADING -> {
-                        goToLoading()
-                    }
-                    Dict.GO_RETURN_TO_QUEUE -> {
-                        returnToQueue()
-                    }
-                    Dict.YOU_LOADED_GO_TO_FACTORY -> {
-                        setStateToLoadedAndDisconnect()
-                    }
+                    Dict.DISMISS_FROM_QUEUE -> { youDismissed() }
+                    Dict.YOU_NEED_TO_RECONNECT -> { startReconnectionToLoader() }
+                    Dict.GO_TO_LOADING -> { goToLoading() }
+                    Dict.GO_RETURN_TO_QUEUE -> { returnToQueue() }
+                    Dict.YOU_LOADED_GO_TO_FACTORY -> { setStateToLoadedAndDisconnect() }
                 }
             }
 
@@ -196,14 +171,11 @@ open class DriverAppController: AppController() {
                     Main.main.toastMe("ПОДКЛЮЧАЕМСЯ К ПОГРУЗЧИКУ")
                     DriverTripPage.toLoaderConnectionStarted = true
                     DriverTripPage.toLoaderConnected = false
-                    DriverTripPage.currentRangingState = Dict.CONNECT_TO_LOADER_SIGNAL
+
                     loaderFinded = false
                     showToLoaderConnectionActions()
 
-                    var uuid = DriverTripPage.currentRangingState + UserData.makeShortCut(UserData.dq_id) +
-                        currentCarNumber.length.let { Integer.toHexString(it).uppercase() } + numberCode
-
-                    Beacons.createBeacon(Beacons.completeRawUUID(uuid))
+                    createSignal(Dict.CONNECT_TO_LOADER_SIGNAL, numberCode)
                 }
             }
         }
@@ -217,17 +189,8 @@ open class DriverAppController: AppController() {
         DriverTripPage.toLoaderConnectionStarted = false
         playAlertSoundAnd("Погрузчик отклонил вашу погрузку.")
 
-        DriverTripPage.currentRangingState = Dict.IM_DISMISSED_BUT_ON_FIELD
         Beacons.killAllBeacons()
-        Beacons.createBeacon(
-            Beacons.completeRawUUID(
-                "${DriverTripPage.currentRangingState}${
-                    UserData.makeShortCut(
-                        UserData.dq_id
-                    )
-                }"
-            )
-        )
+        createSignal(Dict.IM_DISMISSED_BUT_ON_FIELD)
 
         setText(R.id.trip_page_trip_status,"СТАТУС: <b>ОТКАЗАНО В ПОГРУЗКЕ</b>")
         infoView!!.findViewById<TextView>(R.id.trip_page_trip_status).setTextColor(ContextCompat.getColor(scene.applicationContext,
@@ -239,19 +202,9 @@ open class DriverAppController: AppController() {
     fun returnToQueue() {
         if(DriverTripPage.currentRangingState == Dict.IM_WAITING_FOR_LOADER_SIGNAL)
             return
-
-        DriverTripPage.currentRangingState = Dict.IM_WAITING_FOR_LOADER_SIGNAL
-
         Beacons.killAllBeacons()
-        Beacons.createBeacon(
-            Beacons.completeRawUUID(
-                "${DriverTripPage.currentRangingState}${
-                    UserData.makeShortCut(
-                        UserData.dq_id
-                    )
-                }"
-            )
-        )
+        createSignal(Dict.IM_WAITING_FOR_LOADER_SIGNAL)
+
         playAlertSoundAnd("Погрузчик вернул вас в очередь.")
 
         onLoading = false
@@ -261,18 +214,9 @@ open class DriverAppController: AppController() {
     fun setStateToLoadedAndDisconnect() {
         if(DriverTripPage.currentRangingState == Dict.IM_LOADED_AND_GO_TO_FACTORY)
             return
-
-        DriverTripPage.currentRangingState = Dict.IM_LOADED_AND_GO_TO_FACTORY
         Beacons.killAllBeacons()
-        Beacons.createBeacon(
-            Beacons.completeRawUUID(
-                "${DriverTripPage.currentRangingState}${
-                    UserData.makeShortCut(
-                        UserData.dq_id
-                    )
-                }"
-            )
-        )
+        createSignal(Dict.IM_LOADED_AND_GO_TO_FACTORY)
+
         playAlertSoundAnd("Вы погружены, отправляйтесь на завод.")
 
         var d = Date()
@@ -304,24 +248,11 @@ open class DriverAppController: AppController() {
     fun goToLoading() {
         if(DriverTripPage.currentRangingState == Dict.IM_ON_LOADING)
             return
-
-        DriverTripPage.currentRangingState = Dict.IM_ON_LOADING
         Beacons.killAllBeacons()
-        Beacons.createBeacon(
-            Beacons.completeRawUUID(
-                "${DriverTripPage.currentRangingState}${
-                    UserData.makeShortCut(
-                        UserData.dq_id
-                    )
-                }"
-            )
-        )
+        createSignal(Dict.IM_ON_LOADING)
+
         playAlertSoundAnd("Погрузчик вызывает вас для погрузки.")
-        /*HTTPRequest("trips/logs-new",
-            _args = hashMapOf("id" to UserData.tripId, "status" to "loaded", "loggingTime" to "Mon Oct 31 2022 08:38:22 GMT+0300"),
-            _callback = fun(_resp: HashMap<String, Any>) {
-                Main.log(_resp)
-            }).execute()*/
+
         onLoading = true
         showAssignedStateActions()
     }
@@ -344,15 +275,8 @@ open class DriverAppController: AppController() {
         }
 
         showToLoaderConnectionActions()
-        Main.log(UserData.makeShortCut(UserData.dq_id))
-        Main.log(UserData.dq_id)
-        var uuid = DriverTripPage.currentRangingState + UserData.makeShortCut(UserData.dq_id) +
-                currentCarNumber.length.let {Integer.toHexString(it).uppercase()} +
-                Beacons.makeCodeFromNumber(currentCarNumber)
 
-        uuid = Beacons.completeRawUUID(uuid)
-
-        Beacons.createBeacon(uuid)
+        createSignal(DriverTripPage.currentRangingState, numberCode)
     }
 
     fun playAlertSoundAnd(_msg:String) {
@@ -365,26 +289,26 @@ open class DriverAppController: AppController() {
 
     fun waitForSignal() {
         Beacons.killAllBeacons()
+
+        createSignal(Dict.IM_WAITING_FOR_LOADER_SIGNAL)
         DriverTripPage.currentRangingState = Dict.IM_WAITING_FOR_LOADER_SIGNAL
-        Beacons.createBeacon(
-            Beacons.completeRawUUID(
-                "${DriverTripPage.currentRangingState}${
-                    UserData.makeShortCut(
-                        UserData.dq_id
-                    )
-                }"
-            )
-        )
+
         DriverTripPage.toLoaderConnected = true
         DriverTripPage.toLoaderConnectionStarted = false
         currentTripState = 0
-        //startSheduler()
 
         stopPreloading()
         if(actionsView != null) {
             scene.findViewById<LinearLayout>(R.id.trip_page_actions_container).removeView(actionsView)
             actionsView = null
         }
+    }
+
+    open fun createSignal(_signalID:String, _append:String = "") {
+        Beacons.createBeacon(
+            Beacons.completeRawUUID("$_signalID${UserData.makeShortCut(UserData.dq_id)}$_append")
+        )
+        DriverTripPage.currentRangingState = _signalID
     }
 
     open fun showToLoaderConnectionActions() {

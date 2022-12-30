@@ -17,7 +17,6 @@ class DriverTripPage: DriverAppController() {
     companion object {
         var pingCounter = 0
         var currentRangingState = ""
-        //var myShortCut = ""
         var toLoaderConnected = false
         var toLoaderConnectionStarted = false
     }
@@ -351,18 +350,10 @@ class DriverTripPage: DriverAppController() {
     fun startConectionToLoader() {
         toLoaderConnectionStarted = true
         toLoaderConnected = false
-        currentRangingState = Dict.CONNECT_TO_LOADER_SIGNAL
+
+        createSignal(Dict.CONNECT_TO_LOADER_SIGNAL, numberCode)
+
         showToLoaderConnectionActions()
-
-        var uuid = currentRangingState + UserData.makeShortCut(UserData.dq_id) +
-            currentCarNumber.length.let {Integer.toHexString(it).uppercase()} +
-                Beacons.makeCodeFromNumber(currentCarNumber)
-
-        uuid = Beacons.completeRawUUID(uuid)
-
-        Main.log(" ======================= ++++ $uuid ${UserData.dq_id} ${UserData.makeShortCut(UserData.dq_id)}")
-
-        Beacons.createBeacon(uuid)
     }
 
     override fun startPreloading() {
