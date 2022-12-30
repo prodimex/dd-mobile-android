@@ -184,11 +184,7 @@ class LoaderPagesListitem(_number:String, _shortCut:String) {
         if(uuid.indexOf(Dict.IM_DISMISSED_BUT_ON_FIELD) == 0 && driverState == Dict.DISMISS_FROM_QUEUE) {
             setImInQueueAndWait(Dict.LOADER_CANCELLED_PAGE, "Погрузка запрещена")
 
-            LoaderAppController.driversOnField.remove(number)
-            LoaderAppController.driversOnFieldByShortCut.remove(shortCut)
-            LoaderAppController.driversPings.remove(shortCut)
-
-            LoaderAppController.driversOnArchive[shortCut] = this
+            placeMeToArchive()
         }
 
         Main.log("=============================================")
@@ -197,9 +193,16 @@ class LoaderPagesListitem(_number:String, _shortCut:String) {
 
         if(uuid.indexOf(Dict.IM_LOADED_AND_GO_TO_FACTORY) == 0 && driverState == Dict.YOU_LOADED_GO_TO_FACTORY) {
             setImInQueueAndWait(Dict.LOADER_CANCELLED_PAGE, "Погрузка успешно завершена")
-            PAGE_ID = Dict.LOADER_CANCELLED_PAGE
-            Beacons.killBeacon(currentBeacon)
+            placeMeToArchive()
         }
+    }
+
+    fun placeMeToArchive() {
+        LoaderAppController.driversOnField.remove(number)
+        LoaderAppController.driversOnFieldByShortCut.remove(shortCut)
+        LoaderAppController.driversPings.remove(shortCut)
+
+        LoaderAppController.driversOnArchive[shortCut] = this
     }
 
     fun setImInQueueAndWait(_newPageId:String, _newDriverStatus:String) {
