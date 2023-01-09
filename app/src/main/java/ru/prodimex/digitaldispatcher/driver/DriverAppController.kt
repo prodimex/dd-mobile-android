@@ -40,8 +40,7 @@ open class DriverAppController: AppController() {
                                 "status" to req["status"].toString(),
                                 "loggingTime" to req["date"].toString()),
                             _callback = fun(_resp: HashMap<String, Any>) {
-                                Main.log("-1-1-1-1--1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1")
-                                Main.log("$_resp")
+                                Main.log("$_resp", "DRIVER APP CONTROLLER PENDING REQUEST")
                                 if(_resp["result"]  == "error") {
                                     //createPendingRequest(UserData.tripId, "loaded", date)
                                 } else {
@@ -65,15 +64,7 @@ open class DriverAppController: AppController() {
             }
         }
     }
-
-    val commandsWithShortcuts = hashMapOf(
-        Dict.IM_WAITING_FOR_LOADER_SIGNAL to true,
-        Dict.IM_DISMISSED_BUT_ON_FIELD to true,
-        Dict.SEND_DRIVER_INFO_TO_LOADER to true,
-        Dict.IM_ON_LOADING to true,
-        Dict.RECONNECT_TO_LOADER_AS_DISMISSED to true,
-    )
-
+    override val TAG = "DRIVER APP CONTROLLER"
     var infoView:LinearLayout? = null
     var actionsView:LinearLayout? = null
     var currentTripState = 0
@@ -103,7 +94,8 @@ open class DriverAppController: AppController() {
 
 
             var uuid = it.id1.toString().replace("-", "", true)
-            Main.log("scanObserver ${Dict.signalsLangs[uuid.slice(0..1)]} $uuid")
+            val signalType = uuid.slice(0..1)
+            Main.log("Получен сигнал ${Dict.signalsLangs[signalType]} $uuid", TAG)
 
             if(UserData.userHasTrip && uuid.indexOf(UserData.makeShortCut(UserData.dq_id)) == 2) {
                 if(DriverTripPage.currentRangingState == Dict.CONNECT_TO_LOADER_SIGNAL
@@ -111,8 +103,8 @@ open class DriverAppController: AppController() {
                     || DriverTripPage.currentRangingState == Dict.RECONNECT_TO_LOADER_AS_DISMISSED
                     || DriverTripPage.currentRangingState == Dict.RECONNECT_TO_LOADER_IN_TO_LOADING_QUEUE
                 ) {
-                    Main.log("myCarNumber $currentCarNumber $uuid $numberCode")
-                    when (uuid.slice(0..1)) {
+                    Main.log("myCarNumber $currentCarNumber $uuid $numberCode", TAG)
+                    when (signalType) {
                         Dict.I_KNOW_YOU_WAIT_FOR_LOADER_SIGNAL -> { waitForSignal() }
                         Dict.GIVE_ME_DRIVER_INFO -> {
                             DriverTripPage.currentRangingState = Dict.SEND_DRIVER_INFO_TO_LOADER
@@ -122,41 +114,36 @@ open class DriverAppController: AppController() {
                             var fio = "${UserData.surname}|${UserData.name}|${UserData.patronymic}".uppercase()
                             var fioCode = ""
                             fio.forEach { fioCode += Dict.farmIndexHexByChar[it.toString()] }
-                            Main.log("Generate driver data")
+                            Main.log("Generate driver data", TAG)
                             var maxInfoLength = 32 - uuidHead.length - 2
                             var totalChunks = Math.ceil((fioCode.length.toFloat()/maxInfoLength.toFloat()).toDouble()).toInt()
-                            Main.log("driver data $fio $fioCode ${fioCode.length} ${maxInfoLength} ${fioCode.length.toFloat() / maxInfoLength.toFloat()} $totalChunks")
+                            Main.log("driver data $fio $fioCode ${fioCode.length} ${maxInfoLength} ${fioCode.length.toFloat() / maxInfoLength.toFloat()} $totalChunks", TAG)
                             Beacons.killAllBeacons()
                             for(i in 0 until totalChunks) {
                                 var newUUID = "$uuidHead$i${totalChunks - 1}"
                                 if (i * maxInfoLength + maxInfoLength > fioCode.length) {
-                                    Main.log(fioCode.slice(i * maxInfoLength..fioCode.length - 1))
+                                    Main.log(fioCode.slice(i * maxInfoLength..fioCode.length - 1), TAG)
                                     newUUID +=fioCode.slice(i * maxInfoLength..fioCode.length - 1)
                                 } else {
-                                    Main.log(fioCode.slice(i * maxInfoLength..i * maxInfoLength + maxInfoLength - 1))
+                                    Main.log(fioCode.slice(i * maxInfoLength..i * maxInfoLength + maxInfoLength - 1), TAG)
                                     newUUID += fioCode.slice(i * maxInfoLength..i * maxInfoLength + maxInfoLength - 1)
                                 }
                                 newUUID = Beacons.completeRawUUID(newUUID)
 
-                                Main.log(newUUID)
+                                Main.log(newUUID, TAG)
                                 Beacons.createBeacon(newUUID)
                             }
                         }
                     }
                 }
-                if(DriverTripPage.currentRangingState == Dict.SEND_DRIVER_INFO_TO_LOADER) {
-                    when (uuid.slice(0..1)) {
-                        Dict.STOP_SENDING_DATA_AND_WAIT -> { waitForSignal() }
-                    }
-                }
 
-                Main.log("Получен сигнал с шорткатом $uuid")
-                when (uuid.slice(0..1)) {
+                when (signalType) {
                     Dict.DISMISS_FROM_QUEUE -> { youDismissed() }
                     Dict.YOU_NEED_TO_RECONNECT -> { startReconnectionToLoader() }
                     Dict.GO_TO_LOADING -> { goToLoading() }
                     Dict.GO_RETURN_TO_QUEUE -> { returnToQueue() }
                     Dict.YOU_LOADED_GO_TO_FACTORY -> { setStateToLoadedAndDisconnect() }
+                    Dict.STOP_SENDING_DATA_AND_WAIT -> { if(DriverTripPage.currentRangingState == Dict.SEND_DRIVER_INFO_TO_LOADER) waitForSignal() }
                 }
             }
 

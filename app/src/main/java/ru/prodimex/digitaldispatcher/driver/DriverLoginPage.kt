@@ -15,9 +15,6 @@ import ru.prodimex.digitaldispatcher.uitools.PreloadingButton
 
 
 class DriverLoginPage: AppController() {
-    companion object {
-
-    }
     private var showPassword = false
     var phoneField:MaskedEditText? = null
     var passwordText:EditText? = null
@@ -26,14 +23,14 @@ class DriverLoginPage: AppController() {
     var requestButton: PreloadingButton? = null
     var passwordActionsView:LinearLayout? = null
     var requestPasswordActionsView:LinearLayout? = null
-
+    override val TAG = "DRIVER LOGIN PAGE"
     init {
         init(R.layout.driver_enter_page)
     }
 
     override fun init(_layoutId:Int) {
         if(Main.getParam("userData") != "" && Main.getParam("driverLoggedOuted") != "") {
-            Main.log(Main.getParam("userData"))
+            Main.log(Main.getParam("userData"), TAG)
             val userData:HashMap<String, Any>
                 = Gson().fromJson(Main.getParam("userData"), object : TypeToken<HashMap<String?, Any?>?>() {}.type)
 
@@ -52,8 +49,6 @@ class DriverLoginPage: AppController() {
             if(Main.getParam("driverPendingRequests") != "") {
                 val pendingRequests:HashMap<String, HashMap<String, String>>
                         = Gson().fromJson(Main.getParam("driverPendingRequests"), object : TypeToken<HashMap<String, HashMap<String, String>>?>() {}.type)
-
-                Main.log("pendingRequests pendingRequests pendingRequests pendingRequests pendingRequests pendingRequests pendingRequests ${pendingRequests}")
                 DriverAppController.pendingRequests = pendingRequests
             }
 
@@ -129,8 +124,8 @@ class DriverLoginPage: AppController() {
             "phone" to "7${phoneField!!.unMaskedText.toString()}",
             "notificationToken" to "",
         ), _callback = fun (_response:HashMap<String, Any>) {
-            Main.log("Result ======== ")
-            Main.log(_response)
+            Main.log("Result ======== ", TAG)
+            Main.log(_response, TAG)
             if(_response["result"] == "error") {
                 showError(_response)
             } else {
@@ -140,17 +135,6 @@ class DriverLoginPage: AppController() {
                 Main.setParam("password", "")
                 (Main.main.applicationContext.getSystemService(Context.INPUT_METHOD_SERVICE)
                         as InputMethodManager).showSoftInput(passwordText, InputMethodManager.SHOW_IMPLICIT)
-                /*Main.setParam("server", _response["server"].toString())
-                Main.setParam("token", _response["token"].toString())
-                Main.setParam("token_type", _response["token_type"].toString())
-
-                HTTPRequest.token = _response["token"].toString()
-                HTTPRequest.token_type = _response["token_type"].toString()
-                HTTPRequest.nodeServerUrl =  _response["server"].toString() + "/mobile/"
-                HTTPRequest("users/current", _requestMethod = "GET", _callback = fun (_response:HashMap<String, Any>) {
-                    UserData.collectData(_response)
-                    scene.showPage(Main.TRIP_PAGE)
-                }).execute()*/
             }
         }, _requestMethod = "GET", _isTms = true).execute()
     }
@@ -175,8 +159,8 @@ class DriverLoginPage: AppController() {
             "token" to "0000",
             "notificationToken" to "",
         ), _callback = fun (_response:HashMap<String, Any>) {
-            Main.log("Result ======== ")
-            Main.log(_response)
+            Main.log("Result ======== ", TAG)
+            Main.log(_response, TAG)
             if(_response["result"] == "error") {
                 showError(_response)
             } else {

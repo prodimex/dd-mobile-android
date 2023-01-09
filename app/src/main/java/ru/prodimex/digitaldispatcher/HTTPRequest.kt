@@ -27,6 +27,7 @@ class HTTPRequest(_method:String, _args:HashMap<String, String> = hashMapOf(), _
     private val REQUEST_METHOD = _requestMethod
     private val IS_TMS = _isTms
     private val METHOD = _method
+    private val TAG = "HTTP REQUEST"
     override fun doInBackground(vararg p0: Void?):String {
         if(!isNetworkAvailable(appContext))
             return "{'result':'error', 'responseCode':'888'}"
@@ -62,7 +63,7 @@ class HTTPRequest(_method:String, _args:HashMap<String, String> = hashMapOf(), _
             con.setInstanceFollowRedirects(false);
             con.connect();*/
         }
-        println("====================${con.url} $REQUEST_METHOD")
+        Main.log("====================${con.url} $REQUEST_METHOD", TAG)
         try {
             with(con) {
                 requestMethod = REQUEST_METHOD

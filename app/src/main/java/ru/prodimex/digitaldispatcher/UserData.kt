@@ -93,8 +93,6 @@ class UserData {
 
             tripData = _data
             if (_data["timeslot"]!!::class.simpleName == "ArrayList" && (_data["timeslot"]!! as ArrayList<Any>).size == 0) {
-                //Main.log(_data)
-                //Main.log((_data["timeslot"]!! as ArrayList<Any>).size)
                 currentTrip = null
                 return
             }
@@ -107,7 +105,6 @@ class UserData {
 
             loadingCargoStation = toNode(currentTrip!!["loading_cargo_station"])
             tripFieldindex = toNode(loadingCargoStation["farm"])["alternative_name"] as String
-            //Main.log(data)
         }
 
         fun toNode(_node:Any?):LinkedTreeMap<String, Any> {
@@ -115,20 +112,13 @@ class UserData {
         }
 
         fun makeShortCut(_tripId:String):String {
-            /*LoaderAppController.driverShortCutMem ++
-            var str = LoaderAppController.driverShortCutMem.toString()
-            for (i in 0 until 4 - str.length) str = "0$str"
-            Main.log(str)*/
-
             var dq_id_hex = Integer.toHexString(_tripId.toInt())
             return "${Integer.toHexString(dq_id_hex.length)}$dq_id_hex"
         }
 
         fun getShortCutFromUUIDTail(_uuidTail:String):String {
             var uuidTail = _uuidTail.replace("-", "", true)
-            Main.log("getShortCutFromUUIDTail ${uuidTail}")
             var numLength = BigInteger(uuidTail.get(0).toString(), 16).toInt()
-            Main.log("getShortCutFromUUIDTail ${numLength}")
             uuidTail = uuidTail.slice(1..numLength)
 
             return "$numLength$uuidTail"

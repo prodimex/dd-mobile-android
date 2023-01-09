@@ -8,9 +8,6 @@ import ru.prodimex.digitaldispatcher.uitools.PopupManager
 import ru.prodimex.digitaldispatcher.R
 
 class LoaderSettingsPage: LoaderAppController() {
-    companion object {
-
-    }
     init {
         init(R.layout.loader_settings_page)
 
@@ -39,7 +36,8 @@ class LoaderSettingsPage: LoaderAppController() {
         var i = 50
         setOnClick(R.id.add_beacon) {
             i ++
-            var bcn = Beacons.createBeaconTransmitter("${i}000000-0000-0000-0000-000000000000")
+            Beacons.createBeaconTransmitter("${i}000000-0000-0000-0000-000000000000")
+            Main.main.toastMe("Создан пустой маячок ${i}000000-0000-0000-0000-000000000000")
         }
 
         highlightButton(R.id.settings_button)

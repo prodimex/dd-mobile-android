@@ -1,4 +1,5 @@
 package ru.prodimex.digitaldispatcher.scaner
+import android.annotation.SuppressLint
 import org.altbeacon.beacon.*
 import android.widget.TextView
 import ru.prodimex.digitaldispatcher.*
@@ -9,6 +10,7 @@ class BeaconScannerPage: AppController() {
         val fieldId = "МДА"
         val drivers:MutableMap<String, BeaconScannerListItem> = mutableMapOf()
     }
+    override val TAG = "BEACON SCANNER PAGE"
     init {
         showLayout(R.layout.scanner_page_layout)
         listContainer = scene.findViewById(R.id.lp_drivers_container)
@@ -38,12 +40,11 @@ class BeaconScannerPage: AppController() {
 
     override fun scanObserver(beacons:Collection<Beacon>) {
         var pinged = mutableMapOf<String, Boolean>()
-        //Main.log(beacons.size)
         beacons.forEach {
             if(Beacons.beaconFarmCode.indexOf("${it.id2}${it.id3}") != 0)
                 return
             var uuid = it.id1.toString()
-            Main.log("$uuid ${it.id2}${it.id3}")
+            Main.log("Beacon observed: $uuid ${it.id2}${it.id3}", TAG)
             if(!drivers.contains(uuid)) {
                 drivers[uuid] = BeaconScannerListItem(this, uuid)
             } else {
@@ -55,6 +56,7 @@ class BeaconScannerPage: AppController() {
         updateView()
     }
 
+    @SuppressLint("SetTextI18n")
     override fun updateView() {
         if(scanStarted) {
             vis(R.id.start_scan, false)
@@ -70,17 +72,10 @@ class BeaconScannerPage: AppController() {
         }
         scene.findViewById<TextView>(R.id.online_offline_drivers_counter).text = "$online/${drivers.size} Поле:$fieldId / ${Beacons.beaconFarmCode}"
 
-        var t = "FBSP: ${Beacons.beaconManager.foregroundBetweenScanPeriod} "
-        t += "FSP: ${Beacons.beaconManager.foregroundScanPeriod} "
-        t += "FSFF: ${Beacons.beaconManager.foregroundServiceStartFailed()} "
-        t += "BGM: ${Beacons.beaconManager.backgroundMode} "
-        t += "MRGS: ${Beacons.beaconManager.monitoredRegions} "
-
-        /*
-        t += "LAY: ${Beacons.beaconParser.layout} "
-        t += "POWCORR: ${Beacons.beaconParser.powerCorrection} "
-        t += "ID: ${Beacons.beaconParser.identifier} "
-*/
-        scene.findViewById<TextView>(R.id.scanner_stats).text = t
+        scene.findViewById<TextView>(R.id.scanner_stats).text = "FBSP: ${Beacons.beaconManager.foregroundBetweenScanPeriod} " +
+                "FSP: ${Beacons.beaconManager.foregroundScanPeriod} " +
+                "FSFF: ${Beacons.beaconManager.foregroundServiceStartFailed()} " +
+                "BGM: ${Beacons.beaconManager.backgroundMode} " +
+                "MRGS: ${Beacons.beaconManager.monitoredRegions} "
     }
 }

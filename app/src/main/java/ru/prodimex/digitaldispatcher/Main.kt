@@ -42,8 +42,8 @@ class Main : AppCompatActivity() {
 
         var logCounter = 0
         val sessionLogs:ArrayList<String> = arrayListOf()
-        fun log(_str:Any) {
-            println("#${logCounter++} ${sessionLogs.size} MOMOZODO: $_str")
+        fun log(_str:Any, _tag:String = "NO TAG") {
+            println("${_tag}: #${logCounter++} ${sessionLogs.size} MOMOZODO: $_str")
             sessionLogs.add("$_str")
             while (sessionLogs.size > 5000)
                 sessionLogs.removeAt(0)
@@ -60,7 +60,7 @@ class Main : AppCompatActivity() {
             sharedPref.edit().putString(_key, _value).apply()
         }
     }
-
+    private val TAG = "MAIN"
     private val uiOptions = (View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
             or View.SYSTEM_UI_FLAG_FULLSCREEN
             or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
@@ -164,17 +164,17 @@ class Main : AppCompatActivity() {
                 )
                 when (state) {
                     BluetoothAdapter.STATE_OFF -> {
-                        log("BluetoothAdapter.STATE_OFF")
+                        log("BluetoothAdapter.STATE_OFF", TAG)
                         showWhenBluetoothIsOff()
                     }
                     BluetoothAdapter.STATE_TURNING_OFF -> {
-                        log("BluetoothAdapter.STATE_TURNING_OFF")
+                        log("BluetoothAdapter.STATE_TURNING_OFF", TAG)
                     }
                     BluetoothAdapter.STATE_ON -> {
-                        log("BluetoothAdapter.STATE_ON")
+                        log("BluetoothAdapter.STATE_ON", TAG)
                     }
                     BluetoothAdapter.STATE_TURNING_ON -> {
-                        log("BluetoothAdapter.STATE_TURNING_ON")
+                        log("BluetoothAdapter.STATE_TURNING_ON", TAG)
                     }
                 }
             }
@@ -182,13 +182,13 @@ class Main : AppCompatActivity() {
     }
 
     override fun onStop() {
-        log("=================== onStop Intent.ACTION_SCREEN_OFF:${intent.action}")
+        log("=================== onStop Intent.ACTION_SCREEN_OFF:${intent.action}", TAG)
         super.onStop()
         //unregisterReceiver(mReceiver)
     }
 
     override fun onResume() {
-        log("=================== onResume Intent.ACTION_SCREEN_OFF:${intent.action}")
+        log("=================== onResume Intent.ACTION_SCREEN_OFF:${intent.action}", TAG)
         Beacons.startScan()
         super.onResume()
     }
@@ -209,7 +209,7 @@ class Main : AppCompatActivity() {
         when (requestCode) {
             PERMISSION_REQUEST_FINE_LOCATION -> {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    log("fine location permission granted")
+                    log("fine location permission granted", TAG)
                 } else {
                     val builder: AlertDialog.Builder = AlertDialog.Builder(this)
                     builder.setTitle("Functionality limited")
@@ -222,17 +222,17 @@ class Main : AppCompatActivity() {
             }
             PERMISSION_BLUETOOTH_SCAN -> {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    log("BLUETOOTH_SCAN permission granted")
+                    log("BLUETOOTH_SCAN permission granted", TAG)
                 } else {
-                    log("BLUETOOTH_SCAN permission denied")
+                    log("BLUETOOTH_SCAN permission denied", TAG)
                 }
                 return
             }
             PERMISSION_BLUETOOTH_ADVERTISE -> {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    log("BLUETOOTH_ADVERTISE permission granted")
+                    log("BLUETOOTH_ADVERTISE permission granted", TAG)
                 } else {
-                    log("BLUETOOTH_ADVERTISE permission denied")
+                    log("BLUETOOTH_ADVERTISE permission denied", TAG)
                 }
                 return
             }
@@ -259,7 +259,7 @@ class Main : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        log("=================== onDestroy")
+        log("=================== onDestroy", TAG)
         Beacons.killAllBeacons()
         super.onDestroy()
     }
@@ -275,7 +275,7 @@ class Main : AppCompatActivity() {
     fun installUpdate() {
         runApplication()
         val intent = Intent(Intent.ACTION_VIEW)
-        log(Environment.getExternalStorageDirectory())
+        log(Environment.getExternalStorageDirectory(), TAG)
         val f = File("${Environment.getExternalStorageDirectory().absolutePath}/Download/pxupdate.apk")
 
         val data = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".provider", f)

@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat
 import org.altbeacon.beacon.Beacon
 
 open class AppController {
+    open val TAG = "APP CONTROLLER"
     val scene = Main.main
     lateinit var listContainer: LinearLayout
     var scanStarted = false
@@ -36,7 +37,7 @@ open class AppController {
     open fun switchTopage(_pageId:String) {
         if(currentPageId == _pageId)
             return
-        Main.log("PAGE SWITCHED TO: $currentPageId")
+        Main.log("PAGE SWITCHED TO: $currentPageId", TAG)
         pageKilled = true
         scene.showPage(_pageId)
     }
@@ -96,4 +97,5 @@ open class AppController {
             scene.findViewById<TextView>(R.id.error_field_app_version).text = ""
         }
     }
+
 }

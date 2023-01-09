@@ -15,6 +15,7 @@ class UpdateDownloader(_apkUrl:String, _scene:UpdatePage): AsyncTask<String, Int
     private var wakeLock:WakeLock? = null
     val apkUrl = _apkUrl
     val scene = _scene
+    private val TAG = "UPDATE DOWNLOADER"
 
     @SuppressLint("WakelockTimeout")
     override fun onPreExecute() {
@@ -27,7 +28,7 @@ class UpdateDownloader(_apkUrl:String, _scene:UpdatePage): AsyncTask<String, Int
     override fun onProgressUpdate(vararg values:Int?) {
         super.onProgressUpdate(*values)
         values[0]?.let { scene.showDownloadProgress(it) }
-        Main.log(values)
+        Main.log(values, TAG)
     }
     
     override fun doInBackground(vararg p0:String?):String {
@@ -64,7 +65,7 @@ class UpdateDownloader(_apkUrl:String, _scene:UpdatePage): AsyncTask<String, Int
             input.close()
             return "complete"
         } catch (e:Exception) {
-            println(e.toString())
+            Main.log(e.toString(), TAG)
             return e.toString()
         }
     }

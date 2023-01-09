@@ -1,5 +1,6 @@
 package ru.prodimex.digitaldispatcher.loader
 
+import android.annotation.SuppressLint
 import android.os.Build
 import android.text.Html
 import android.view.View
@@ -13,13 +14,13 @@ import ru.prodimex.digitaldispatcher.*
 import ru.prodimex.digitaldispatcher.uitools.PopupManager
 import java.math.BigInteger
 
-class LoaderPagesListitem(_number:String, _shortCut:String) {
+class LoaderPagesListItem(_number:String, _shortCut:String) {
     var PAGE_ID = Dict.LOADER_QUEUE_PAGE
     val number = _number
     val tripId = BigInteger(_shortCut.slice(1.._shortCut.length-1), 16).toString()
     var driverState = Dict.NEW_ITEM
     var view: LinearLayout = Main.main.layoutInflater.inflate(R.layout.queue_driver_list_item, null) as LinearLayout
-    var shortCut = _shortCut//UserData.makeShortCut(_tripId)
+    var shortCut = _shortCut
     var currentBeacon = ""
 
     var surname = ""
@@ -28,6 +29,7 @@ class LoaderPagesListitem(_number:String, _shortCut:String) {
     var driverStatus = "Обнаружен"
     val space = Space(Main.main.applicationContext)
 
+    val TAG = "LOADER PAGE LIST ITEM"
     init {
         if(LoaderAppController.driversInfoCache.contains(number)) {
             var cacheData = LoaderAppController.driversInfoCache[number] as LinkedTreeMap<String, Any>
@@ -82,7 +84,7 @@ class LoaderPagesListitem(_number:String, _shortCut:String) {
         pingCounter ++
     }
     fun receiveUIIDs(_uuid:String) {
-        Main.log("receiveUIIDs $_uuid $driverState")
+        Main.log("receiveUIIDs $_uuid $driverState", TAG)
         pingCounter = 0
         var uuid = _uuid
         if(uuid.indexOf(Dict.SEND_DRIVER_INFO_TO_LOADER) == 0
@@ -91,22 +93,20 @@ class LoaderPagesListitem(_number:String, _shortCut:String) {
             Beacons.killBeacon(currentBeacon)
             driverStatus = "Передаёт данные"
 
-            Main.log("Получаем данные от водителя")
-            Main.log(uuid)
+            Main.log("Получаем данные от водителя $uuid", TAG)
             uuid = uuid.replace("-", "", true)
-            var shortCut = UserData.getShortCutFromUUIDTail(_uuid.slice(2..uuid.length - 1))
-            Main.log("shortCut ${shortCut}")
-            var scLength = BigInteger(shortCut.get(0).toString(), 16).toInt()
-            Main.log("scLength ${scLength}")
-            var cur = uuid.slice(scLength + 3..scLength + 3)
-            var tot = uuid.slice(scLength + 4..scLength + 4)
-            Main.log("$cur $tot ${recievedData.size} $uuid")
+            val uuidTail = UserData.getShortCutFromUUIDTail(_uuid.slice(2..uuid.length - 1))
+            val scLength = BigInteger(uuidTail.get(0).toString(), 16).toInt()
+            Main.log("shortCut ${uuidTail} scLength ${scLength}", TAG)
+            val cur = uuid.slice(scLength + 3..scLength + 3)
+            val tot = uuid.slice(scLength + 4..scLength + 4)
+            Main.log("$cur $tot ${recievedData.size} $uuid", TAG)
 
             uuid = uuid.slice(scLength + 5..uuid.length - 1)
-            Main.log("uuid ${uuid}")
+            Main.log("uuid ${uuid}", TAG)
             recievedData[cur] = uuid
             if(recievedData.size - 1 == tot.toInt()) {
-                Main.log("Данные получены")
+                Main.log("Данные получены", TAG)
                 driverStatus = "Все данные получены"
                 var dataLine = ""
                 for (i in 0..tot.toInt()) {
@@ -119,7 +119,7 @@ class LoaderPagesListitem(_number:String, _shortCut:String) {
                         fio += Dict.farmIndexCharByHex[hex]
                 }
                 fio = fio.lowercase()
-                Main.log(fio)
+                Main.log(fio, TAG)
 
                 val fioArray:List<String> = fio.split("|")
                 surname = "${fioArray[0].slice(0..0).uppercase()}${fioArray[0].slice(1 until fioArray[0].length)}"
@@ -143,8 +143,7 @@ class LoaderPagesListitem(_number:String, _shortCut:String) {
                 startBeacon(Dict.STOP_SENDING_DATA_AND_WAIT)
                 stopPreloading()
             }
-            Main.log("$cur $tot ${recievedData.size} $uuid")
-
+            Main.log("$cur $tot ${recievedData.size} $uuid", TAG)
         }
 
         if(uuid.indexOf(Dict.IM_WAITING_FOR_LOADER_SIGNAL) == 0
@@ -165,7 +164,7 @@ class LoaderPagesListitem(_number:String, _shortCut:String) {
                 else if(uuid.indexOf(Dict.RECONNECT_TO_LOADER_AS_DISMISSED) == 0) Dict.LOADER_CANCELLED_PAGE
                 else Dict.LOADER_QUEUE_PAGE
 
-            Main.log("СОЗДАЕМ ОТВЕТНЫЙ БИКОН ДЛЯ ВОДИТЕЛЯ $number")
+            Main.log("СОЗДАЕМ ОТВЕТНЫЙ БИКОН ДЛЯ ВОДИТЕЛЯ $number", TAG)
             if(LoaderAppController.driversInfoCache.contains(number)) {
                 startBeacon(Dict.I_KNOW_YOU_WAIT_FOR_LOADER_SIGNAL)
             } else {
@@ -186,14 +185,12 @@ class LoaderPagesListitem(_number:String, _shortCut:String) {
             placeMeToArchive()
         }
 
-        Main.log("=============================================")
-        Main.log(uuid.indexOf(Dict.IM_LOADED_AND_GO_TO_FACTORY))
-        Main.log(driverState)
-
         if(uuid.indexOf(Dict.IM_LOADED_AND_GO_TO_FACTORY) == 0 && driverState == Dict.YOU_LOADED_GO_TO_FACTORY) {
             setImInQueueAndWait(Dict.LOADER_CANCELLED_PAGE, "Погрузка успешно завершена")
             placeMeToArchive()
         }
+
+        Main.log("UUIDS Recieved and processed $driverState", TAG)
     }
 
     fun placeMeToArchive() {
@@ -205,7 +202,7 @@ class LoaderPagesListitem(_number:String, _shortCut:String) {
     }
 
     fun setImInQueueAndWait(_newPageId:String, _newDriverStatus:String) {
-        Main.log("setImInQueueAndWait --------- $currentBeacon")
+        Main.log("setImInQueueAndWait --------- $currentBeacon", TAG)
         PAGE_ID = _newPageId
         Beacons.killBeacon(currentBeacon)
         driverState = Dict.SILENCE
@@ -232,11 +229,12 @@ class LoaderPagesListitem(_number:String, _shortCut:String) {
         view.findViewById<ImageView>(R.id.loader_driver_preloader_image).clearAnimation()
     }
 
+    @SuppressLint("CutPasteId")
     fun updateView() {
         setText(R.id.loader_car_number, "<b>АМ: $number Номер рейса: $tripId</b>")
         setText(R.id.loader_block_driver_name, "<b>$surname $name $patronymic</b>")
 
-        setText(R.id.loader_queue_driver_fio, "$driverStatus")
+        setText(R.id.loader_queue_driver_fio, driverStatus)
 
         view.findViewById<Button>(R.id.disconnect_button).visibility = View.VISIBLE
         view.findViewById<Button>(R.id.connect_button).visibility = View.VISIBLE

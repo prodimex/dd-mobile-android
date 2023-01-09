@@ -20,29 +20,6 @@ class DriverSettingsPage: DriverAppController() {
 
         setOnClick(R.id.set_current_trip_to_loaded) {
 
-            Main.log("------------------------------------")
-            var d = Date()
-            var timeZone = SimpleDateFormat("z", Locale("en")).format(d).replace(":", "")
-            var date = SimpleDateFormat("EEE MMM d yyy HH:mm:ss", Locale("en")).format(d) + " $timeZone"
-            Main.log(date)
-            Main.log("Mon Oct 31 2022 08:38:22 GMT+0300")
-            Main.log("------------------------------------")
-            /*Main.log(SimpleDateFormat("EEE MMM d yyy HH:mm:ss zz", Locale("en")).format(d))
-            Main.log("Mon Oct 31 2022 08:38:22 GMT+0300")
-            Main.log("${d.day} ${d.month} ${d.date} ${d.year} ${d.hours}:${d.minutes}:${d.seconds} ${d.timezoneOffset} ")*/
-
-            /*HTTPRequest("trips/logs-new",
-                _args = hashMapOf("id" to UserData.tripId, "status" to "loaded", "loggingTime" to "Mon Oct 31 2022 08:38:22 GMT+0300"),
-                _callback = fun(_response:HashMap<String, Any>) {
-                    if(_response["result"] == "error") {
-                        showErrorByCode(_response)
-                        return
-                    }
-                    hideError()
-                    Main.log(_response)
-                }).execute()
-
-             */
         }
 
         setOnClick(R.id.set_current_trip_to_discarded) {

@@ -6,16 +6,13 @@ import android.widget.TextView
 import org.altbeacon.beacon.Beacon
 import org.altbeacon.beacon.BeaconTransmitter
 import ru.prodimex.digitaldispatcher.*
-import java.math.BigInteger
 
 open class LoaderAppController: AppController() {
     companion object {
-        var driverShortCutMem = 0
+        var driversOnField:MutableMap<String, LoaderPagesListItem> = hashMapOf()
+        var driversOnArchive:MutableMap<String, LoaderPagesListItem> = hashMapOf()
 
-        var driversOnField:MutableMap<String, LoaderPagesListitem> = hashMapOf()
-        var driversOnArchive:MutableMap<String, LoaderPagesListitem> = hashMapOf()
-
-        var driversOnFieldByShortCut:MutableMap<String, LoaderPagesListitem> = hashMapOf()
+        var driversOnFieldByShortCut:MutableMap<String, LoaderPagesListItem> = hashMapOf()
         var reconnectShortcuts:MutableMap<String, BeaconTransmitter> = hashMapOf()
 
         var driversInfoCache = HashMap<String, Any>()
@@ -26,25 +23,6 @@ open class LoaderAppController: AppController() {
             reconnectShortcuts.clear()
         }
 
-        fun checkDriverAvailability(_uuid:String) {
-            Main.log("checkDriverAvailability $_uuid")
-            var number = Beacons.makeNumberFromUUID(_uuid)
-            var shortCut = UserData.getShortCutFromUUIDTail(_uuid.slice(2.._uuid.length - 1))
-            Main.log("checkDriverAvailability $number $shortCut ${driversOnField.contains(number)}")
-            if(!driversOnField.contains(number)) {
-                driversOnField[number] = LoaderPagesListitem(number, shortCut)
-                if(_uuid.indexOf(Dict.RECONNECT_TO_LOADER_IN_TO_LOADING_QUEUE) == 0)
-                    driversOnField[number]!!.PAGE_ID = Dict.LOADER_LOADED_PAGE
-
-                if(_uuid.indexOf(Dict.RECONNECT_TO_LOADER_AS_DISMISSED) == 0)
-                    driversOnField[number]!!.PAGE_ID = Dict.LOADER_CANCELLED_PAGE
-
-                Main.log("Обнаружен новый водитель и добавлен: $_uuid")
-                playAlertSoundAnd("Обнаружен новый водитель.")
-            }
-            driversOnField[number]!!.receiveUIIDs(_uuid)
-        }
-
         fun playAlertSoundAnd(_msg:String) {
             Main.main.toastMe(_msg)
             val notification: Uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
@@ -52,68 +30,9 @@ open class LoaderAppController: AppController() {
             r.play()
         }
 
-        fun makeReconnectBeacon(_shortcut:String) {
-            var uuid = Beacons.completeRawUUID("${Dict.YOU_NEED_TO_RECONNECT}$_shortcut")
-            Main.log("makeReconnectBeacon $uuid ++ ${_shortcut}")
-            Beacons.createBeacon(uuid)
-            reconnectShortcuts[_shortcut] = Beacons.beaconTransmitters[uuid]!!
-
-        }
-
         var driversPings:MutableMap<String, Boolean> = hashMapOf()
-        fun processTheSignal(_uuid:String) {
-            Main.log("processTheSignal $_uuid - ${_uuid.indexOf(Dict.IM_WAITING_FOR_LOADER_SIGNAL)}")
-
-            //При обнаружении водителя с просьбой о подключении заводим его карточку и читаем сигнал
-            if(_uuid.indexOf(Dict.CONNECT_TO_LOADER_SIGNAL) == 0) {
-                checkDriverAvailability(_uuid)
-            }
-
-            //Если водитель получил сигнал переприсоединения он присылает соответствующий сигнал
-            if(_uuid.indexOf(Dict.RECONNECT_TO_LOADER) == 0
-                || _uuid.indexOf(Dict.RECONNECT_TO_LOADER_AS_DISMISSED) == 0
-                || _uuid.indexOf(Dict.RECONNECT_TO_LOADER_IN_TO_LOADING_QUEUE) == 0) {
-                var shortCut = UserData.makeShortCut(Beacons.getTripIdFromUUID(_uuid))
-                Main.log("Если водитель получил сигнал ${reconnectShortcuts.contains(shortCut)} ${shortCut}")
-                if(reconnectShortcuts.contains(shortCut)) {
-                    reconnectShortcuts.remove(shortCut)
-                    Beacons.killBeacon(Beacons.completeRawUUID("${Dict.YOU_NEED_TO_RECONNECT}$shortCut"))
-                }
-                checkDriverAvailability(_uuid)
-            }
-
-            //При получении сигналов содержащих только шорткат проверяем на отсутствие карточки
-            // и если её нет то запрашиваем данные
-            if(_uuid.indexOf(Dict.SEND_DRIVER_INFO_TO_LOADER) == 0
-                || _uuid.indexOf(Dict.IM_WAITING_FOR_LOADER_SIGNAL) == 0
-                || _uuid.indexOf(Dict.IM_DISMISSED_BUT_ON_FIELD) == 0
-                || _uuid.indexOf(Dict.IM_LOADED_AND_GO_TO_FACTORY) == 0
-                || _uuid.indexOf(Dict.IM_ON_LOADING) == 0) {
-
-                var shortCut = UserData.getShortCutFromUUIDTail(_uuid.slice(2.._uuid.length - 1))//getShortCutFromUUID(_uuid)
-                Main.log("Only shorcutted signal $shortCut ${driversOnFieldByShortCut.contains(shortCut)}")
-                if (driversOnFieldByShortCut.contains(shortCut)) {
-                    driversOnFieldByShortCut[shortCut]!!.receiveUIIDs(_uuid)
-                    driversPings[shortCut] = true
-                } else if (driversOnArchive.contains(shortCut)) {
-                    driversOnArchive[shortCut]!!.receiveUIIDs(_uuid)
-                } else {
-                    if(!reconnectShortcuts.contains(shortCut))
-                         makeReconnectBeacon(shortCut)
-                }
-            }
-        }
-
-        /*private fun getShortCutFromUUID(_uuid: String):String {
-            Main.log("getShortCutFromUUID $_uuid")
-            var shortCut = _uuid.slice(2..2) +
-                    _uuid.replace("-", "", true)
-                        .slice(3..BigInteger(_uuid.slice(2..2), 16).toInt() + 2)
-            Main.log("getShortCutFromUUID shortCut $shortCut")
-            return shortCut
-        }*/
     }
-
+    override val TAG = "LOADER APP CONTROLLER"
     override fun init(_layoutId:Int) {
         super.init(_layoutId)
         listContainer = scene.findViewById(R.id.loader_list_container)
@@ -153,6 +72,74 @@ open class LoaderAppController: AppController() {
         super.switchTopage(_pageId)
     }
 
+    fun checkDriverAvailability(_uuid:String) {
+        var number = Beacons.makeNumberFromUUID(_uuid)
+        var shortCut = UserData.getShortCutFromUUIDTail(_uuid.slice(2.._uuid.length - 1))
+        Main.log("checkDriverAvailability $_uuid $number $shortCut ${driversOnField.contains(number)}", TAG)
+        if(!driversOnField.contains(number)) {
+            driversOnField[number] = LoaderPagesListItem(number, shortCut)
+            if(_uuid.indexOf(Dict.RECONNECT_TO_LOADER_IN_TO_LOADING_QUEUE) == 0)
+                driversOnField[number]!!.PAGE_ID = Dict.LOADER_LOADED_PAGE
+
+            if(_uuid.indexOf(Dict.RECONNECT_TO_LOADER_AS_DISMISSED) == 0)
+                driversOnField[number]!!.PAGE_ID = Dict.LOADER_CANCELLED_PAGE
+
+            Main.log("Обнаружен новый водитель и добавлен: $_uuid")
+            playAlertSoundAnd("Обнаружен новый водитель.")
+        }
+        driversOnField[number]!!.receiveUIIDs(_uuid)
+    }
+
+    fun processTheSignal(_uuid:String) {
+        Main.log("processTheSignal $_uuid - ${_uuid.indexOf(Dict.IM_WAITING_FOR_LOADER_SIGNAL)}", TAG)
+
+        //При обнаружении водителя с просьбой о подключении заводим его карточку и читаем сигнал
+        if(_uuid.indexOf(Dict.CONNECT_TO_LOADER_SIGNAL) == 0) {
+            checkDriverAvailability(_uuid)
+        }
+
+        //Если водитель получил сигнал переприсоединения он присылает соответствующий сигнал
+        if(_uuid.indexOf(Dict.RECONNECT_TO_LOADER) == 0
+            || _uuid.indexOf(Dict.RECONNECT_TO_LOADER_AS_DISMISSED) == 0
+            || _uuid.indexOf(Dict.RECONNECT_TO_LOADER_IN_TO_LOADING_QUEUE) == 0) {
+            var shortCut = UserData.makeShortCut(Beacons.getTripIdFromUUID(_uuid))
+            Main.log("Если водитель получил сигнал ${reconnectShortcuts.contains(shortCut)} ${shortCut}", TAG)
+            if(reconnectShortcuts.contains(shortCut)) {
+                reconnectShortcuts.remove(shortCut)
+                Beacons.killBeacon(Beacons.completeRawUUID("${Dict.YOU_NEED_TO_RECONNECT}$shortCut"))
+            }
+            checkDriverAvailability(_uuid)
+        }
+
+        //При получении сигналов содержащих только шорткат проверяем на отсутствие карточки
+        // и если её нет то запрашиваем данные
+        if(_uuid.indexOf(Dict.SEND_DRIVER_INFO_TO_LOADER) == 0
+            || _uuid.indexOf(Dict.IM_WAITING_FOR_LOADER_SIGNAL) == 0
+            || _uuid.indexOf(Dict.IM_DISMISSED_BUT_ON_FIELD) == 0
+            || _uuid.indexOf(Dict.IM_LOADED_AND_GO_TO_FACTORY) == 0
+            || _uuid.indexOf(Dict.IM_ON_LOADING) == 0) {
+
+            var shortCut = UserData.getShortCutFromUUIDTail(_uuid.slice(2.._uuid.length - 1))//getShortCutFromUUID(_uuid)
+            Main.log("Only shorcutted signal $shortCut ${driversOnFieldByShortCut.contains(shortCut)}", TAG)
+            if (driversOnFieldByShortCut.contains(shortCut)) {
+                driversOnFieldByShortCut[shortCut]!!.receiveUIIDs(_uuid)
+                driversPings[shortCut] = true
+            } else if (driversOnArchive.contains(shortCut)) {
+                driversOnArchive[shortCut]!!.receiveUIIDs(_uuid)
+            } else {
+                if(!reconnectShortcuts.contains(shortCut))
+                    makeReconnectBeacon(shortCut)
+            }
+        }
+    }
+
+    fun makeReconnectBeacon(_shortcut:String) {
+        var uuid = Beacons.completeRawUUID("${Dict.YOU_NEED_TO_RECONNECT}$_shortcut")
+        Main.log("makeReconnectBeacon $uuid ++ ${_shortcut}", TAG)
+        Beacons.createBeacon(uuid)
+        reconnectShortcuts[_shortcut] = Beacons.beaconTransmitters[uuid]!!
+    }
+
     override fun scanObserver(beacons:Collection<Beacon>) {
         super.scanObserver(beacons)
         driversPings.clear()
@@ -165,7 +152,7 @@ open class LoaderAppController: AppController() {
         }
         driversPings.forEach {
             if(!it.value) {
-                Main.log(it.key)
+                Main.log(it.key, TAG)
                 driversOnFieldByShortCut[it.key]!!.ping()
             }
         }
@@ -173,7 +160,7 @@ open class LoaderAppController: AppController() {
     }
 
     var dc = HashMap<String, Int>() // счетчики водителей
-    private fun processDriverOnPage(driver: LoaderPagesListitem) {
+    private fun processDriverOnPage(driver: LoaderPagesListItem) {
         driver.updateView()
         if(!dc.contains(driver.PAGE_ID))
             dc[driver.PAGE_ID] = 0

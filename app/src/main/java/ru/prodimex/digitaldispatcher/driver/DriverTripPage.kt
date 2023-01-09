@@ -20,7 +20,7 @@ class DriverTripPage: DriverAppController() {
         var toLoaderConnected = false
         var toLoaderConnectionStarted = false
     }
-
+    override val TAG = "DRIVER TRIP PAGE"
     var timer = Timer()
     var takeNewTripStarted = false
 
@@ -47,10 +47,10 @@ class DriverTripPage: DriverAppController() {
 
     fun pingTrip() {
         pingCounter++
-        Main.log("pingCounter $pingCounter")
+        Main.log("pingCounter $pingCounter", TAG)
         HTTPRequest("users/trip", _requestMethod = "GET", _callback = fun (_response:HashMap<String, Any>) {
-            Main.log(" - ping - ")
-            Main.log(_response)
+            Main.log(" - ping - ", TAG)
+            Main.log(_response, TAG)
             if(_response["result"] == "error") {
                 if(_response["responseCode"] == "401") {
                     Main.setParam("driverLoggedOuted", "")
@@ -108,7 +108,6 @@ class DriverTripPage: DriverAppController() {
             return
         }
 
-        //currentTripState = 0
         onLoading = false
         toLoaderConnected = false
         toLoaderConnectionStarted = false
@@ -120,12 +119,8 @@ class DriverTripPage: DriverAppController() {
 
         setText(R.id.trip_page_header,"Получаем новый рейс,\nподождите...")
 
-        Main.log("-------------------------------")
-        Main.log(UserData.cars[0])
-        //var carId = (UserData.cars[0]["id"] as Double).toInt().toString()
-        //val sdf = SimpleDateFormat("yyyy-MM-dd hh:mm:ss")
-        //val currentDate = SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(Date())
-        //timer.cancel()
+        Main.log("takeNewTrip ${UserData.cars[0]}", TAG)
+
         HTTPRequest("users/ready-to-trip-new",
             _args = hashMapOf("car_id" to (UserData.cars[0]["id"] as Double).toInt().toString(),
                 "isNeedDelete" to "false",
@@ -137,10 +132,7 @@ class DriverTripPage: DriverAppController() {
                     return
                 }
                 hideError()
-                Main.log(" ================= ")
-                Main.log(_response)
-                Main.log(" + +++ +++++++++++ ")
-                //startSheduler()
+                Main.log("users/ready-to-trip-new $_response", TAG)
             }).execute()
     }
     fun killViews() {
@@ -315,7 +307,6 @@ class DriverTripPage: DriverAppController() {
 
     fun cancelTrip() {
         startPreloading()
-        //timer.cancel()
         HTTPRequest("trips/${UserData.tripId}/cancel", _requestMethod = "GET", _callback = fun(_response:HashMap<String, Any>) {
             if(_response["result"] == "error") {
                 showErrorByCode(_response)
@@ -343,8 +334,6 @@ class DriverTripPage: DriverAppController() {
             stopPreloading()
             showAssignedStateActions()
         }
-
-        //timer.cancel()
     }
 
     fun startConectionToLoader() {
@@ -360,7 +349,7 @@ class DriverTripPage: DriverAppController() {
         if(preloadingShowed) return
         super.startPreloading()
 
-        Main.log("===== startPreloading")
+        Main.log("===== startPreloading", TAG)
 
         if(actionsView != null) actionsView!!.visibility = View.GONE
 
@@ -376,7 +365,7 @@ class DriverTripPage: DriverAppController() {
         if(!preloadingShowed) return
         super.stopPreloading()
 
-        Main.log("----- stopPreloading")
+        Main.log("----- stopPreloading", TAG)
         scene.findViewById<ImageView>(R.id.trip_page_preloading).clearAnimation()
         scene.findViewById<ImageView>(R.id.trip_page_preloading).visibility = View.GONE
     }

@@ -10,9 +10,6 @@ import ru.prodimex.digitaldispatcher.*
 
 
 class LoaderEnterPage: AppController() {
-    companion object {
-
-    }
     init {
         LoaderAppController.driversInfoCache = Gson().fromJson(
             Main.sharedPref.getString("driversInfoCache", "{}"),

@@ -15,50 +15,19 @@ import ru.prodimex.digitaldispatcher.R
 class BeaconScannerListItem(_scene: BeaconScannerPage, _uuid:String) {
     companion object {
         const val ACCEPT_CONNECTION = "0"
-
-
-        var inited = false
-
-        fun getNumberFromNumberCode(_numberCode:String):String {
-            var number = ""
-            for (i in 0 until _numberCode.length / 2) {
-                number += Dict.carNumberCharsByHex[_numberCode.slice(i * 2..i * 2 + 1)]
-            }
-            return number
-        }
-        /*fun getNumberFromUUID(_uuid:String):String {
-            /*if (!inited) {
-                for((key, value ) in Main.carNumberChars) charByHexForCarNumbers[value] = key
-                inited = true
-            }*/
-
-            var uuidTail = _uuid.slice (   BeaconScannerPage.fieldId.length.._uuid.length-1)
-            uuidTail = uuidTail.replace("-", "", true)
-
-            return getNumberFromNumberCode(uuidTail.slice (1..parseLong(uuidTail[0].toString(), 16).toInt() * 2))
-        }*/
-        fun getActionFromUUID(_uuid:String):String {
-            /*var uuidTail = _uuid.slice (   BeaconScannerPage.fieldId.length.._uuid.length-1)
-            uuidTail = uuidTail.replace("-", "", true)
-            var numlength = parseLong(uuidTail[0].toString(), 16).toInt()
-            uuidTail = uuidTail.slice (1..uuidTail.length - 1)
-            uuidTail = uuidTail.slice (numlength*2..uuidTail.length - 1)*/
-
-            return _uuid.slice(0..1)//parseLong(uuidTail[0].toString(), 16).toInt()
-        }
     }
     private val scene = _scene
     private val view: LinearLayout = scene.scene.layoutInflater.inflate(R.layout.scanner_page_list_item, null) as LinearLayout
     private val space = Space(scene.scene.applicationContext)
-
+    private val TAG = "BEACON SCANNER LIST ITEM"
     val number = Beacons.makeNumberFromUUID(_uuid)
     private var pingCounter = 0
     private var offlinePingCounter = 0
     var online = false
-    var action = getActionFromUUID(_uuid)
+    var action = _uuid.slice(0..1)
     var uuid = _uuid
     init {
-        Main.log("loh $number ${Dict.signalsLangs[action]}")
+        Main.log("loh $number ${Dict.signalsLangs[action]}", TAG)
         view.tag = number
 
         scene.listContainer.addView(view)
@@ -72,7 +41,7 @@ class BeaconScannerListItem(_scene: BeaconScannerPage, _uuid:String) {
             uuid += ACCEPT_CONNECTION
             uuid = Beacons.completeRawUUID(uuid)
 
-            Main.log("uuid ${uuid}")
+            Main.log("uuid ${uuid}", TAG)
             Beacons.createBeacon(uuid)
             vis(R.id.accept_driver_connection, false)
         }
@@ -84,11 +53,8 @@ class BeaconScannerListItem(_scene: BeaconScannerPage, _uuid:String) {
     fun updateView() {
         view.findViewById<TextView>(R.id.driver_number).text = "$number $action ${Dict.signalsLangs[action.toString()]}"
         view.findViewById<TextView>(R.id.ping_count).text = "$pingCounter $uuid"
-        view.findViewById<TextView>(R.id.offline_ping_count).text = "$offlinePingCounter - ${
-            Beacons.makeNumberFromUUID(
-                uuid
-            )
-        }"
+        view.findViewById<TextView>(R.id.offline_ping_count).text = "$offlinePingCounter - ${Beacons.makeNumberFromUUID(uuid)}"
+
         if(online) {
             view.setBackgroundColor(0xFFCCCCCC.toInt())
         } else {
