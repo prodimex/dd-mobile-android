@@ -82,6 +82,8 @@ class UserData {
         var tripId = ""
         var dq_id = ""
 
+        val userHasTrip:Boolean get() = tripId != ""
+
         fun collectTripData(_data:HashMap<String, Any>) {
             if (_data.contains("error"))
                 return

@@ -165,7 +165,7 @@ class LoaderPagesListitem(_number:String, _shortCut:String) {
                 else if(uuid.indexOf(Dict.RECONNECT_TO_LOADER_AS_DISMISSED) == 0) Dict.LOADER_CANCELLED_PAGE
                 else Dict.LOADER_QUEUE_PAGE
 
-            Main.log("СОЗДАЕМ ОТВЕТНЫЙ БИКОН ДЛЯ ПЕРЕДАЧИ ШОРТКАТА ВОДИТЕЛЮ $number")
+            Main.log("СОЗДАЕМ ОТВЕТНЫЙ БИКОН ДЛЯ ВОДИТЕЛЯ $number")
             if(LoaderAppController.driversInfoCache.contains(number)) {
                 startBeacon(Dict.I_KNOW_YOU_WAIT_FOR_LOADER_SIGNAL)
             } else {
@@ -183,7 +183,6 @@ class LoaderPagesListitem(_number:String, _shortCut:String) {
 
         if(uuid.indexOf(Dict.IM_DISMISSED_BUT_ON_FIELD) == 0 && driverState == Dict.DISMISS_FROM_QUEUE) {
             setImInQueueAndWait(Dict.LOADER_CANCELLED_PAGE, "Погрузка запрещена")
-
             placeMeToArchive()
         }
 

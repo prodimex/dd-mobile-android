@@ -105,7 +105,7 @@ open class DriverAppController: AppController() {
             var uuid = it.id1.toString().replace("-", "", true)
             Main.log("scanObserver ${Dict.signalsLangs[uuid.slice(0..1)]} $uuid")
 
-            if(uuid.indexOf(UserData.makeShortCut(UserData.dq_id)) == 2) {
+            if(UserData.userHasTrip && uuid.indexOf(UserData.makeShortCut(UserData.dq_id)) == 2) {
                 if(DriverTripPage.currentRangingState == Dict.CONNECT_TO_LOADER_SIGNAL
                     || DriverTripPage.currentRangingState == Dict.RECONNECT_TO_LOADER
                     || DriverTripPage.currentRangingState == Dict.RECONNECT_TO_LOADER_AS_DISMISSED
@@ -149,9 +149,7 @@ open class DriverAppController: AppController() {
                         Dict.STOP_SENDING_DATA_AND_WAIT -> { waitForSignal() }
                     }
                 }
-            }
 
-            if(uuid.indexOf(UserData.makeShortCut(UserData.dq_id)) == 2) {
                 Main.log("Получен сигнал с шорткатом $uuid")
                 when (uuid.slice(0..1)) {
                     Dict.DISMISS_FROM_QUEUE -> { youDismissed() }
