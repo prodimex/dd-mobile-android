@@ -257,17 +257,11 @@ class Beacons {
         }
 
         fun getTripIdFromUUID(_uuid:String):String {
-            var uuidTail = _uuid.slice (   3.._uuid.length-1)
-            var numLength = _uuid.slice(2..2).toInt()
+            var uuidTail = _uuid.slice (3.._uuid.length-1)
             uuidTail = uuidTail.replace("-", "", true)
-            uuidTail = uuidTail.slice(numLength * 2..uuidTail.length - 1)
+            uuidTail = uuidTail.slice(1..BigInteger(uuidTail.get(0).toString(), 16).toInt())
 
-            var tripIdNumlength = BigInteger(uuidTail.get(0).toString(), 16).toInt()
-            uuidTail = uuidTail.slice(1..tripIdNumlength)
-
-
-            var tripId = BigInteger(uuidTail, 16).toString()
-            return tripId
+            return BigInteger(uuidTail, 16).toString()
         }
     }
 }
