@@ -104,10 +104,12 @@ class Beacons {
                 if (Main.main.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                     || Main.main.checkSelfPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED
                     || Main.main.checkSelfPermission(Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED
+                    || Main.main.checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED
                     || Main.main.checkSelfPermission(Manifest.permission.BLUETOOTH_ADVERTISE) != PackageManager.PERMISSION_GRANTED) {
                     Main.main.requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION,
                         Manifest.permission.ACCESS_BACKGROUND_LOCATION,
                         Manifest.permission.BLUETOOTH_SCAN,
+                        Manifest.permission.BLUETOOTH_CONNECT,
                         Manifest.permission.BLUETOOTH_ADVERTISE), Main.PERMISSION_REQUEST_FINE_LOCATION)
                 }
             }
@@ -257,8 +259,7 @@ class Beacons {
         }
 
         fun getTripIdFromUUID(_uuid:String):String {
-            var uuidTail = _uuid.slice (3.._uuid.length-1)
-            uuidTail = uuidTail.replace("-", "", true)
+            var uuidTail = _uuid.slice (3.._uuid.length-1).replace("-", "", true)
             uuidTail = uuidTail.slice(1..BigInteger(uuidTail.get(0).toString(), 16).toInt())
 
             return BigInteger(uuidTail, 16).toString()
