@@ -6,6 +6,8 @@ import android.widget.TextView
 import org.altbeacon.beacon.Beacon
 import org.altbeacon.beacon.BeaconTransmitter
 import ru.prodimex.digitaldispatcher.*
+import java.util.*
+import kotlin.collections.HashMap
 
 open class LoaderAppController: AppController() {
     companion object {
@@ -134,7 +136,10 @@ open class LoaderAppController: AppController() {
     }
 
     fun makeReconnectBeacon(_shortcut:String) {
-        var uuid = Beacons.completeRawUUID("${Dict.YOU_NEED_TO_RECONNECT}$_shortcut")
+        var d = Date().time
+        var uuid = Beacons.completeRawUUID("${Dict.YOU_NEED_TO_RECONNECT}$_shortcut$d")
+
+
         Main.log("makeReconnectBeacon $uuid ++ ${_shortcut}", TAG)
         Beacons.createBeacon(uuid)
         reconnectShortcuts[_shortcut] = Beacons.beaconTransmitters[uuid]!!

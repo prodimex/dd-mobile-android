@@ -139,7 +139,7 @@ open class DriverAppController: AppController() {
 
                 when (signalType) {
                     Dict.DISMISS_FROM_QUEUE -> { youDismissed() }
-                    Dict.YOU_NEED_TO_RECONNECT -> { startReconnectionToLoader() }
+                    Dict.YOU_NEED_TO_RECONNECT -> { startReconnectionToLoader(uuid) }
                     Dict.GO_TO_LOADING -> { goToLoading() }
                     Dict.GO_RETURN_TO_QUEUE -> { returnToQueue() }
                     Dict.YOU_LOADED_GO_TO_FACTORY -> { setStateToLoadedAndDisconnect() }
@@ -242,13 +242,17 @@ open class DriverAppController: AppController() {
         showAssignedStateActions()
     }
 
-    fun startReconnectionToLoader() {
+    var lastReconnectSignal = ""
+    fun startReconnectionToLoader(_uuid:String) {
         if(DriverTripPage.currentRangingState == Dict.RECONNECT_TO_LOADER
             || DriverTripPage.currentRangingState == Dict.RECONNECT_TO_LOADER_IN_TO_LOADING_QUEUE
             || DriverTripPage.currentRangingState == Dict.RECONNECT_TO_LOADER_AS_DISMISSED
         )
             return
+        if(lastReconnectSignal == _uuid)
+            return
 
+        lastReconnectSignal = _uuid
         Main.main.toastMe("ПОГРУЗЧИК ЗАПРОСИЛ ОБНОВИТЬ ДАННЫЕ")
         DriverTripPage.toLoaderConnectionStarted = true
         DriverTripPage.toLoaderConnected = false
