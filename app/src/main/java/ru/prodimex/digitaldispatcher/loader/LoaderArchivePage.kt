@@ -2,7 +2,7 @@ package ru.prodimex.digitaldispatcher.loader
 
 import ru.prodimex.digitaldispatcher.R
 
-class LoaderCancelledPage: LoaderAppController() {
+class LoaderArchivePage: LoaderAppController() {
     companion object {
 
     }

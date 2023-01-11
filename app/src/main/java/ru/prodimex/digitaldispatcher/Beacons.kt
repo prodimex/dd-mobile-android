@@ -203,6 +203,8 @@ class Beacons {
             if(beaconTransmitters.contains(_uuid)) {
                 beaconTransmitters[_uuid]!!.stopAdvertising()
                 beaconTransmitters.remove(_uuid)
+            } else {
+                Main.log("Error - Beacon not finded", TAG)
             }
         }
 

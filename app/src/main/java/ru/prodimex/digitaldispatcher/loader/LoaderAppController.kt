@@ -3,18 +3,22 @@ package ru.prodimex.digitaldispatcher.loader
 import android.media.RingtoneManager
 import android.net.Uri
 import android.widget.TextView
+import com.google.gson.Gson
 import org.altbeacon.beacon.Beacon
 import org.altbeacon.beacon.BeaconTransmitter
 import ru.prodimex.digitaldispatcher.*
+import ru.prodimex.digitaldispatcher.driver.DriverAppController
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 open class LoaderAppController: AppController() {
     companion object {
-        var driversOnField:MutableMap<String, LoaderPagesListItem> = hashMapOf()
-        var driversOnArchive:MutableMap<String, LoaderPagesListItem> = hashMapOf()
+        var driversOnField:MutableMap<String, LoaderQueueListItem> = hashMapOf()
+        var driversOnFieldByShortCut:MutableMap<String, LoaderQueueListItem> = hashMapOf()
 
-        var driversOnFieldByShortCut:MutableMap<String, LoaderPagesListItem> = hashMapOf()
+        var driversOnArchive:MutableMap<String, LoaderArchiveListItem> = hashMapOf()
+
         var reconnectShortcuts:MutableMap<String, BeaconTransmitter> = hashMapOf()
 
         var driversInfoCache = HashMap<String, Any>()
@@ -33,7 +37,23 @@ open class LoaderAppController: AppController() {
         }
 
         var driversPings:MutableMap<String, Boolean> = hashMapOf()
+
+        fun placeToArchive(_number:String, _shortCut:String) {
+            driversOnField.remove(_number)
+            driversOnFieldByShortCut.remove(_shortCut)
+            driversPings.remove(_shortCut)
+
+            var time = Date().time.toString()
+            driversOnArchive["$_shortCut$time"] = LoaderArchiveListItem(_number, _shortCut, time)
+
+            var archiveToSave:ArrayList<HashMap<String, String>> = arrayListOf()
+            driversOnArchive.forEach {
+                archiveToSave.add(hashMapOf("number" to it.value.number, "shortCut" to it.value.shortCut, "time" to it.value.time))
+            }
+            Main.setParam("loaderArchive", Gson().toJson(archiveToSave))
+        }
     }
+
     override val TAG = "LOADER APP CONTROLLER"
     override fun init(_layoutId:Int) {
         super.init(_layoutId)
@@ -79,7 +99,7 @@ open class LoaderAppController: AppController() {
         var shortCut = UserData.getShortCutFromUUIDTail(_uuid.slice(2.._uuid.length - 1))
         Main.log("checkDriverAvailability $_uuid $number $shortCut ${driversOnField.contains(number)}", TAG)
         if(!driversOnField.contains(number)) {
-            driversOnField[number] = LoaderPagesListItem(number, shortCut)
+            driversOnField[number] = LoaderQueueListItem(number, shortCut)
             if(_uuid.indexOf(Dict.RECONNECT_TO_LOADER_IN_TO_LOADING_QUEUE) == 0)
                 driversOnField[number]!!.PAGE_ID = Dict.LOADER_LOADED_PAGE
 
@@ -118,21 +138,25 @@ open class LoaderAppController: AppController() {
         if(_uuid.indexOf(Dict.SEND_DRIVER_INFO_TO_LOADER) == 0
             || _uuid.indexOf(Dict.IM_WAITING_FOR_LOADER_SIGNAL) == 0
             || _uuid.indexOf(Dict.IM_DISMISSED_BUT_ON_FIELD) == 0
-            || _uuid.indexOf(Dict.IM_LOADED_AND_GO_TO_FACTORY) == 0
             || _uuid.indexOf(Dict.IM_ON_LOADING) == 0) {
 
-            var shortCut = UserData.getShortCutFromUUIDTail(_uuid.slice(2.._uuid.length - 1))//getShortCutFromUUID(_uuid)
+            var shortCut = UserData.getShortCutFromUUIDTail(_uuid.slice(2.._uuid.length - 1))
             Main.log("Only shorcutted signal $shortCut ${driversOnFieldByShortCut.contains(shortCut)}", TAG)
             if (driversOnFieldByShortCut.contains(shortCut)) {
                 driversOnFieldByShortCut[shortCut]!!.receiveUIIDs(_uuid)
                 driversPings[shortCut] = true
-            } else if (driversOnArchive.contains(shortCut)) {
-                driversOnArchive[shortCut]!!.receiveUIIDs(_uuid)
             } else {
                 if(!reconnectShortcuts.contains(shortCut))
                     makeReconnectBeacon(shortCut)
             }
         }
+        if(_uuid.indexOf(Dict.IM_LOADED_AND_GO_TO_FACTORY) == 0) {
+            var shortCut = UserData.getShortCutFromUUIDTail(_uuid.slice(2.._uuid.length - 1))
+            if (driversOnArchive.contains(shortCut)) {
+                driversOnArchive[shortCut]!!.receiveUIIDs(_uuid)
+            }
+        }
+
     }
 
     fun makeReconnectBeacon(_shortcut:String) {
@@ -165,7 +189,7 @@ open class LoaderAppController: AppController() {
     }
 
     var dc = HashMap<String, Int>() // счетчики водителей
-    private fun processDriverOnPage(driver: LoaderPagesListItem) {
+    private fun processDriverOnPage(driver: ListItem) {
         driver.updateView()
         if(!dc.contains(driver.PAGE_ID))
             dc[driver.PAGE_ID] = 0

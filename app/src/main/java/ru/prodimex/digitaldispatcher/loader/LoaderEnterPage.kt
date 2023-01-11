@@ -43,6 +43,15 @@ class LoaderEnterPage: AppController() {
         Main.setParam("tripFieldindex", UserData.tripFieldindex)
         Main.setParam("appEntered", "true")
 
+        if(Main.getParam("loaderArchive") != "") {
+            val loaderArchive:ArrayList<HashMap<String, String>>
+                    = Gson().fromJson(Main.getParam("loaderArchive"), object : TypeToken<ArrayList<HashMap<String?, String?>?>>() {}.type)
+            loaderArchive.forEach {
+                LoaderAppController.driversOnArchive["${it["shortCut"]}${it["time"]}"] = LoaderArchiveListItem("${it["number"]}", "${it["shortCut"]}", "${it["time"]}")
+            }
+        }
+
+
         Beacons.init()
         Beacons.startScan(Beacons.completeRawUUID(Dict.LOADER_ON_FIELD_ON_AIR))
         switchTopage(Dict.LOADER_QUEUE_PAGE)

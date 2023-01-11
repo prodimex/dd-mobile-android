@@ -1,8 +1,6 @@
 package ru.prodimex.digitaldispatcher.loader
 
 import android.annotation.SuppressLint
-import android.os.Build
-import android.text.Html
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.LinearInterpolator
@@ -14,32 +12,17 @@ import ru.prodimex.digitaldispatcher.*
 import ru.prodimex.digitaldispatcher.uitools.PopupManager
 import java.math.BigInteger
 
-class LoaderPagesListItem(_number:String, _shortCut:String) {
-    var PAGE_ID = Dict.LOADER_QUEUE_PAGE
-    val number = _number
-    val tripId = BigInteger(_shortCut.slice(1.._shortCut.length-1), 16).toString()
+class LoaderQueueListItem(_number:String, _shortCut:String): ListItem(_number, _shortCut) {
     var driverState = Dict.NEW_ITEM
-    var view: LinearLayout = Main.main.layoutInflater.inflate(R.layout.queue_driver_list_item, null) as LinearLayout
-    var shortCut = _shortCut
+
+
     var currentBeacon = ""
 
-    var surname = ""
-    var name = ""
-    var patronymic = ""
     var driverStatus = "Обнаружен"
-    val space = Space(Main.main.applicationContext)
 
-    val TAG = "LOADER PAGE LIST ITEM"
+    override val TAG = "LOADER PAGE LIST ITEM"
+
     init {
-        if(LoaderAppController.driversInfoCache.contains(number)) {
-            var cacheData = LoaderAppController.driversInfoCache[number] as LinkedTreeMap<String, Any>
-            surname = cacheData["surname"].toString()
-            name = cacheData["name"].toString()
-            patronymic = cacheData["patronymic"].toString()
-        }
-        space.minimumHeight = 12
-        updateView()
-
         LoaderAppController.driversOnFieldByShortCut[shortCut] = this
 
         view.findViewById<Button>(R.id.disconnect_button).setOnClickListener {
@@ -68,6 +51,8 @@ class LoaderPagesListItem(_number:String, _shortCut:String) {
                 }
             }
         }
+
+        updateView()
     }
 
     var recievedData = HashMap<String, String>()
@@ -83,7 +68,8 @@ class LoaderPagesListItem(_number:String, _shortCut:String) {
     fun ping() {
         pingCounter ++
     }
-    fun receiveUIIDs(_uuid:String) {
+
+    override fun receiveUIIDs(_uuid:String) {
         Main.log("receiveUIIDs $_uuid $driverState", TAG)
         pingCounter = 0
         var uuid = _uuid
@@ -182,27 +168,15 @@ class LoaderPagesListItem(_number:String, _shortCut:String) {
 
         if(uuid.indexOf(Dict.IM_DISMISSED_BUT_ON_FIELD) == 0 && driverState == Dict.DISMISS_FROM_QUEUE) {
             setImInQueueAndWait(Dict.LOADER_CANCELLED_PAGE, "Погрузка запрещена")
-            placeMeToArchive()
-        }
-
-        if(uuid.indexOf(Dict.IM_LOADED_AND_GO_TO_FACTORY) == 0 && driverState == Dict.YOU_LOADED_GO_TO_FACTORY) {
-            setImInQueueAndWait(Dict.LOADER_CANCELLED_PAGE, "Погрузка успешно завершена")
-            placeMeToArchive()
+            LoaderAppController.placeToArchive(number, shortCut)
         }
 
         Main.log("UUIDS Recieved and processed $driverState", TAG)
     }
 
-    fun placeMeToArchive() {
-        LoaderAppController.driversOnField.remove(number)
-        LoaderAppController.driversOnFieldByShortCut.remove(shortCut)
-        LoaderAppController.driversPings.remove(shortCut)
-
-        LoaderAppController.driversOnArchive[shortCut] = this
-    }
-
     fun setImInQueueAndWait(_newPageId:String, _newDriverStatus:String) {
-        Main.log("setImInQueueAndWait --------- $currentBeacon", TAG)
+        Main.log("setImInQueueAndWait --------- $currentBeacon $_newDriverStatus $_newPageId", TAG)
+        Main.log("setImInQueueAndWait --------- $driverState ", TAG)
         PAGE_ID = _newPageId
         Beacons.killBeacon(currentBeacon)
         driverState = Dict.SILENCE
@@ -230,7 +204,7 @@ class LoaderPagesListItem(_number:String, _shortCut:String) {
     }
 
     @SuppressLint("CutPasteId")
-    fun updateView() {
+    override fun updateView() {
         setText(R.id.loader_car_number, "<b>АМ: $number Номер рейса: $tripId</b>")
         setText(R.id.loader_block_driver_name, "<b>$surname $name $patronymic</b>")
 
@@ -254,13 +228,5 @@ class LoaderPagesListItem(_number:String, _shortCut:String) {
 
         view.findViewById<Button>(R.id.online_indicator_dot).isEnabled = pingCounter <= 5
         view.findViewById<TextView>(R.id.online_indicator_text).text = if (pingCounter <= 5)  "На связи $pingCounter" else "Связь отсутствует $pingCounter"
-    }
-
-    fun setText(_id:Int, _text:String) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            (view.findViewById<TextView>(_id)).text = Html.fromHtml(_text, Html.FROM_HTML_MODE_COMPACT)
-        } else {
-            (view.findViewById<TextView>(_id)).text = Html.fromHtml(_text)
-        }
     }
 }

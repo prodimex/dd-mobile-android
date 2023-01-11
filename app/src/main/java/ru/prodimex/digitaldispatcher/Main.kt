@@ -135,7 +135,7 @@ class Main : AppCompatActivity() {
             Dict.LOADER_ENTER_PAGE -> LoaderEnterPage().afterInit(pageId)
             Dict.LOADER_QUEUE_PAGE -> LoaderQueuePage().afterInit(pageId)
             Dict.LOADER_LOADED_PAGE -> LoaderLoadedPage().afterInit(pageId)
-            Dict.LOADER_CANCELLED_PAGE -> LoaderCancelledPage().afterInit(pageId)
+            Dict.LOADER_CANCELLED_PAGE -> LoaderArchivePage().afterInit(pageId)
             Dict.LOADER_SETTINGS_PAGE -> LoaderSettingsPage().afterInit(pageId)
             Dict.UPDATE_PAGE -> UpdatePage().afterInit(pageId)
             Dict.ROLE_SELECTOR -> showRoleSelector()
@@ -184,7 +184,6 @@ class Main : AppCompatActivity() {
     override fun onStop() {
         log("=================== onStop Intent.ACTION_SCREEN_OFF:${intent.action}", TAG)
         super.onStop()
-        //unregisterReceiver(mReceiver)
     }
 
     override fun onResume() {
@@ -236,14 +235,6 @@ class Main : AppCompatActivity() {
                 }
                 return
             }
-            /*PERMISSION_REQUEST_BLUETOOTH_CONNECT -> {
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    log("BLUETOOTH_CONNECT permission granted")
-                } else {
-                    log("BLUETOOTH_CONNECT permission denied")
-                }
-                return
-            }*/
         }
     }
 

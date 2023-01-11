@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:paddingHorizontal="10dp"
+    android:paddingTop="5dp"
+    android:paddingBottom="10dp"
+    android:background="@drawable/loader_list_item_background"
+    android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/status_header"
+            android:layout_width="wrap_content"
+            android:textColor="@color/status_text_color_2"
+            android:layout_height="wrap_content"
+            android:textSize="16dp"
+            android:text="В погрузке отказано"/>
+        <TextView
+            android:id="@+id/loader_car_number"
+            android:layout_width="wrap_content"
+            android:textColor="@color/black"
+            android:layout_height="wrap_content"
+            android:textSize="18dp"
+            android:text="0001: H482EF 56"/>
+        <TextView
+            android:id="@+id/loader_block_driver_name"
+            android:layout_width="wrap_content"
+            android:textColor="@color/text_gray"
+            android:layout_height="wrap_content"
+            android:textSize="16dp"
+            android:text="Водителев Водитель Водителевич"/>
+        <TextView
+            android:id="@+id/loader_archive_list_item_date"
+            android:layout_width="wrap_content"
+            android:textColor="@color/text_gray"
+            android:layout_height="wrap_content"
+            android:textSize="14dp"
+            android:text="@string/preview_text"/>
+    </LinearLayout>
+</LinearLayout>
