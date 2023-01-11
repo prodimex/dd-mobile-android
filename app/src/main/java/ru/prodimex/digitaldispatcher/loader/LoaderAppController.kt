@@ -152,9 +152,7 @@ open class LoaderAppController: AppController() {
         }
         if(_uuid.indexOf(Dict.IM_LOADED_AND_GO_TO_FACTORY) == 0) {
             var shortCut = UserData.getShortCutFromUUIDTail(_uuid.slice(2.._uuid.length - 1))
-            if (driversOnArchive.contains(shortCut)) {
-                driversOnArchive[shortCut]!!.receiveUIIDs(_uuid)
-            }
+            Beacons.killBeacon(Beacons.completeRawUUID("${Dict.YOU_LOADED_GO_TO_FACTORY}$shortCut"))
         }
 
     }

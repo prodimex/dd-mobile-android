@@ -171,6 +171,11 @@ class LoaderQueueListItem(_number:String, _shortCut:String): ListItem(_number, _
             LoaderAppController.placeToArchive(number, shortCut)
         }
 
+        /*if(uuid.indexOf(Dict.IM_LOADED_AND_GO_TO_FACTORY) == 0 && driverState == Dict.YOU_LOADED_GO_TO_FACTORY) {
+            setImInQueueAndWait(Dict.LOADER_CANCELLED_PAGE, "Погрузка успешно завершена")
+            LoaderAppController.placeToArchive(number, shortCut)
+        }*/
+
         Main.log("UUIDS Recieved and processed $driverState", TAG)
     }
 
